@@ -1,0 +1,1 @@
+C:\Users\Dex\source\repos\AvatarForms\AvatarFormsApp\AvatarFormsApp\AvatarFormsApp.csproj;x64

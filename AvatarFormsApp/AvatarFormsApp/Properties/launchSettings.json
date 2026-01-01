@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AvatarFormsApp (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "AvatarFormsApp (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
