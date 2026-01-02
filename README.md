@@ -9,7 +9,7 @@ To get the AI components running on your local machine, follow these steps:
 
 ### 1. Install Ollama
 Download and install Ollama from [ollama.com](https://ollama.com).
-Once installed, pull the required model (Dex uses gemma3:1b because of Ram constraints change loacl_prototype.py if needed):
+Once installed, pull the required model (Dex uses gemma3:1b because of Ram constraints change local_prototype.py if needed):
 ```bash
 ollama pull gemma3:1b
 ```
