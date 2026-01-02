@@ -8,12 +8,27 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Title="AvatarFormsApp">
+    <Grid Margin="20">
+        <StackPanel x:Name="LandingPage" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+            <TextBlock Text="Welcome to Avatar Forms App!" FontSize="24" FontWeight="Bold" TextAlignment="Center"/>
+            <Button Content="Chat with AI" Width="200" Height="50" Click="OnChatAIClicked"/>
+        </StackPanel>
 
-    <Window.SystemBackdrop>
-        <MicaBackdrop />
-    </Window.SystemBackdrop>
+        <Grid x:Name="ChatInterface" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-    <Grid>
+            <ScrollViewer x:Name="ChatScroll" Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                <TextBlock x:Name="ChatDisplay" TextWrapping="Wrap" FontSize="16" />
+            </ScrollViewer>
 
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
+                <TextBox x:Name="UserInput" Width="600" PlaceholderText="Type your answer here..." 
+                         KeyDown="OnInputKeyDown"/>
+                <Button Content="Send" Click="OnSendClicked" Style="{StaticResource AccentButtonStyle}"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

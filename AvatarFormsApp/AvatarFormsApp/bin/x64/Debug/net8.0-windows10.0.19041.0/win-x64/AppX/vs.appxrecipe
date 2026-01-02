@@ -18,7 +18,7 @@
     <DeployOptionalPackages>false</DeployOptionalPackages>
     <WindowsSdkPath>C:\Program Files %28x86%29\Windows Kits\10\</WindowsSdkPath>
     <LayoutDir>C:\Users\Dex\source\repos\AvatarForms\AvatarFormsApp\AvatarFormsApp\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppX</LayoutDir>
-    <RegisteredManifestChecksum>0C6958814BDCB60C3690F4B9C8F28C29C4B701CD34DB985D8B3663C6BE7A7F04</RegisteredManifestChecksum>
+    <RegisteredManifestChecksum>058C5300B6669640466B99BF54DD70B5E912B961BFAF9A8A9E71125277A7A5AD</RegisteredManifestChecksum>
     <RegisteredPackageMoniker>b0c31439-938c-4c7e-9eb3-2602ac7a0e23_1.0.0.0_x64__cnqmqce5cprty</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>b0c31439-938c-4c7e-9eb3-2602ac7a0e23_cnqmqce5cprty!App</RegisteredUserModeAppID>
     <RegisteredPackageID>b0c31439-938c-4c7e-9eb3-2602ac7a0e23</RegisteredPackageID>
@@ -29,7 +29,7 @@
     <AppXManifest Include="C:\Users\Dex\source\repos\AvatarForms\AvatarFormsApp\AvatarFormsApp\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2026-01-01T23:34:46.977</Modified>
+      <Modified>2026-01-02T13:39:24.426</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -39,11 +39,15 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Dex\source\repos\AvatarForms\AvatarFormsApp\AvatarFormsApp\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
       <PackagePath>AvatarFormsApp.exe</PackagePath>
-      <Modified>2026-01-01T23:34:37.319</Modified>
+      <Modified>2026-01-02T12:58:00.345</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Dex\source\repos\AvatarForms\Local\local_prototype.py">
+      <PackagePath>Local\local_prototype.py</PackagePath>
+      <Modified>2026-01-02T13:30:02.168</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Dex\source\repos\AvatarForms\AvatarFormsApp\AvatarFormsApp\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AvatarFormsApp.dll">
       <PackagePath>AvatarFormsApp.dll</PackagePath>
-      <Modified>2026-01-01T23:34:36.634</Modified>
+      <Modified>2026-01-02T12:57:59.504</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Dex\.nuget\packages\microsoft.netcore.app.runtime.win-x64\8.0.22\runtimes\win-x64\lib\net8.0\Microsoft.CSharp.dll">
       <PackagePath>Microsoft.CSharp.dll</PackagePath>
@@ -927,7 +931,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Dex\source\repos\AvatarForms\AvatarFormsApp\AvatarFormsApp\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AvatarFormsApp.deps.json">
       <PackagePath>AvatarFormsApp.deps.json</PackagePath>
-      <Modified>2026-01-01T23:34:41.631</Modified>
+      <Modified>2026-01-02T12:34:38.632</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Dex\source\repos\AvatarForms\AvatarFormsApp\AvatarFormsApp\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
@@ -963,7 +967,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Dex\source\repos\AvatarForms\AvatarFormsApp\AvatarFormsApp\bin\x64\Debug\net8.0-windows10.0.19041.0\win-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2026-01-01T23:34:44.282</Modified>
+      <Modified>2026-01-02T12:58:02.387</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

@@ -31,6 +31,9 @@
     <AppxPackagedFile Include="C:\Users\Dex\source\repos\AvatarForms\AvatarFormsApp\AvatarFormsApp\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\apphost.exe">
       <PackagePath>AvatarFormsApp.exe</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Dex\source\repos\AvatarForms\Local\local_prototype.py">
+      <PackagePath>Local\local_prototype.py</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Dex\source\repos\AvatarForms\AvatarFormsApp\AvatarFormsApp\obj\x64\Debug\net8.0-windows10.0.19041.0\win-x64\AvatarFormsApp.dll">
       <PackagePath>AvatarFormsApp.dll</PackagePath>
     </AppxPackagedFile>

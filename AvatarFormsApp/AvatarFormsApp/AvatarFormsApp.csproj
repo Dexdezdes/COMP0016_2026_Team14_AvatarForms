@@ -40,6 +40,24 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7175" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
   </ItemGroup>
+	
+  <!--
+    Include the python environment in the 'env' folder in the output directory
+  -->
+  <ItemGroup>
+	<Content Include="env\**">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Content>
+  </ItemGroup>
+
+	<ItemGroup>
+		<Content Include="$(ProjectDir)..\..\Local\local_prototype.py">
+			<Link>Local\local_prototype.py</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	
+	
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
