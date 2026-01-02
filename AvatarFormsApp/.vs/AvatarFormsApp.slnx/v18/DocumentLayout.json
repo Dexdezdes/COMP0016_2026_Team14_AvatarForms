@@ -1,0 +1,99 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Dex\\source\\repos\\AvatarForms\\AvatarFormsApp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{AC41B690-BC95-48A6-F6FE-B921512F8479}|AvatarFormsApp\\AvatarFormsApp.csproj|c:\\users\\dex\\source\\repos\\avatarforms\\local\\local_prototype.py||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC41B690-BC95-48A6-F6FE-B921512F8479}|AvatarFormsApp\\AvatarFormsApp.csproj|c:\\users\\dex\\source\\repos\\avatarforms\\avatarformsapp\\avatarformsapp\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AC41B690-BC95-48A6-F6FE-B921512F8479}|AvatarFormsApp\\AvatarFormsApp.csproj|solutionrelative:avatarformsapp\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC41B690-BC95-48A6-F6FE-B921512F8479}|AvatarFormsApp\\AvatarFormsApp.csproj|c:\\users\\dex\\source\\repos\\avatarforms\\avatarformsapp\\avatarformsapp\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{AC41B690-BC95-48A6-F6FE-B921512F8479}|AvatarFormsApp\\AvatarFormsApp.csproj|solutionrelative:avatarformsapp\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC41B690-BC95-48A6-F6FE-B921512F8479}|AvatarFormsApp\\AvatarFormsApp.csproj|c:\\users\\dex\\source\\repos\\avatarforms\\avatarformsapp\\avatarformsapp\\avatarformsapp.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{AC41B690-BC95-48A6-F6FE-B921512F8479}|AvatarFormsApp\\AvatarFormsApp.csproj|solutionrelative:avatarformsapp\\avatarformsapp.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AC41B690-BC95-48A6-F6FE-B921512F8479}|AvatarFormsApp\\AvatarFormsApp.csproj|c:\\users\\dex\\source\\repos\\avatarforms\\avatarformsapp\\avatarformsapp\\package.appxmanifest||{4D47164B-07B6-4A52-A855-728D6A2E2AA3}",
+      "RelativeMoniker": "D:0:0:{AC41B690-BC95-48A6-F6FE-B921512F8479}|AvatarFormsApp\\AvatarFormsApp.csproj|solutionrelative:avatarformsapp\\package.appxmanifest||{4D47164B-07B6-4A52-A855-728D6A2E2AA3}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Package.appxmanifest",
+              "DocumentMoniker": "C:\\Users\\Dex\\source\\repos\\AvatarForms\\AvatarFormsApp\\AvatarFormsApp\\Package.appxmanifest",
+              "RelativeDocumentMoniker": "AvatarFormsApp\\Package.appxmanifest",
+              "ToolTip": "C:\\Users\\Dex\\source\\repos\\AvatarForms\\AvatarFormsApp\\AvatarFormsApp\\Package.appxmanifest",
+              "RelativeToolTip": "AvatarFormsApp\\Package.appxmanifest",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001793|",
+              "WhenOpened": "2026-01-02T12:47:27.259Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AvatarFormsApp.csproj",
+              "DocumentMoniker": "C:\\Users\\Dex\\source\\repos\\AvatarForms\\AvatarFormsApp\\AvatarFormsApp\\AvatarFormsApp.csproj",
+              "RelativeDocumentMoniker": "AvatarFormsApp\\AvatarFormsApp.csproj",
+              "ToolTip": "C:\\Users\\Dex\\source\\repos\\AvatarForms\\AvatarFormsApp\\AvatarFormsApp\\AvatarFormsApp.csproj",
+              "RelativeToolTip": "AvatarFormsApp\\AvatarFormsApp.csproj",
+              "ViewState": "AgIAADAAAAAAAAAAAAAmwEEAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-01-02T12:32:58.892Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\Dex\\source\\repos\\AvatarForms\\AvatarFormsApp\\AvatarFormsApp\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "AvatarFormsApp\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\Dex\\source\\repos\\AvatarForms\\AvatarFormsApp\\AvatarFormsApp\\MainWindow.xaml.cs",
+              "RelativeToolTip": "AvatarFormsApp\\MainWindow.xaml.cs",
+              "ViewState": "AgIAAHYAAAAAAAAAAAAswIcAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-02T11:46:13.942Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "local_prototype.py",
+              "DocumentMoniker": "C:\\Users\\Dex\\source\\repos\\AvatarForms\\Local\\local_prototype.py",
+              "RelativeDocumentMoniker": "..\\Local\\local_prototype.py",
+              "ToolTip": "C:\\Users\\Dex\\source\\repos\\AvatarForms\\Local\\local_prototype.py",
+              "RelativeToolTip": "..\\Local\\local_prototype.py",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAAC8AAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-01-02T11:47:06.065Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\Dex\\source\\repos\\AvatarForms\\AvatarFormsApp\\AvatarFormsApp\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "AvatarFormsApp\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\Dex\\source\\repos\\AvatarForms\\AvatarFormsApp\\AvatarFormsApp\\MainWindow.xaml",
+              "RelativeToolTip": "AvatarFormsApp\\MainWindow.xaml",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAACAAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-02T11:46:07.157Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

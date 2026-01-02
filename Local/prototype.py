@@ -1,3 +1,6 @@
+''' This is the local version of the prototype
+'''
+
 import os
 from dotenv import load_dotenv
 import ollama

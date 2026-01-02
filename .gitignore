@@ -1,5 +1,38 @@
 ﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+# Visual Studio & Windows
 ################################################################################
+# Ignore the .vs folder anywhere it appears
+.vs/
+**/.vs/
 
-/.vs
+# Build results
+[Bb]in/
+[Obj]/
+Generated Files/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+################################################################################
+# Python (AI Components)
+################################################################################
+# Ignore the virtual environment folder
+env/
+venv/
+**/env/
+**/venv/
+
+# Ignore compiled python files
+**/__pycache__/
+*.py[cod]
+
+# Ignore the environment variables file (keeps OLLAMA_HOST private)
+.env
+
+################################################################################
+# Others
+################################################################################
+.DS_Store
