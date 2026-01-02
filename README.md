@@ -11,7 +11,7 @@ To get the AI components running on your local machine, follow these steps:
 Download and install Ollama from [ollama.com](https://ollama.com).
 Once installed, pull the required model (Dex uses gemma3:1b because of Ram constraints change loacl_prototype.py if needed):
 ```bash
-ollama pull gemma3:1b
+ollama pull gemma3:1b```
 
 ### 2. Import the github project into Visual Studio
 Just choose clone from github and paste the url of this repository.
@@ -20,15 +20,18 @@ Just choose clone from github and paste the url of this repository.
 In the AvatarFormsApp directory just below the AvatarForms root folder
 Create the python virtual environment:
 
-python -m venv env
+```bash
+python -m venv env```
 
 # Activate the environment
 
-.\env\Scripts\activate
+```bash
+.\env\Scripts\activate```
 
 # Install dependencies (Just Ollama and dotnet, same as the original version)
 
-pip install -r requirements.txt
+```bash
+pip install -r requirements.txt```
 
 ### 4. Run app in Visual Studio
 Choose to run AvatarFormsApp.slnx 
