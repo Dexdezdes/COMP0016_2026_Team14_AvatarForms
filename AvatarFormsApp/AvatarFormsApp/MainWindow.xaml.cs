@@ -19,9 +19,6 @@ using Windows.Foundation.Collections;
 
 namespace AvatarFormsApp
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainWindow : Window
     {
         private System.Diagnostics.Process _pythonProcess;
@@ -38,11 +35,15 @@ namespace AvatarFormsApp
 
         private void OnChatAIClicked(object sender, RoutedEventArgs e)
         {
+            var button = sender as Button;
+            string mode = button.Tag?.ToString() ?? "local"; // Default to local if tag is missing
+
             LandingPage.Visibility = Visibility.Collapsed;
             ChatInterface.Visibility = Visibility.Visible;
 
-            ChatDisplay.Text += "[SYSTEM]: Initializing AI Agent...\n";
-            StartAIProcess();
+            ChatDisplay.Text += $"[SYSTEM]: Initializing {mode.ToUpper()} AI Agent...\n";
+
+            StartAIProcess(mode);
         }
 
         private string GetPythonPath()
@@ -58,10 +59,13 @@ namespace AvatarFormsApp
             return "python";
         }
 
-        private void StartAIProcess()
+        private void StartAIProcess(string mode)
         {
             string baseDirectory = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
-            string scriptPath = Path.Combine(baseDirectory, "Local", "local_prototype.py");
+            string subFolder = mode == "cloud" ? "Cloud" : "Local";
+            string fileName = mode == "cloud" ? "cloud_prototype.py" : "local_prototype.py";
+
+            string scriptPath = Path.Combine(baseDirectory, subFolder, fileName);
 
             if (!File.Exists(scriptPath))
             {
@@ -73,12 +77,13 @@ namespace AvatarFormsApp
             {
                 FileName = GetPythonPath(),
                 Arguments = $"-u \"{scriptPath}\"",
-                WorkingDirectory = baseDirectory,
+                WorkingDirectory = Path.Combine(baseDirectory, subFolder),
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardInput = true,
                 RedirectStandardError = true,
-                CreateNoWindow = true
+                CreateNoWindow = true,
+                StandardOutputEncoding = System.Text.Encoding.UTF8
             };
 
             _pythonProcess = new Process { StartInfo = start, EnableRaisingEvents = true };
@@ -88,8 +93,11 @@ namespace AvatarFormsApp
                 {
                     string cleanData = System.Text.RegularExpressions.Regex.Replace(e.Data, @"\x1B\[[^m]*m", "");
 
+                    // Filter out emojis (Unicode ranges for symbols and pictographs)
+                    cleanData = System.Text.RegularExpressions.Regex.Replace(cleanData, @"[\uD83C-\uDBFF\uDC00-\uDFFF]+", "");
+
                     DispatcherQueue.TryEnqueue(() => {
-                        ChatDisplay.Text += $"{cleanData}\n";
+                        ChatDisplay.Text += $"{cleanData.Trim()}\n";
                         ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
                     });
                 }

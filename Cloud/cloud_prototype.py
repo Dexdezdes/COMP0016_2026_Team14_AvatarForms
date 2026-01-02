@@ -4,6 +4,17 @@ from dotenv import load_dotenv
 import requests
 import json
 
+def get_token():
+    try:
+        # This looks for token.txt in the same folder as this script
+        with open("token.txt", "r") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        print("\033[91mError: token.txt not found in the Cloud folder!\033[0m")
+        return None
+
+TOKEN = get_token()
+
 load_dotenv()
 
 class Agent:
@@ -61,7 +72,7 @@ def runAgent(agent, messages):
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {os.getenv('TOKEN')}"
+        "Authorization": f"Bearer {TOKEN}"
     }
     response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
     text = json.loads(response.content)["choices"][0]["message"]["content"]

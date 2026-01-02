@@ -19,6 +19,10 @@ Generated Files/
 ################################################################################
 # Python (AI Components)
 ################################################################################
+# Ignore API keys
+token.txt
+**/token.txt
+*.token
 # Ignore the virtual environment folder
 env/
 venv/

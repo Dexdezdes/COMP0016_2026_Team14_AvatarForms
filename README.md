@@ -30,11 +30,15 @@ Activate the environment
 .\env\Scripts\activate
 ```
 
-Install dependencies (Just Ollama and dotnet, same as the original version)
+Install dependencies (Just Ollama and dotnet for local and requests for cloud)
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Run app in Visual Studio
+### 4. Add cloud ai token
+Add a file called "token.txt" in the Cloud folder where the cloud_prototype.py file is located and paste your token there.
+The cloud_prototype.py file currently uses firework.ai as the cloud ai provider.
+
+### 5. Run app in Visual Studio
 Choose to run AvatarFormsApp.slnx 

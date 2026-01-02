@@ -44,15 +44,27 @@
   <!--
     Include the python environment in the 'env' folder in the output directory
   -->
-  <ItemGroup>
-	<Content Include="env\**">
-		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="$(ProjectDir)..\env\**">
+			<Link>env\%(RecursiveDir)%(Filename)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
 	<ItemGroup>
 		<Content Include="$(ProjectDir)..\..\Local\local_prototype.py">
 			<Link>Local\local_prototype.py</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="$(ProjectDir)..\..\Cloud\cloud_prototype.py">
+			<Link>Cloud\cloud_prototype.py</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="$(ProjectDir)..\..\Cloud\token.txt">
+			<Link>Cloud\token.txt</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>

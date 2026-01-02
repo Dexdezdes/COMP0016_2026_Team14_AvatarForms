@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AvatarFormsApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e85372588f599df6011254adf6a5515215c98de2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f62b49046e7c08b7db735fcb40f81ef89430159b")]
 [assembly: System.Reflection.AssemblyProductAttribute("AvatarFormsApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AvatarFormsApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

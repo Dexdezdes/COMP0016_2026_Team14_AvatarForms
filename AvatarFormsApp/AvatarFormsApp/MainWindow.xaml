@@ -9,10 +9,19 @@
     mc:Ignorable="d"
     Title="AvatarFormsApp">
     <Grid Margin="20">
-        <StackPanel x:Name="LandingPage" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
-            <TextBlock Text="Welcome to Avatar Forms App!" FontSize="24" FontWeight="Bold" TextAlignment="Center"/>
-            <Button Content="Chat with AI" Width="200" Height="50" Click="OnChatAIClicked"/>
-        </StackPanel>
+		<StackPanel x:Name="LandingPage" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+			<TextBlock Text="Welcome to Avatar Forms App!" FontSize="24" FontWeight="Bold" TextAlignment="Center"/>
+
+			<Button Content="Start Local AI Chat"
+					Width="200" Height="50"
+					Tag="local"
+					Click="OnChatAIClicked"/>
+
+			<Button Content="Start Cloud AI Chat"
+					Width="200" Height="50"
+					Tag="cloud"
+					Click="OnChatAIClicked"/>
+		</StackPanel>
 
         <Grid x:Name="ChatInterface" Visibility="Collapsed">
             <Grid.RowDefinitions>
