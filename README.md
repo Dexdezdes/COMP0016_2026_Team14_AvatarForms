@@ -21,17 +21,20 @@ In the AvatarFormsApp directory just below the AvatarForms root folder
 Create the python virtual environment:
 
 ```bash
-python -m venv env```
+python -m venv env
+```
 
 # Activate the environment
 
 ```bash
-.\env\Scripts\activate```
+.\env\Scripts\activate
+```
 
 # Install dependencies (Just Ollama and dotnet, same as the original version)
 
 ```bash
-pip install -r requirements.txt```
+pip install -r requirements.txt
+```
 
 ### 4. Run app in Visual Studio
 Choose to run AvatarFormsApp.slnx 
