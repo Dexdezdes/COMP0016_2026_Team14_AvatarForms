@@ -1,5 +1,4 @@
 # AvatarForms
-# Avatar Forms Project
 
 This project uses a C# WinUI 3 frontend and a Python-based AI backend powered by Ollama.
 
