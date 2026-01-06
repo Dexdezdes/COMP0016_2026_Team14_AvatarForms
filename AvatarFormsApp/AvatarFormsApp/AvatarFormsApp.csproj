@@ -1,29 +1,50 @@
 <Project Sdk="Uno.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-maccatalyst</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <UnoSingleProject>true</UnoSingleProject>
 
-    <PublishTrimmed>true</PublishTrimmed>
+    <PublishTrimmed>false</PublishTrimmed>
     <MtouchLink>None</MtouchLink>
     
     <UnoDisableAutoMain>false</UnoDisableAutoMain>
     <UseInterpreter>true</UseInterpreter>
-    <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::IsOSPlatform('windows'))">10.0.19041.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="!$([MSBuild]::IsOSPlatform('windows'))">15.0</SupportedOSPlatformVersion>
 
     <UnoThemesVersion>5.2.13</UnoThemesVersion>
     <UnoToolkitVersion>5.2.14</UnoToolkitVersion>
     <UnoFeatures>Material;Toolkit;</UnoFeatures>
 
-    <ApplicationId>com.companyname.avatarformsapp.v2</ApplicationId>
+    <ApplicationId Condition="$([MSBuild]::IsOSPlatform('windows'))">43257544-773a-4876-be11-3e0e932b5003</ApplicationId>
+    <ApplicationId Condition="!$([MSBuild]::IsOSPlatform('windows'))">com.companyname.avatarformsapp.v2</ApplicationId>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>
     <ApplicationTitle>AvatarFormsApp</ApplicationTitle>
+    <MetadataPublisher Condition="$([MSBuild]::IsOSPlatform('windows'))">Group14</MetadataPublisher>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::IsOSPlatform('windows'))">10.0.19041.0</TargetPlatformMinVersion>
+    <DefaultLanguage Condition="$([MSBuild]::IsOSPlatform('windows'))">en-US</DefaultLanguage>
+    <PublisherName Condition="$([MSBuild]::IsOSPlatform('windows'))">CN=Group14</PublisherName>
+    <ApplicationIdGuid Condition="$([MSBuild]::IsOSPlatform('windows'))">43257544-773a-4876-be11-3e0e932b5003</ApplicationIdGuid>
+    <IdentityName Condition="$([MSBuild]::IsOSPlatform('windows'))">43257544-773a-4876-be11-3e0e932b5003</IdentityName>
+    <PhoneProductId Condition="$([MSBuild]::IsOSPlatform('windows'))">43257544-773a-4876-be11-3e0e932b5003</PhoneProductId>
+    <PackageDisplayName Condition="$([MSBuild]::IsOSPlatform('windows'))">AvatarFormsApp</PackageDisplayName>
+    <PackagePublisherDisplayName Condition="$([MSBuild]::IsOSPlatform('windows'))">Group14</PackagePublisherDisplayName>
+    <EnableDefaultAppxManifestMetadata Condition="$([MSBuild]::IsOSPlatform('windows'))">false</EnableDefaultAppxManifestMetadata>
+    <ManagePackageVersionsCentrally Condition="$([MSBuild]::IsOSPlatform('windows'))">false</ManagePackageVersionsCentrally>
+    <ApplicationManifest Condition="$([MSBuild]::IsOSPlatform('windows'))">Platforms\Windows\app.manifest</ApplicationManifest>
+    <PackageAppxManifest Condition="$([MSBuild]::IsOSPlatform('windows'))">Platforms\Windows\Package.appxmanifest</PackageAppxManifest>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Uno.Material.WinUI" />
-    <PackageReference Include="Uno.Toolkit.WinUI" />
+  <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
+      <PackageReference Include="Uno.Material.WinUI" />
+      <PackageReference Include="Uno.Toolkit.WinUI" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
+      <PackageReference Include="Uno.Material.WinUI" VersionOverride="$(UnoThemesVersion)" />
+      <PackageReference Include="Uno.Toolkit.WinUI" VersionOverride="$(UnoToolkitVersion)" />
   </ItemGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
@@ -34,5 +55,12 @@
     <CodesignEntitlements>Platforms/maccatalyst/Entitlements.plist</CodesignEntitlements>
     <UseHardenedRuntime>false</UseHardenedRuntime>
     <CreatePackage>false</CreatePackage>
-</PropertyGroup>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
+      <AppxManifest Include="Platforms\Windows\Package.appxmanifest">
+          <SubType>Designer</SubType>
+      </AppxManifest>
+      <Manifest Include="Platforms\Windows\app.manifest" />
+  </ItemGroup>
 </Project>
