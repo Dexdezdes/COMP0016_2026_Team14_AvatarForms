@@ -1,43 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Window
     x:Class="AvatarFormsApp.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:AvatarFormsApp"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Title="AvatarFormsApp">
-    <Grid Margin="20">
-		<StackPanel x:Name="LandingPage" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
-			<TextBlock Text="Welcome to Avatar Forms App!" FontSize="24" FontWeight="Bold" TextAlignment="Center"/>
-
-			<Button Content="Start Local AI Chat"
-					Width="200" Height="50"
-					Tag="local"
-					Click="OnChatAIClicked"/>
-
-			<Button Content="Start Cloud AI Chat"
-					Width="200" Height="50"
-					Tag="cloud"
-					Click="OnChatAIClicked"/>
-		</StackPanel>
-
-        <Grid x:Name="ChatInterface" Visibility="Collapsed">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <ScrollViewer x:Name="ChatScroll" Grid.Row="0" VerticalScrollBarVisibility="Auto">
-                <TextBlock x:Name="ChatDisplay" TextWrapping="Wrap" FontSize="16" />
-            </ScrollViewer>
-
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
-                <TextBox x:Name="UserInput" Width="600" PlaceholderText="Type your answer here..." 
-                         KeyDown="OnInputKeyDown"/>
-                <Button Content="Send" Click="OnSendClicked" Style="{StaticResource AccentButtonStyle}"/>
-            </StackPanel>
-        </Grid>
-    </Grid>
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- The content will be a Frame set in code-behind -->
 </Window>
