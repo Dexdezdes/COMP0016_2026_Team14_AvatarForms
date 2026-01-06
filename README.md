@@ -55,7 +55,7 @@ After running the command, right click the solution 'AvatarformsApp' and select 
 
 ### 6. Run app in Visual Studio
 Choose to run AvatarFormsApp.sln 
-Use Debug and x64
+Use Debug and x64. Choose the AvatarFormsApp (Desktop).
 
 ## MacBook special (replaces step 5 and 6 which are windows steps)
 Because of the MacOS security, there are steps to follow to launch the app.
