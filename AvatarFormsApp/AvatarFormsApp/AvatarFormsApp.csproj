@@ -5,7 +5,8 @@
     <OutputType>Exe</OutputType>
     <UnoSingleProject>true</UnoSingleProject>
 
-    <PublishTrimmed>false</PublishTrimmed>
+    <PublishTrimmed Condition="!$([MSBuild]::IsOSPlatform('windows'))">true</PublishTrimmed>
+    <PublishTrimmed Condition="$([MSBuild]::IsOSPlatform('windows'))">false</PublishTrimmed>
     <MtouchLink>None</MtouchLink>
     
     <UnoDisableAutoMain>false</UnoDisableAutoMain>

@@ -27,7 +27,10 @@ python -m venv env
 Activate the environment
 
 ```bash
+# Windows
 .\env\Scripts\activate
+# Mac
+source env/bin/activate
 ```
 
 Install dependencies (Just Ollama and dotnet for local and requests for cloud)
@@ -40,5 +43,39 @@ pip install -r requirements.txt
 Add a file called "token.txt" in the Cloud folder where the cloud_prototype.py file is located and paste your token there.
 The cloud_prototype.py file currently uses firework.ai as the cloud ai provider.
 
-### 5. Run app in Visual Studio
-Choose to run AvatarFormsApp.slnx 
+### 5. Allow long paths
+Windows has a 260-character limit for file paths, and NuGet packages often break this. 
+
+Need to open powershell as admin then do
+```bash
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+```
+
+After running the command, right click the solution 'AvatarformsApp' and select the restore nuget packages in Visual studio.
+
+### 6. Run app in Visual Studio
+Choose to run AvatarFormsApp.sln 
+Use Debug and x64
+
+### MacBook special (replaces step 5 and 6 which are windows steps)
+Because of the MacOS security, there are steps to follow to launch the app.
+
+### 5. Kill the old app first (just in case)
+```bash
+killall AvatarFormsApp || true
+```
+
+### 6. Build the updated code
+```bash
+dotnet build -f net10.0-maccatalyst
+```
+
+### 7. Strip the security flags (requires password)
+```bash
+sudo xattr -cr bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/AvatarFormsApp.app
+```
+
+### 8. Launch
+```bash
+open -n bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/AvatarFormsApp.app
+```
