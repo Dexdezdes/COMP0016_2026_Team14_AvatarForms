@@ -57,7 +57,7 @@ After running the command, right click the solution 'AvatarformsApp' and select 
 Choose to run AvatarFormsApp.sln 
 Use Debug and x64
 
-### MacBook special (replaces step 5 and 6 which are windows steps)
+## MacBook special (replaces step 5 and 6 which are windows steps)
 Because of the MacOS security, there are steps to follow to launch the app.
 
 ### 5. Kill the old app first (just in case)
