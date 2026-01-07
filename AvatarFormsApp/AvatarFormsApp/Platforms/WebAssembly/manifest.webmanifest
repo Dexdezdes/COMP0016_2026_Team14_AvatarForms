@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "AvatarFormsApp",
+  "display": "standalone",
+  "name": "AvatarFormsApp",
+  "short_name": "AvatarFormsApp",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}

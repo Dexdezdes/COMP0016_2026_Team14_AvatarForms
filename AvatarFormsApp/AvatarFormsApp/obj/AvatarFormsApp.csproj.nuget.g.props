@@ -13,24 +13,15 @@
     <SourceRoot Include="C:\Users\Dex\.nuget\packages\" />
     <SourceRoot Include="C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages\" />
   </ItemGroup>
-  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <Import Project="$(NuGetPackageRoot)microsoft.windows.sdk.buildtools.msix\1.7.20250829.1\buildTransitive\Microsoft.Windows.SDK.BuildTools.MSIX.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windows.sdk.buildtools.msix\1.7.20250829.1\buildTransitive\Microsoft.Windows.SDK.BuildTools.MSIX.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.windows.sdk.buildtools\10.0.26100.7175\buildTransitive\Microsoft.Windows.SDK.BuildTools.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windows.sdk.buildtools\10.0.26100.7175\buildTransitive\Microsoft.Windows.SDK.BuildTools.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.windowsappsdk.base\1.8.250831001\buildTransitive\Microsoft.WindowsAppSDK.Base.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windowsappsdk.base\1.8.250831001\buildTransitive\Microsoft.WindowsAppSDK.Base.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.windowsappsdk.interactiveexperiences\1.8.251104001\buildTransitive\Microsoft.WindowsAppSDK.InteractiveExperiences.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windowsappsdk.interactiveexperiences\1.8.251104001\buildTransitive\Microsoft.WindowsAppSDK.InteractiveExperiences.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.windowsappsdk.foundation\1.8.251104000\buildTransitive\Microsoft.WindowsAppSDK.Foundation.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windowsappsdk.foundation\1.8.251104000\buildTransitive\Microsoft.WindowsAppSDK.Foundation.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.windowsappsdk.winui\1.8.251105000\buildTransitive\Microsoft.WindowsAppSDK.WinUI.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windowsappsdk.winui\1.8.251105000\buildTransitive\Microsoft.WindowsAppSDK.WinUI.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.windowsappsdk.widgets\1.8.250904007\buildTransitive\Microsoft.WindowsAppSDK.Widgets.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windowsappsdk.widgets\1.8.250904007\buildTransitive\Microsoft.WindowsAppSDK.Widgets.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.windowsappsdk.runtime\1.8.251106002\buildTransitive\Microsoft.WindowsAppSDK.Runtime.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windowsappsdk.runtime\1.8.251106002\buildTransitive\Microsoft.WindowsAppSDK.Runtime.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.windowsappsdk.ml\1.8.2109\buildTransitive\Microsoft.WindowsAppSDK.ML.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windowsappsdk.ml\1.8.2109\buildTransitive\Microsoft.WindowsAppSDK.ML.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.windowsappsdk.dwrite\1.8.25090401\buildTransitive\Microsoft.WindowsAppSDK.DWrite.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windowsappsdk.dwrite\1.8.25090401\buildTransitive\Microsoft.WindowsAppSDK.DWrite.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.windowsappsdk.ai\1.8.39\buildTransitive\Microsoft.WindowsAppSDK.AI.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windowsappsdk.ai\1.8.39\buildTransitive\Microsoft.WindowsAppSDK.AI.props')" />
-    <Import Project="$(NuGetPackageRoot)microsoft.windowsappsdk\1.8.251106002\buildTransitive\Microsoft.WindowsAppSDK.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windowsappsdk\1.8.251106002\buildTransitive\Microsoft.WindowsAppSDK.props')" />
+  <ImportGroup Condition=" '$(TargetFramework)' == 'net10.0-windows10.0.19041.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)uno.fonts.fluent\2.3.0\buildTransitive\Uno.Fonts.Fluent.props" Condition="Exists('$(NuGetPackageRoot)uno.fonts.fluent\2.3.0\buildTransitive\Uno.Fonts.Fluent.props')" />
+    <Import Project="$(NuGetPackageRoot)uno.winui\5.2.161\buildTransitive\net7.0-windows\uno.winui.props" Condition="Exists('$(NuGetPackageRoot)uno.winui\5.2.161\buildTransitive\net7.0-windows\uno.winui.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.windows.sdk.buildtools\10.0.22621.3233\buildTransitive\Microsoft.Windows.SDK.BuildTools.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windows.sdk.buildtools\10.0.22621.3233\buildTransitive\Microsoft.Windows.SDK.BuildTools.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.windowsappsdk\1.5.240404000\buildTransitive\Microsoft.WindowsAppSDK.props" Condition="Exists('$(NuGetPackageRoot)microsoft.windowsappsdk\1.5.240404000\buildTransitive\Microsoft.WindowsAppSDK.props')" />
   </ImportGroup>
-  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <PkgMicrosoft_Windows_SDK_BuildTools_MSIX Condition=" '$(PkgMicrosoft_Windows_SDK_BuildTools_MSIX)' == '' ">C:\Users\Dex\.nuget\packages\microsoft.windows.sdk.buildtools.msix\1.7.20250829.1</PkgMicrosoft_Windows_SDK_BuildTools_MSIX>
-    <PkgMicrosoft_Web_WebView2 Condition=" '$(PkgMicrosoft_Web_WebView2)' == '' ">C:\Users\Dex\.nuget\packages\microsoft.web.webview2\1.0.3179.45</PkgMicrosoft_Web_WebView2>
-    <PkgMicrosoft_WindowsAppSDK_WinUI Condition=" '$(PkgMicrosoft_WindowsAppSDK_WinUI)' == '' ">C:\Users\Dex\.nuget\packages\microsoft.windowsappsdk.winui\1.8.251105000</PkgMicrosoft_WindowsAppSDK_WinUI>
-    <PkgMicrosoft_WindowsAppSDK_Runtime Condition=" '$(PkgMicrosoft_WindowsAppSDK_Runtime)' == '' ">C:\Users\Dex\.nuget\packages\microsoft.windowsappsdk.runtime\1.8.251106002</PkgMicrosoft_WindowsAppSDK_Runtime>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net10.0-windows10.0.19041.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgUno_WinUI Condition=" '$(PkgUno_WinUI)' == '' ">C:\Users\Dex\.nuget\packages\uno.winui\5.2.161</PkgUno_WinUI>
+    <PkgUno_WinUI_DevServer Condition=" '$(PkgUno_WinUI_DevServer)' == '' ">C:\Users\Dex\.nuget\packages\uno.winui.devserver\5.2.161</PkgUno_WinUI_DevServer>
+    <PkgMicrosoft_WindowsAppSDK Condition=" '$(PkgMicrosoft_WindowsAppSDK)' == '' ">C:\Users\Dex\.nuget\packages\microsoft.windowsappsdk\1.5.240404000</PkgMicrosoft_WindowsAppSDK>
   </PropertyGroup>
 </Project>

@@ -1,90 +1,57 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-    <RootNamespace>AvatarFormsApp</RootNamespace>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Platforms>x86;x64;ARM64</Platforms>
-    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
-    <UseWinUI>true</UseWinUI>
-    <WinUISDKReferences>false</WinUISDKReferences>
-    <EnableMsixTooling>true</EnableMsixTooling>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+<Project Sdk="Uno.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFrameworks>
+        <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-maccatalyst</TargetFrameworks>
+        <OutputType>Exe</OutputType>
+        <UnoSingleProject>true</UnoSingleProject>
 
-  <ItemGroup>
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-  </ItemGroup>
+        <PublishTrimmed Condition="!$([MSBuild]::IsOSPlatform('windows'))">true</PublishTrimmed>
+        <PublishTrimmed Condition="$([MSBuild]::IsOSPlatform('windows'))">false</PublishTrimmed>
+        <MtouchLink>None</MtouchLink>
 
-  <ItemGroup>
-    <Manifest Include="$(ApplicationManifest)" />
-  </ItemGroup>
+        <UnoDisableAutoMain>false</UnoDisableAutoMain>
+        <UseInterpreter>true</UseInterpreter>
+        <SupportedOSPlatformVersion Condition="!$([MSBuild]::IsOSPlatform('windows'))">15.0</SupportedOSPlatformVersion>
 
-  <!--
-    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
-    Tools extension to be activated for this project even if the Windows App SDK Nuget
-    package has not yet been restored.
-  -->
-  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-    <ProjectCapability Include="Msix" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7175" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
-  </ItemGroup>
-	
-  <!--
-    Include the python environment in the 'env' folder in the output directory
-  -->
-	<ItemGroup>
-		<Content Include="$(ProjectDir)..\env\**">
-			<Link>env\%(RecursiveDir)%(Filename)%(Extension)</Link>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
+        <UnoThemesVersion>5.2.13</UnoThemesVersion>
+        <UnoToolkitVersion>5.2.14</UnoToolkitVersion>
+        <UnoFeatures>Material;Toolkit;</UnoFeatures>
 
-	<ItemGroup>
-		<Content Include="$(ProjectDir)..\..\Local\local_prototype.py">
-			<Link>Local\local_prototype.py</Link>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
+        <ApplicationId Condition="!$([MSBuild]::IsOSPlatform('windows'))">com.companyname.avatarformsapp.v2</ApplicationId>
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationTitle>AvatarFormsApp</ApplicationTitle>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<Content Include="$(ProjectDir)..\..\Cloud\cloud_prototype.py">
-			<Link>Cloud\cloud_prototype.py</Link>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="$(ProjectDir)..\..\Cloud\token.txt">
-			<Link>Cloud\token.txt</Link>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-	
-	
+    <PropertyGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
+        <DefineConstants>$(DefineConstants);DEV_PYTHON_ENV="$(MSBuildProjectDirectory)/../env/bin/python3"</DefineConstants>
+    </PropertyGroup>
 
-  <!--
-    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
-    Explorer "Package and Publish" context menu entry to be enabled for this project even if
-    the Windows App SDK Nuget package has not yet been restored.
-  -->
-  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
-  </PropertyGroup>
+    <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
+        <PackageReference Include="Uno.Material.WinUI" />
+        <PackageReference Include="Uno.Toolkit.WinUI" />
+    </ItemGroup>
 
-  <!-- Publish Properties -->
-  <PropertyGroup>
-    <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
-    <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
-    <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
-    <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-  </PropertyGroup>
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+        <RuntimeIdentifier>maccatalyst-arm64</RuntimeIdentifier>
+        <SuppressUserScriptSandboxing>true</SuppressUserScriptSandboxing>
+        <EnableCodeSigning>false</EnableCodeSigning>
+        <CodesignKey>-</CodesignKey>
+        <CodesignEntitlements>Platforms/maccatalyst/Entitlements.plist</CodesignEntitlements>
+        <UseHardenedRuntime>false</UseHardenedRuntime>
+        <CreatePackage>false</CreatePackage>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="../../Cloud/**/*">
+            <Link>Cloud/%(RecursiveDir)%(FileName)%(Extension)</Link>
+            <LogicalName>Cloud/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="../../Local/**/*">
+            <Link>Local/%(RecursiveDir)%(FileName)%(Extension)</Link>
+            <LogicalName>Local/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 </Project>
