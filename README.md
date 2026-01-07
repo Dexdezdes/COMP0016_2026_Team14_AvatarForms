@@ -28,6 +28,14 @@ python3 -m venv env
 ```
 
 Activate the environment
+For windows, scripts are disabled by default. So you need to open up powershell as administrator and run this command.
+
+```bash
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+Then windows will ask "Do you want to change the execution policy?"
+Type Y to confirm.
+Then return to the project terminal.
 
 ```bash
 # Windows
