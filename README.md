@@ -4,8 +4,6 @@ This project uses a C# WinUI 3 frontend and a Python-based AI backend powered by
 
 ## Setup Instructions
 
-To get the AI components running on your local machine, follow these steps:
-
 ### 1. Install Ollama
 Download and install Ollama from [ollama.com](https://ollama.com).
 Once installed, pull the required model (Dex uses gemma3:1b because of Ram constraints change local_prototype.py if needed):
@@ -14,7 +12,7 @@ ollama pull gemma3:1b
 ```
 
 ### 2. Import the github project into Visual Studio
-Just choose clone from github and paste the url of this repository.
+Clone from github and paste the url of this repository.
 
 ### 3. Set Up Python Environment
 In the AvatarFormsApp directory just below the AvatarForms root folder
@@ -66,7 +64,8 @@ After running the command, right click the solution 'AvatarformsApp' and select 
 
 ### 6. Run app in Visual Studio
 Choose to run AvatarFormsApp.sln 
-Use Debug and x64. Choose the AvatarFormsApp (Desktop).
+Choose the AvatarFormsApp (Desktop).
+Use Debug and x64 (sometimes these two options do not show up in Visual Studio and it is fine). 
 
 ## MacBook special (replaces step 5 and 6 which are windows steps)
 Because of the MacOS security, there are steps to follow to launch the app.
@@ -83,7 +82,7 @@ killall AvatarFormsApp || true
 dotnet build -f net10.0-maccatalyst
 ```
 
-### 7. Strip the security flags (requires password)
+### 7. Strip the security flags (requires device password)
 ```bash
 sudo xattr -cr bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/AvatarFormsApp.app
 ```
