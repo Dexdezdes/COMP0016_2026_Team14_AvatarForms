@@ -50,7 +50,8 @@ pip install -r requirements.txt
 ```
 
 ### 4. Add cloud ai token
-Add a file called "token.txt" in the Cloud folder where the cloud_prototype.py file is located and paste your token there.
+Add a file called "token.txt" in the Cloud folder where the cloud_prototype.py file is located and paste your token there. Name is "token" and file format is txt.
+
 The cloud_prototype.py file currently uses firework.ai as the cloud ai provider.
 
 ### 5. Allow long paths
