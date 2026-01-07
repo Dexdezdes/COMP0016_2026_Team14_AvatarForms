@@ -21,7 +21,10 @@ In the AvatarFormsApp directory just below the AvatarForms root folder
 Create the python virtual environment:
 
 ```bash
+#Windows
 python -m venv env
+#Mac
+python3 -m venv env
 ```
 
 Activate the environment
@@ -71,6 +74,8 @@ dotnet build -f net10.0-maccatalyst
 ```
 
 ### 7. Strip the security flags (requires password)
+Make sure that you are in the inner AvatarFormsApp folder when 
+performing this command.
 ```bash
 sudo xattr -cr bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/AvatarFormsApp.app
 ```
