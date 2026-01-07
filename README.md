@@ -27,7 +27,6 @@ python -m venv env
 python3 -m venv env
 ```
 
-Activate the environment
 For windows, scripts are disabled by default. So you need to open up powershell as administrator and run this command.
 
 ```bash
