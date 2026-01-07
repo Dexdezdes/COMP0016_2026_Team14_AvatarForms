@@ -23,15 +23,22 @@ public sealed partial class MainPage : Page
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            string venvPath = Path.Combine(AppContext.BaseDirectory, "env", "Scripts", "python.exe");
-            return File.Exists(venvPath) ? venvPath : "python";
+            string baseDir = AppContext.BaseDirectory;
+            // 1. Check build output folder (standard)
+            string buildVenvPath = Path.Combine(baseDir, "env", "Scripts", "python.exe");
+            if (File.Exists(buildVenvPath)) return buildVenvPath;
+
+            // 2. Check source project folder fallback
+            string sourceVenvPath = Path.GetFullPath(Path.Combine(baseDir, "..\\..\\..\\..\\env\\Scripts\\python.exe"));
+            if (File.Exists(sourceVenvPath)) return sourceVenvPath;
+
+            return "python";
         }
         else
         {
-            // Uses the portable path defined in your .csproj [cite: 7]
-            #if DEV_PYTHON_ENV
-                if (File.Exists(DEV_PYTHON_ENV)) return DEV_PYTHON_ENV;
-            #endif
+#if DEV_PYTHON_ENV
+            if (File.Exists(DEV_PYTHON_ENV)) return DEV_PYTHON_ENV;
+#endif
             return "python3";
         }
     }
@@ -40,14 +47,13 @@ public sealed partial class MainPage : Page
     {
         try
         {
-            string baseDir = AppContext.BaseDirectory; 
+            string baseDir = AppContext.BaseDirectory;
             string subFolder = mode == "cloud" ? "Cloud" : "Local";
             string fileName = mode == "cloud" ? "cloud_prototype.py" : "local_prototype.py";
-            
-            // Standard bundle path
+
             string scriptPath = Path.Combine(baseDir, subFolder, fileName);
-            
-            // Mac-specific bundle fallback for Resources
+
+            // Mac-specific bundle fallback
             if (!File.Exists(scriptPath) && !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 scriptPath = Path.GetFullPath(Path.Combine(baseDir, "..", "Resources", subFolder, fileName));
@@ -63,22 +69,33 @@ public sealed partial class MainPage : Page
             {
                 FileName = GetPythonPath(),
                 Arguments = $"-u \"{scriptPath}\"",
+                // Start inside the folder (Cloud or Local) so Python finds token.txt natively
                 WorkingDirectory = Path.GetDirectoryName(scriptPath),
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardInput = true,
-                RedirectStandardError = true, 
+                RedirectStandardError = true,
                 CreateNoWindow = true
             };
 
-            _pythonProcess = new Process { StartInfo = start, EnableRaisingEvents = true };
-            
-            _pythonProcess.OutputDataReceived += (s, e) => {
-                if (!string.IsNullOrEmpty(e.Data)) 
+            // Windows-specific environment fix for 'dotenv'
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                string pythonExe = GetPythonPath();
+                if (pythonExe.Contains("env"))
                 {
-                    // Trimming ANSI escape codes for cleaner UI output
-                    string cleanedData = Regex.Replace(e.Data, @"\x1B\[[^@-~]*[@-~]", string.Empty);
+                    string venvRoot = Path.GetDirectoryName(Path.GetDirectoryName(pythonExe));
+                    string sitePackages = Path.Combine(venvRoot, "Lib", "site-packages");
+                    start.EnvironmentVariables["PYTHONPATH"] = sitePackages;
+                }
+            }
 
+            _pythonProcess = new Process { StartInfo = start, EnableRaisingEvents = true };
+
+            _pythonProcess.OutputDataReceived += (s, e) => {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    string cleanedData = Regex.Replace(e.Data, @"\x1B\[[^@-~]*[@-~]", string.Empty);
                     DispatcherQueue.TryEnqueue(() => {
                         ChatDisplay.Text += $"{cleanedData}\n";
                         ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
@@ -87,7 +104,7 @@ public sealed partial class MainPage : Page
             };
 
             _pythonProcess.ErrorDataReceived += (s, e) => {
-                if (!string.IsNullOrEmpty(e.Data)) 
+                if (!string.IsNullOrEmpty(e.Data))
                 {
                     string cleanedError = Regex.Replace(e.Data, @"\x1B\[[^@-~]*[@-~]", string.Empty);
                     DispatcherQueue.TryEnqueue(() => ChatDisplay.Text += $"[PYTHON ERROR]: {cleanedError}\n");
@@ -96,7 +113,7 @@ public sealed partial class MainPage : Page
 
             _pythonProcess.Start();
             _pythonProcess.BeginOutputReadLine();
-            _pythonProcess.BeginErrorReadLine(); 
+            _pythonProcess.BeginErrorReadLine();
         }
         catch (Exception ex) { ChatDisplay.Text += $"[RUNTIME ERROR]: {ex.Message}\n"; }
     }
@@ -108,14 +125,16 @@ public sealed partial class MainPage : Page
         if (!string.IsNullOrWhiteSpace(message))
         {
             _pythonProcess.StandardInput.WriteLine(message);
-            _pythonProcess.StandardInput.Flush(); // Necessary for Mac/Unix pipes
+            _pythonProcess.StandardInput.Flush();
             ChatDisplay.Text += $"You: {message}\n";
             UserInput.Text = "";
         }
     }
-    
-    private void OnChatAIClicked(object sender, RoutedEventArgs e) {
-        if (sender is Button b) {
+
+    private void OnChatAIClicked(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button b)
+        {
             string mode = b.Tag?.ToString() ?? "local";
             LandingPage.Visibility = Visibility.Collapsed;
             ChatInterface.Visibility = Visibility.Visible;
