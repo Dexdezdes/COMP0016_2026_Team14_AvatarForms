@@ -27,7 +27,14 @@ python -m venv env
 python3 -m venv env
 ```
 
-Activate the environment
+For windows, scripts are disabled by default. So you need to open up powershell as administrator and run this command.
+
+```bash
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+Then windows will ask "Do you want to change the execution policy?"
+Type Y to confirm.
+Then return to the project terminal.
 
 ```bash
 # Windows
@@ -43,7 +50,8 @@ pip install -r requirements.txt
 ```
 
 ### 4. Add cloud ai token
-Add a file called "token.txt" in the Cloud folder where the cloud_prototype.py file is located and paste your token there.
+Add a file called "token.txt" in the Cloud folder where the cloud_prototype.py file is located and paste your token there. Name is "token" and file format is txt.
+
 The cloud_prototype.py file currently uses firework.ai as the cloud ai provider.
 
 ### 5. Allow long paths
