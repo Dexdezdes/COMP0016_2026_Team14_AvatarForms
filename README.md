@@ -62,6 +62,8 @@ Use Debug and x64. Choose the AvatarFormsApp (Desktop).
 
 ## MacBook special (replaces step 5 and 6 which are windows steps)
 Because of the MacOS security, there are steps to follow to launch the app.
+Make sure that you are in the inner AvatarFormsApp folder when 
+performing these commands.
 
 ### 5. Kill the old app first (just in case)
 ```bash
@@ -74,8 +76,6 @@ dotnet build -f net10.0-maccatalyst
 ```
 
 ### 7. Strip the security flags (requires password)
-Make sure that you are in the inner AvatarFormsApp folder when 
-performing this command.
 ```bash
 sudo xattr -cr bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/AvatarFormsApp.app
 ```
