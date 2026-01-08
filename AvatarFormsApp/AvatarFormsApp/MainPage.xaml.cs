@@ -12,6 +12,7 @@ namespace AvatarFormsApp;
 public sealed partial class MainPage : Page
 {
     private Process? _pythonProcess;
+    private string? _cachedPythonPath;
 
     public MainPage()
     {
@@ -21,6 +22,7 @@ public sealed partial class MainPage : Page
 
     private string GetPythonPath()
     {
+        if (!string.IsNullOrEmpty(_cachedPythonPath)) return _cachedPythonPath;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             string baseDir = AppContext.BaseDirectory;
@@ -36,10 +38,36 @@ public sealed partial class MainPage : Page
         }
         else
         {
-#if DEV_PYTHON_ENV
-            if (File.Exists(DEV_PYTHON_ENV)) return DEV_PYTHON_ENV;
-#endif
-            return "python3";
+            // 1. Check the Project Constant from .csproj
+            #if DEV_PYTHON_ENV
+                if (File.Exists(DEV_PYTHON_ENV)) return DEV_PYTHON_ENV;
+            #endif
+
+            string baseDir = AppContext.BaseDirectory;
+        
+            // We will look 1 - 10 levels up from the App Bundle to find 'env'
+            string relativePrefix = "";
+
+            // Loop 12 times, adding another "../" each time
+            for (int i = 0; i <= 12; i++)
+            {
+                // Combine: baseDir + "../../../" + "env/bin/python3"
+                string combinedPath = Path.Combine(baseDir, relativePrefix + "env/bin/python3");
+                string fullPath = Path.GetFullPath(combinedPath);
+
+                if (File.Exists(fullPath))
+                {
+                    DispatcherQueue.TryEnqueue(() => {
+                        ChatDisplay.Text += $"[SYSTEM]: Found Environment using prefix '{relativePrefix}'\n";
+                    });
+                    return _cachedPythonPath = fullPath;
+                }
+
+                // String manipulation: add another level of "up" for the next turn
+                relativePrefix += "../";
+            }
+
+            return _cachedPythonPath = "python3";
         }
     }
 
@@ -110,6 +138,41 @@ public sealed partial class MainPage : Page
                     DispatcherQueue.TryEnqueue(() => ChatDisplay.Text += $"[PYTHON ERROR]: {cleanedError}\n");
                 }
             };
+
+            // FIX FOR MAC: Tell Python where to find 'dotenv' library
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                string pythonExe = GetPythonPath();
+                // Only apply if we found our custom env, not system python
+                if (pythonExe.Contains("env")) 
+                {
+                    string venvRoot = Path.GetDirectoryName(Path.GetDirectoryName(pythonExe)); // Go up from /bin/ to /env/
+                    
+                    // Construct path to site-packages (Adjust 'python3.11' to your actual version if needed)
+                    // A safer way is to add all possible python versions
+                    string libFolder = Path.Combine(venvRoot, "lib");
+                    if (Directory.Exists(libFolder))
+                    {
+                        var pythonFolders = Directory.GetDirectories(libFolder, "python3.*");
+                        if (pythonFolders.Length > 0)
+                        {
+                            string sitePackages = Path.Combine(pythonFolders[0], "site-packages");
+                            start.EnvironmentVariables["PYTHONPATH"] = sitePackages;
+                            
+                            // Debug Print to confirm we set it
+                            ChatDisplay.Text += $"[DEBUG] Mac PYTHONPATH set to: {sitePackages}\n";
+                        }
+                    }
+                }
+            }
+
+            #if DEV_PYTHON_ENV
+                ChatDisplay.Text += $"[DEBUG] DEV_PYTHON_ENV Constant: {DEV_PYTHON_ENV}\n";
+                ChatDisplay.Text += $"[DEBUG] File.Exists check: {File.Exists(DEV_PYTHON_ENV)}\n";
+            #else
+                ChatDisplay.Text += "[DEBUG] DEV_PYTHON_ENV is NOT defined in this build.\n";
+            #endif
+            ChatDisplay.Text += $"[DEBUG]: Looking for Python at: {GetPythonPath()} | Exists: {File.Exists(GetPythonPath())}\n";
 
             _pythonProcess.Start();
             _pythonProcess.BeginOutputReadLine();

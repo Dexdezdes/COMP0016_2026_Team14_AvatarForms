@@ -3,12 +3,8 @@
 		<UnoPlatformIDE>vscode</UnoPlatformIDE>
 		<UnoPlatformIDEVersion>1.107.1</UnoPlatformIDEVersion>
 		<UnoPlatformExtension>unoplatform.vscode 0.23.15</UnoPlatformExtension>
-		<UnoRemoteControlPort>49881</UnoRemoteControlPort>
+		<UnoRemoteControlPort>53566</UnoRemoteControlPort>
 		<UnoVSCodeCSharpExtension>ms-dotnettools.csharp 2.110.4</UnoVSCodeCSharpExtension>
 		<UnoVSCodeCSharpDevKitExtension>ms-dotnettools.csdevkit 1.90.2</UnoVSCodeCSharpDevKitExtension>
-		<ActiveDebugProfile>AvatarFormsApp (Desktop)</ActiveDebugProfile>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-windows10.0.19041.0|AnyCPU'">
-	  <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
 	</PropertyGroup>
 </Project>

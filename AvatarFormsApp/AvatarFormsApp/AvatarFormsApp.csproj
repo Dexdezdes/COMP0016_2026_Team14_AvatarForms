@@ -1,4 +1,4 @@
-<Project Sdk="Uno.Sdk">
+﻿<Project Sdk="Uno.Sdk">
     <PropertyGroup>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFrameworks>
         <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-maccatalyst</TargetFrameworks>
@@ -24,7 +24,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
-        <DefineConstants>$(DefineConstants);DEV_PYTHON_ENV="$(MSBuildProjectDirectory)/../env/bin/python3"</DefineConstants>
+        <DefineConstants>$(DefineConstants);DEV_PYTHON_ENV='$(MSBuildProjectDirectory)/../env/bin/python3'</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
