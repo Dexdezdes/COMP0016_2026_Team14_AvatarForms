@@ -38,20 +38,17 @@ public sealed partial class MainPage : Page
         }
         else
         {
-            // 1. Check the Project Constant from .csproj
             #if DEV_PYTHON_ENV
                 if (File.Exists(DEV_PYTHON_ENV)) return DEV_PYTHON_ENV;
             #endif
 
             string baseDir = AppContext.BaseDirectory;
         
-            // We will look 1 - 10 levels up from the App Bundle to find 'env'
+            // We will look 0 - 12 levels up from the App Bundle to find 'env'
             string relativePrefix = "";
 
-            // Loop 12 times, adding another "../" each time
             for (int i = 0; i <= 12; i++)
             {
-                // Combine: baseDir + "../../../" + "env/bin/python3"
                 string combinedPath = Path.Combine(baseDir, relativePrefix + "env/bin/python3");
                 string fullPath = Path.GetFullPath(combinedPath);
 
@@ -81,7 +78,6 @@ public sealed partial class MainPage : Page
 
             string scriptPath = Path.Combine(baseDir, subFolder, fileName);
 
-            // Mac-specific bundle fallback
             if (!File.Exists(scriptPath) && !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 scriptPath = Path.GetFullPath(Path.Combine(baseDir, "..", "Resources", subFolder, fileName));
@@ -97,7 +93,6 @@ public sealed partial class MainPage : Page
             {
                 FileName = GetPythonPath(),
                 Arguments = $"-u \"{scriptPath}\"",
-                // Start inside the folder (Cloud or Local) so Python finds token.txt natively
                 WorkingDirectory = Path.GetDirectoryName(scriptPath),
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -106,7 +101,6 @@ public sealed partial class MainPage : Page
                 CreateNoWindow = true
             };
 
-            // Windows-specific environment fix for 'dotenv'
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 string pythonExe = GetPythonPath();
@@ -139,17 +133,14 @@ public sealed partial class MainPage : Page
                 }
             };
 
-            // FIX FOR MAC: Tell Python where to find 'dotenv' library
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 string pythonExe = GetPythonPath();
-                // Only apply if we found our custom env, not system python
+
                 if (pythonExe.Contains("env")) 
                 {
-                    string venvRoot = Path.GetDirectoryName(Path.GetDirectoryName(pythonExe)); // Go up from /bin/ to /env/
+                    string venvRoot = Path.GetDirectoryName(Path.GetDirectoryName(pythonExe));
                     
-                    // Construct path to site-packages (Adjust 'python3.11' to your actual version if needed)
-                    // A safer way is to add all possible python versions
                     string libFolder = Path.Combine(venvRoot, "lib");
                     if (Directory.Exists(libFolder))
                     {
@@ -159,7 +150,6 @@ public sealed partial class MainPage : Page
                             string sitePackages = Path.Combine(pythonFolders[0], "site-packages");
                             start.EnvironmentVariables["PYTHONPATH"] = sitePackages;
                             
-                            // Debug Print to confirm we set it
                             ChatDisplay.Text += $"[DEBUG] Mac PYTHONPATH set to: {sitePackages}\n";
                         }
                     }
