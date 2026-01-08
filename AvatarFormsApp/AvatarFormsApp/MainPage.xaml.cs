@@ -68,6 +68,43 @@ public sealed partial class MainPage : Page
         }
     }
 
+    private void SpeakText(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+
+        // Clean quotes to prevent breaking the terminal command strings
+        string safeText = text.Replace("\"", "'").Replace("\r", " ").Replace("\n", " ");
+
+        try
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // Windows: Use PowerShell to access the SpeechSynthesizer
+                // No extra packages needed as PowerShell is built-in
+                string psCommand = $"Add-Type -AssemblyName System.Speech; " +
+                                $"(New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('{safeText}')";
+                
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "powershell",
+                    Arguments = $"-Command \"{psCommand}\"",
+                    CreateNoWindow = true,
+                    UseShellExecute = false
+                });
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Create("MACCATALYST")) || 
+                    RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                // Mac: Use the native 'say' command
+                Process.Start("say", $"\"{safeText}\"");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Voice Error: {ex.Message}");
+        }
+    }
+
     private void StartAIProcess(string mode)
     {
         try
@@ -115,15 +152,31 @@ public sealed partial class MainPage : Page
             _pythonProcess = new Process { StartInfo = start, EnableRaisingEvents = true };
 
             _pythonProcess.OutputDataReceived += (s, e) => {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    string cleanedData = Regex.Replace(e.Data, @"\x1B\[[^@-~]*[@-~]", string.Empty);
-                    DispatcherQueue.TryEnqueue(() => {
-                        ChatDisplay.Text += $"{cleanedData}\n";
-                        ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
-                    });
-                }
-            };
+            if (!string.IsNullOrEmpty(e.Data))
+            {
+                // 1. Clean the terminal escape codes first
+                string cleanedData = Regex.Replace(e.Data, @"\x1B\[[^@-~]*[@-~]", string.Empty);
+
+                // 2. SCRUB EMOJIS: Removes symbols, emoticons, and non-ASCII characters
+                cleanedData = Regex.Replace(cleanedData, @"[^\u0000-\u007F]+", string.Empty);
+                
+                DispatcherQueue.TryEnqueue(() => {
+                    // 3. Add everything to the visible chat display so you can still see debug info
+                    ChatDisplay.Text += $"{cleanedData}\n";
+                    
+                    // 4. Only Speak if the line starts with "Talker:"
+                    if (cleanedData.Trim().StartsWith("Talker:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Remove the "Talker:" prefix so it doesn't say the word "Talker" out loud
+                        string speechText = cleanedData.Replace("Talker:", "", StringComparison.OrdinalIgnoreCase).Trim();
+                        speechText = speechText.Replace("\r", " ").Replace("\n", " ");
+                        SpeakText(speechText);
+                    }
+
+                    ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
+                });
+            }
+        };
 
             _pythonProcess.ErrorDataReceived += (s, e) => {
                 if (!string.IsNullOrEmpty(e.Data))
