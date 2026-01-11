@@ -8,6 +8,10 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+#if WINDOWS
+using Windows.Media.SpeechRecognition;
+#endif
+
 #if __MACCATALYST__
 using Speech;
 using AVFoundation;
@@ -32,12 +36,16 @@ public sealed partial class MainPage : Page
     private System.Collections.Generic.Queue<string> _speechQueue = new();
     private bool _isProcessingQueue = false;
 
-    #if __MACCATALYST__
+#if WINDOWS
+    private SpeechRecognizer _winRecognizer;
+#endif
+
+#if __MACCATALYST__
     private SFSpeechRecognizer _speechRecognizer = new SFSpeechRecognizer(new NSLocale("en-US"));
     private SFSpeechAudioBufferRecognitionRequest _recognitionRequest;
     private SFSpeechRecognitionTask _recognitionTask;
     private AVAudioEngine _audioEngine = new AVAudioEngine();
-    #endif
+#endif
 
     public MainPage()
     {
@@ -100,10 +108,8 @@ public sealed partial class MainPage : Page
     {
         if (string.IsNullOrWhiteSpace(text)) return;
 
-        // 1. Enqueue the text instead of speaking immediately
         _speechQueue.Enqueue(text);
 
-        // 2. If the processor isn't running, start it
         if (!_isProcessingQueue)
         {
             _ = ProcessSpeechQueue();
@@ -115,7 +121,6 @@ public sealed partial class MainPage : Page
         _isProcessingQueue = true;
         _isAiSpeaking = true;
 
-        // A. Stop the mic ONLY ONCE for the entire batch of lines
         bool wasMicOn = _isMicEnabled;
         if (wasMicOn)
         {
@@ -124,10 +129,8 @@ public sealed partial class MainPage : Page
             #endif
         }
 
-        // B. Process every line in the queue sequentially
         while (_speechQueue.Count > 0)
         {
-            // Get the next line
             string text = _speechQueue.Dequeue();
             string safeText = text.Replace("\"", "'").Replace("\r", " ").Replace("\n", " ");
             
@@ -158,7 +161,6 @@ public sealed partial class MainPage : Page
                     });
                 }
 
-                // Wait for this specific line to finish before starting the next one
                 if (proc != null) await proc.WaitForExitAsync();
             }
             catch (Exception ex)
@@ -167,16 +169,16 @@ public sealed partial class MainPage : Page
             }
         }
 
-        // C. Batch finished: Reset state and restart mic
         _isAiSpeaking = false;
         _isProcessingQueue = false;
 
-        // Ensure we are on the UI thread to restart the mic
         DispatcherQueue.TryEnqueue(async () => {
             if (wasMicOn && _isMicEnabled) 
             {
                 #if __MACCATALYST__
                 await StartMacVoiceInput();
+                #elif WINDOWS
+                await StartWindowsVoiceInput();
                 #endif
             }
         });
@@ -323,26 +325,103 @@ public sealed partial class MainPage : Page
         }
     }
 
-    private void OnMicClicked(object sender, RoutedEventArgs e) {
+    private async void OnMicClicked(object sender, RoutedEventArgs e) {
         _isMicEnabled = !_isMicEnabled;
         
         if (_isMicEnabled) {
             MicIcon.Glyph = "\uE720"; // Mic
             MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Red);
             _isUserEditing = false;
-            #if __MACCATALYST__
-            _ = StartMacVoiceInput();
+#if __MACCATALYST__
+            await StartMacVoiceInput();
+#elif WINDOWS
+            await StartWindowsVoiceInput();
             #endif
-        } else {
+
+        }
+        else {
             MicIcon.Glyph = "\uF12E"; // Mic with Slash
             MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Black);
             #if __MACCATALYST__
             StopMacVoiceInput();
+            #elif WINDOWS
+            await StopWindowsVoiceInput();
             #endif
         }
     }
 
-    #if __MACCATALYST__
+#if WINDOWS
+    private async Task StartWindowsVoiceInput()
+    {
+        try
+        {
+            if (_winRecognizer == null)
+            {
+                _winRecognizer = new SpeechRecognizer();
+                var dictationConstraint = new SpeechRecognitionTopicConstraint(SpeechRecognitionScenario.Dictation, "dictation");
+                _winRecognizer.Constraints.Add(dictationConstraint);
+                await _winRecognizer.CompileConstraintsAsync();
+
+                _winRecognizer.HypothesisGenerated += (s, args) => {
+                    DispatcherQueue.TryEnqueue(() => {
+                        if (!_isAiSpeaking && !_isUserEditing)
+                        {
+                            _silenceTimer.Stop();
+                            UserInput.Text = args.Hypothesis.Text;
+                        }
+                    });
+                };
+
+                _winRecognizer.ContinuousRecognitionSession.ResultGenerated += async (s, args) => {
+                    if (args.Result.Status == SpeechRecognitionResultStatus.Success)
+                    {
+                        DispatcherQueue.TryEnqueue(() => {
+                            UserInput.Text = args.Result.Text;
+                            if (AutoSendToggle.IsOn && !_isUserEditing && !_isAiSpeaking)
+                            {
+                                _silenceTimer.Stop();
+                                _silenceTimer.Start();
+                            }
+                        });
+                    }
+                };
+            }
+
+            await _winRecognizer.ContinuousRecognitionSession.StartAsync();
+        }
+        catch (Exception ex)
+        {
+            _isMicEnabled = false;
+            MicIcon.Glyph = "\uF12E";
+            MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Black);
+
+            string hexError = string.Format("0x{0:X8}", (uint)ex.HResult);
+            ChatDisplay.Text += $"\n[MIC ERROR {hexError}]: {ex.Message}\n";
+
+            if ((uint)ex.HResult == 0x8004503A || ex.Message.Contains("privacy"))
+            {
+                ChatDisplay.Text += "-> Opening Windows Speech Settings. Please turn ON 'Online Speech Recognition'.\n";
+                var uri = new Uri("ms-settings:privacy-speech");
+                _ = Windows.System.Launcher.LaunchUriAsync(uri);
+            }
+        }
+    }
+
+    private async Task StopWindowsVoiceInput()
+    {
+        if (_winRecognizer?.ContinuousRecognitionSession != null)
+        {
+            try
+            {
+                await _winRecognizer.ContinuousRecognitionSession.StopAsync();
+                _silenceTimer.Stop();
+            }
+            catch { }
+        }
+    }
+#endif
+
+#if __MACCATALYST__
         public async Task StartMacVoiceInput()
         {
             try 
@@ -416,26 +495,25 @@ public sealed partial class MainPage : Page
             var audioSession = AVAudioSession.SharedInstance();
             audioSession.SetActive(false, AVAudioSessionSetActiveOptions.NotifyOthersOnDeactivation, out _);
         }
-    #endif
+#endif
 
-        private void OnBackClicked(object sender, RoutedEventArgs e)
+    private async void OnBackClicked(object sender, RoutedEventArgs e)
         {
-            // 1. Kill the Python process so it doesn't run in the background
             if (_pythonProcess != null && !_pythonProcess.HasExited)
             {
                 try { _pythonProcess.Kill(); } catch { }
             }
 
-            // 2. Ensure the Mic is stopped
             _isMicEnabled = false;
             MicIcon.Glyph = "\uE720";
             MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Black);
             #if __MACCATALYST__
             StopMacVoiceInput();
+            #elif WINDOWS
+            await StopWindowsVoiceInput();
             #endif
 
-            // 3. Reset UI state
-            ChatDisplay.Text = "";
+        ChatDisplay.Text = "";
             UserInput.Text = "";
             ChatInterface.Visibility = Visibility.Collapsed;
             LandingPage.Visibility = Visibility.Visible;

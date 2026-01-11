@@ -76,21 +76,21 @@ def runAgent(agent, messages):
 
 Talker = Agent(
     name="Talker",
-    model="gemma3:4b",
+    model="gemma3:1b",
     params=default_params,
     system_prompt="You are a straightforward AI interviewer. Your job is to ask questions in a concise but friendly manner, not wasting the time of the respondent by being overly verbose. You adapt your tone based on the context provided and the user's previous answers. Always be polite, respect privacy and don't pry."
 )
 
 Nitpicker = Agent(
     name="Nitpicker",
-    model="gemma3:4b",
+    model="gemma3:1b",
     params=default_params,
     system_prompt="You are a detail-oriented judge who decides whether or not an answer provides complete information to a given question and is satisfactory or if a follow-up question / clarification is required. You adhere to the requirements provided but can be flexible based on context."
 )
 
 RequirementDefiner = Agent(
     name="RequirementDefiner",
-    model="gemma3:4b",
+    model="gemma3:1b",
     params=default_params,
     system_prompt="You are an AI that defines very short requirements for a satisfactory answer to a question. You will be provided questionnaire questions that are to be asked by an interviewer, to be answered by the user."
 )
