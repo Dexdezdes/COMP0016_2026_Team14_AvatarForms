@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>We need your microphone to allow you to talk to the AI.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>We use speech recognition to convert your voice into text for the AI.</string>
     <key>CFBundleIdentifier</key>
     <string>com.companyname.avatarformsapp</string>
     <key>CFBundleDevelopmentRegion</key>

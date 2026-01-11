@@ -4,10 +4,7 @@
       xmlns:local="using:AvatarFormsApp"
       Background="White">
 
-    <Grid Background="White" 
-          VerticalAlignment="Stretch" 
-          HorizontalAlignment="Stretch">
-        
+    <Grid Background="White">
         <StackPanel x:Name="LandingPage" 
                     HorizontalAlignment="Center" 
                     VerticalAlignment="Center" 
@@ -22,29 +19,92 @@
             <Button Content="Start Cloud AI Chat" Width="200" Height="50" Tag="cloud" Click="OnChatAIClicked" Foreground="White" Background="Blue"/>
         </StackPanel>
 
-        <Grid x:Name="ChatInterface" 
-              Visibility="Collapsed" 
-              Margin="20">
+        <Grid x:Name="ChatInterface" Visibility="Collapsed" Margin="20,50,20,20"> 
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/> 
+                <RowDefinition Height="*"/>    
+                <RowDefinition Height="Auto"/> 
             </Grid.RowDefinitions>
 
-            <ScrollViewer x:Name="ChatScroll" Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <Button Grid.Row="0" Click="OnBackClicked" Background="Transparent" BorderBrush="Transparent" Margin="0,10,0,10">
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon Glyph="&#xE72B;" FontSize="16" Foreground="Gray"/>
+                    <TextBlock Text=" Back" VerticalAlignment="Center" Foreground="Gray"/>
+                </StackPanel>
+            </Button>
+
+            <ScrollViewer x:Name="ChatScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,10">
                 <TextBlock x:Name="ChatDisplay" TextWrapping="Wrap" FontSize="16" Foreground="Black" />
             </ScrollViewer>
 
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
+            <Grid Grid.Row="2" VerticalAlignment="Bottom" Margin="0,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
                 <TextBox x:Name="UserInput" 
-                        Width="500" 
-                        Height="40" 
+                        Grid.Column="0"
+                        MinHeight="50" 
+                        MaxHeight="150"
+                        AcceptsReturn="True"
+                        TextWrapping="Wrap"
+                        VerticalAlignment="Bottom"
                         VerticalContentAlignment="Center"
-                        PlaceholderText="Type your answer here..." 
+                        PlaceholderText="Type or click the mic to talk..." 
                         KeyDown="OnInputKeyDown" 
+                        TextChanged="OnInputTextChanged"
                         Foreground="Black" 
-                        Background="White"/> 
-                <Button Content="Send" Click="OnSendClicked" Foreground="White" Background="Green"/> 
-            </StackPanel>
-        </Grid>
+                        Background="White"
+                        BorderBrush="LightGray"
+                        BorderThickness="1"
+                        CornerRadius="4"/> 
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Margin="15,0,0,0" Spacing="8">
+                    
+                    <Border Background="#333333" 
+                            CornerRadius="8" 
+                            Padding="10,5" 
+                            BorderBrush="#DCDCDC" 
+                            BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Auto-send:" 
+                                       FontSize="12" 
+                                       FontWeight="Bold" 
+                                       Foreground="White" 
+                                       Margin="0,0,0,2"/>
+                            <ToggleSwitch x:Name="AutoSendToggle" 
+                                          OnContent="On" 
+                                          OffContent="Off"
+                                          IsOn="True" 
+                                          Toggled="OnAutoSendToggled"
+                                          MinWidth="100"/>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+                        <Button x:Name="MicButton" 
+                                Click="OnMicClicked"
+                                Width="55" Height="55"
+                                Background="#F5F5F5"
+                                BorderBrush="#E0E0E0"
+                                BorderThickness="1"
+                                CornerRadius="28"> 
+                            <FontIcon x:Name="MicIcon" Glyph="&#xE720;" FontSize="24" Foreground="Black" /> 
+                        </Button>
+
+                        <Button Content="Send" 
+                                Click="OnSendClicked" 
+                                Width="105" Height="55"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                Foreground="White" 
+                                Background="#2E7D32" 
+                                CornerRadius="8"
+                                BorderThickness="0"/> 
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Grid> 
     </Grid>
 </Page>

@@ -46,6 +46,7 @@ default_params = {
     "top_p": 1.0,
     "repeat_penalty": 1.0,
     "num_ctx": 1024,
+    "stop": ["<think>", "\n\n<think>"]
 }
 
 def updateTemperature(base, temperature):
@@ -96,8 +97,8 @@ RequirementDefiner = Agent(
 
 testInterview = Interview(
     questions=[
-        "What is your name?",
-        "What A levels did you do?",
+        "When did you went to bed lst night?",
+        "How much do you weigh?",
         "What is your favorite food?"
     ],
     context="This questionnaire is designed to get complete information about the user in a friendly manner and get to know them."
@@ -130,7 +131,7 @@ def askQuestion(interview, index, question_override=None):
     print(f"{bcolors.OKBLUE}Talker: {asked_question}{bcolors.ENDC}", flush=True)
 
     # User provides an answer
-    answer = input("User: ")
+    answer = input()
     interview.history.append({"role": "user", "content": answer})
     # Nitpicker evaluates the answer
     nitpicker_message = interview.history + [
