@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using AvatarFormsApp.ViewModels;
 #if WINDOWS
 using Windows.Media.SpeechRecognition;
 #endif
@@ -18,9 +19,9 @@ using AVFoundation;
 using Foundation;
 #endif
 
-namespace AvatarFormsApp;
+namespace AvatarFormsApp.Views;
 
-public sealed partial class MainPage : Page
+public sealed partial class ConversationPage : Page
 {
     private Process? _pythonProcess;
     private string? _cachedPythonPath;
@@ -47,9 +48,13 @@ public sealed partial class MainPage : Page
     private AVAudioEngine _audioEngine = new AVAudioEngine();
 #endif
 
-    public MainPage()
+    public ConversationPageViewModel ViewModel { get; }
+    public ConversationPage()
     {
-        try { InitializeComponent(); }
+        try { 
+            InitializeComponent(); 
+            ViewModel = App.GetService<ConversationPageViewModel>();
+        }
         catch (Exception ex) { Console.WriteLine($"[XAML ERROR]: {ex}"); throw; }
 
         _silenceTimer = new DispatcherTimer();
@@ -433,7 +438,6 @@ public sealed partial class MainPage : Page
 
                 if (!await tcs.Task) return;
 
-                // Simplified Session: Just "PlayAndRecord" to allow mic + speaker usage, no AEC complications
                 var audioSession = AVAudioSession.SharedInstance();
                 audioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord, 
                                         AVAudioSessionCategoryOptions.DefaultToSpeaker | 
@@ -485,7 +489,6 @@ public sealed partial class MainPage : Page
             if (_audioEngine.Running)
             {
                 _audioEngine.Stop();
-                // Critical crash prevention: Must remove tap before stopping session
                 _audioEngine.InputNode.RemoveTapOnBus(0);
             }
             

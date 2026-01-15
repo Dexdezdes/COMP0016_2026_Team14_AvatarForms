@@ -1,7 +1,21 @@
-<Application
+﻿<Application
     x:Class="AvatarFormsApp.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:material="using:Uno.Material"
+    xmlns:toolkit="using:Uno.Toolkit.UI">
     <Application.Resources>
-        </Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+
+                <material:MaterialTheme />
+                <toolkit:ToolkitResources />
+
+                <ResourceDictionary Source="Styles/FontSizes.xaml" />
+                <ResourceDictionary Source="Styles/Thickness.xaml" />
+                <ResourceDictionary Source="Styles/TextBlock.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>
