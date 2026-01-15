@@ -1,4 +1,4 @@
-﻿<Project Sdk="Uno.Sdk">
+<Project Sdk="Uno.Sdk">
     <PropertyGroup>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFrameworks>
         <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-maccatalyst</TargetFrameworks>
@@ -28,6 +28,10 @@
 
     <PropertyGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
         <DefineConstants>$(DefineConstants);DEV_PYTHON_ENV='$(MSBuildProjectDirectory)/../env/bin/python3'</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
+        <DefineConstants>$(DefineConstants);DEV_PYTHON_ENV='$(MSBuildProjectDirectory)/../env/Scripts/python.exe'</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
@@ -80,7 +84,6 @@
         <Content Include="Assets\**\*" Exclude="bin\**;obj\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Page Include="Styles\**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
     </ItemGroup>
 
 </Project>

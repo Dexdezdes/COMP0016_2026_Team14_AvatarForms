@@ -78,7 +78,20 @@ public sealed partial class ConversationPage : Page
         if (!string.IsNullOrEmpty(_cachedPythonPath)) return _cachedPythonPath;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
+            // 1. Try the constant defined in .csproj (Works for both Windows and Mac)
+#if DEV_PYTHON_ENV
+            if (File.Exists(DEV_PYTHON_ENV)) 
+            {
+                return _cachedPythonPath = DEV_PYTHON_ENV;
+            }
+#endif
             string baseDir = AppContext.BaseDirectory;
+            // Search for sibling env folder (up from bin/Debug/... to the root)
+            for (int i = 0; i <= 9; i++)
+            {
+                string probePath = Path.GetFullPath(Path.Combine(baseDir, new string('.', i * 3).Replace("...", "../"), "env/Scripts/python.exe"));
+                if (File.Exists(probePath)) return _cachedPythonPath = probePath;
+            }
             string buildVenvPath = Path.Combine(baseDir, "env", "Scripts", "python.exe");
             if (File.Exists(buildVenvPath)) return buildVenvPath;
 
@@ -403,7 +416,7 @@ public sealed partial class ConversationPage : Page
             string hexError = string.Format("0x{0:X8}", (uint)ex.HResult);
             ChatDisplay.Text += $"\n[MIC ERROR {hexError}]: {ex.Message}\n";
 
-            if ((uint)ex.HResult == 0x8004503A || ex.Message.Contains("privacy"))
+            if ((uint)ex.HResult == 0x8004503A || (uint) ex.HResult == 0x80131509 || ex.Message.Contains("privacy"))
             {
                 ChatDisplay.Text += "-> Opening Windows Speech Settings. Please turn ON 'Online Speech Recognition'.\n";
                 var uri = new Uri("ms-settings:privacy-speech");

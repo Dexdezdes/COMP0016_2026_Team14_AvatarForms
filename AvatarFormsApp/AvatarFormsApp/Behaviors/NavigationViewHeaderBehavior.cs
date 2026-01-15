@@ -1,4 +1,4 @@
-﻿using AvatarFormsApp.Contracts.Services;
+using AvatarFormsApp.Contracts.Services;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -10,7 +10,7 @@ using Microsoft.Xaml.Interactivity;
 namespace AvatarFormsApp.Behaviors;
 
 #if WINDOWS
-public class NavigationViewHeaderBehavior : Microsoft.Xaml.Behaviors.Behavior<NavigationView>
+public class NavigationViewHeaderBehavior : Microsoft.Xaml.Interactivity.Behavior<NavigationView>
 #else
 // On Mac, the Managed package puts the base class in the Interactivity namespace
 public class NavigationViewHeaderBehavior : Behavior<NavigationView>

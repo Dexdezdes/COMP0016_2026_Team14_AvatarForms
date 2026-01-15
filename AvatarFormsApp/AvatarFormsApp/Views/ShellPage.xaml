@@ -6,7 +6,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:AvatarFormsApp.Helpers"
     xmlns:behaviors="using:AvatarFormsApp.Behaviors"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:interactions="using:Microsoft.Xaml.Interactions.Core"
     Loaded="OnLoaded">
 
     <Grid>
@@ -47,7 +48,7 @@
             <NavigationView.MenuItems>
                 <!-- Overview section -->
                 <NavigationViewItemHeader Content="Overview" />
-                <NavigationViewItem Content="Dashboard" x:Name="Nav_Dashboard" IsSelected="True">
+                <NavigationViewItem Content="Dashboard" x:Name="Nav_Dashboard" IsSelected="True" Tag="DashboardPageViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe80f;" />
                     </NavigationViewItem.Icon>
@@ -109,7 +110,7 @@
                 </DataTemplate>
             </NavigationView.HeaderTemplate>
 
-            <i:Interaction.Behaviors>
+            <interactivity:Interaction.Behaviors>
                 <behaviors:NavigationViewHeaderBehavior
                     DefaultHeader="{x:Bind ((ContentControl)ViewModel.Selected).Content, Mode=OneWay}">
                     <behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
@@ -124,7 +125,7 @@
                         </DataTemplate>
                     </behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
                 </behaviors:NavigationViewHeaderBehavior>
-            </i:Interaction.Behaviors>
+            </interactivity:Interaction.Behaviors>
 
             <Grid Margin="{StaticResource NavigationViewPageContentMargin}">
                 <Frame x:Name="NavigationFrame" />

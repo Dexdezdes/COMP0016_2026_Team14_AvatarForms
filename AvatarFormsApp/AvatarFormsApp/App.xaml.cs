@@ -1,4 +1,4 @@
-﻿using AvatarFormsApp.Activation;
+using AvatarFormsApp.Activation;
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Services;
 using AvatarFormsApp.Helpers;
@@ -133,8 +133,6 @@ public partial class App : Application
         var shell = App.GetService<ShellPage>();
         window.Content = shell;
 
-        #if !WINDOWS
-            window.Activate(); 
-        #endif
+        window.Activate(); 
     }
 }

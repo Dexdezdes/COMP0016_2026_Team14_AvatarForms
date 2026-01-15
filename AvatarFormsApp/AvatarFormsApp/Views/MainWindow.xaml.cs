@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.IO;
 using AvatarFormsApp.Helpers;
@@ -10,12 +10,15 @@ using Windows.UI.ViewManagement;
 
 namespace AvatarFormsApp.Views;
 
-public sealed partial class MainWindow : 
+public class MainWindowBase :
 #if WINDOWS
-    WindowEx
+    WinUIEx.WindowEx
 #else
-    Window
+    Microsoft.UI.Xaml.Window
 #endif
+{ }
+
+public sealed partial class MainWindow : MainWindowBase
 {
 #if WINDOWS
     private Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;

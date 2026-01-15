@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Contracts.ViewModels;
@@ -120,7 +120,7 @@ public class NavigationService : INavigationService
     {
         if (sender is Frame frame)
         {
-            var clearNavigation = (bool)frame.Tag;
+            var clearNavigation = frame.Tag is bool tagValue && tagValue;
             if (clearNavigation)
             {
                 frame.BackStack.Clear();
