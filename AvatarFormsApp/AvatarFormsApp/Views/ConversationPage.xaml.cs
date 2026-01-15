@@ -373,50 +373,83 @@ public sealed partial class ConversationPage : Page
     {
         try
         {
-            if (_winRecognizer == null)
+            // FIX: 1. Cleanup existing instance to clear the 0x80131509 (Invalid Operation) state
+            if (_winRecognizer != null)
             {
-                _winRecognizer = new SpeechRecognizer();
-                var dictationConstraint = new SpeechRecognitionTopicConstraint(SpeechRecognitionScenario.Dictation, "dictation");
-                _winRecognizer.Constraints.Add(dictationConstraint);
-                await _winRecognizer.CompileConstraintsAsync();
-
-                _winRecognizer.HypothesisGenerated += (s, args) => {
-                    DispatcherQueue.TryEnqueue(() => {
-                        if (!_isAiSpeaking && !_isUserEditing)
-                        {
-                            _silenceTimer.Stop();
-                            UserInput.Text = args.Hypothesis.Text;
-                        }
-                    });
-                };
-
-                _winRecognizer.ContinuousRecognitionSession.ResultGenerated += async (s, args) => {
-                    if (args.Result.Status == SpeechRecognitionResultStatus.Success)
+                try
+                {
+                    if (_winRecognizer.State != SpeechRecognizerState.Idle)
                     {
-                        DispatcherQueue.TryEnqueue(() => {
-                            UserInput.Text = args.Result.Text;
-                            if (AutoSendToggle.IsOn && !_isUserEditing && !_isAiSpeaking)
-                            {
-                                _silenceTimer.Stop();
-                                _silenceTimer.Start();
-                            }
-                        });
+                        await _winRecognizer.ContinuousRecognitionSession.StopAsync();
                     }
-                };
+                }
+                catch { /* Ignore errors during cleanup */ }
+
+                _winRecognizer.Dispose();
+                _winRecognizer = null;
             }
 
+            // 2. Initialize a FRESH instance
+            _winRecognizer = new SpeechRecognizer();
+
+            // Prevent the recognizer from timing out automatically, which causes state desync
+            _winRecognizer.ContinuousRecognitionSession.AutoStopSilenceTimeout = TimeSpan.MaxValue;
+
+            var dictationConstraint = new SpeechRecognitionTopicConstraint(SpeechRecognitionScenario.Dictation, "dictation");
+            _winRecognizer.Constraints.Add(dictationConstraint);
+
+            var compilationResult = await _winRecognizer.CompileConstraintsAsync();
+            if (compilationResult.Status != SpeechRecognitionResultStatus.Success)
+            {
+                throw new Exception($"Constraint compilation failed: {compilationResult.Status}");
+            }
+
+            // 3. Re-attach Events
+            _winRecognizer.HypothesisGenerated += (s, args) => {
+                DispatcherQueue.TryEnqueue(() => {
+                    if (!_isAiSpeaking && !_isUserEditing)
+                    {
+                        _silenceTimer.Stop();
+                        UserInput.Text = args.Hypothesis.Text;
+                    }
+                });
+            };
+
+            _winRecognizer.ContinuousRecognitionSession.ResultGenerated += (s, args) => {
+                if (args.Result.Status == SpeechRecognitionResultStatus.Success)
+                {
+                    DispatcherQueue.TryEnqueue(() => {
+                        UserInput.Text = args.Result.Text;
+                        if (AutoSendToggle.IsOn && !_isUserEditing && !_isAiSpeaking)
+                        {
+                            _silenceTimer.Stop();
+                            _silenceTimer.Start();
+                        }
+                    });
+                }
+            };
+
+            // 4. Start (Now safe because we know the instance is fresh and Idle)
             await _winRecognizer.ContinuousRecognitionSession.StartAsync();
         }
         catch (Exception ex)
         {
+            // Reset UI State on failure
             _isMicEnabled = false;
             MicIcon.Glyph = "\uF12E";
             MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Black);
 
+            // Force dispose so we don't lock the mic for other apps
+            if (_winRecognizer != null)
+            {
+                _winRecognizer.Dispose();
+                _winRecognizer = null;
+            }
+
             string hexError = string.Format("0x{0:X8}", (uint)ex.HResult);
             ChatDisplay.Text += $"\n[MIC ERROR {hexError}]: {ex.Message}\n";
 
-            if ((uint)ex.HResult == 0x8004503A || (uint) ex.HResult == 0x80131509 || ex.Message.Contains("privacy"))
+            if ((uint)ex.HResult == 0x8004503A || (uint)ex.HResult == 0x80131509 || ex.Message.Contains("privacy"))
             {
                 ChatDisplay.Text += "-> Opening Windows Speech Settings. Please turn ON 'Online Speech Recognition'.\n";
                 var uri = new Uri("ms-settings:privacy-speech");
