@@ -1,0 +1,194 @@
+﻿<Page
+    x:Class="AvatarFormsApp.Views.DashboardPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid x:Name="ContentArea" Padding="20">
+        <StackPanel Margin="0,0,0,0">
+            <Grid Margin="0,0,0,30">
+                <TextBlock Text="Dashboard" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="About" FontSize="18" Margin="0,0,24,0" VerticalAlignment="Center" />
+                    <TextBlock Text="Help" FontSize="18" VerticalAlignment="Center" />
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Text="Welcome, John Smith" FontSize="24" FontWeight="SemiBold" />
+            <TextBlock Text="Check out latest responses" Foreground="Gray" Margin="0,4,0,24" />
+
+            <RelativePanel Margin="0,0,0,12">
+                <StackPanel x:Name="LeftFilters" Orientation="Horizontal">
+                    <ComboBox Width="200" Margin="0,0,8,0" SelectedIndex="0">
+                        <ComboBoxItem>All Questionnaires</ComboBoxItem>
+                        <ComboBoxItem>Pending</ComboBoxItem>
+                        <ComboBoxItem>Closed</ComboBoxItem>
+                    </ComboBox>
+                    <Button Content="Pending" Background="Transparent" BorderBrush="Transparent" Margin="0,0,8,0" Foreground="#5B6DF0" />
+                    <Button Content="Closed" Background="Transparent" BorderBrush="Transparent" Foreground="#5B6DF0" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" RelativePanel.AlignRightWithPanel="True">
+                    <ComboBox Width="160" Margin="0,0,12,0" PlaceholderText="Sort by name (A-Z)">
+                        <ComboBoxItem>Sort by name (A-Z)</ComboBoxItem>
+                        <ComboBoxItem>Sort by responses</ComboBoxItem>
+                    </ComboBox>
+                    <TextBox Width="240" PlaceholderText="Search for questionnaires..." />
+                </StackPanel>
+            </RelativePanel>
+
+            <Grid Padding="12,12,48,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="120" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Questionnaire" FontWeight="Bold" Foreground="Gray" />
+                <TextBlock Grid.Column="1" Text="Progress" FontWeight="Bold" Foreground="Gray" />
+                <TextBlock Grid.Column="2" Text="Responses" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Right" />
+                <TextBlock Grid.Column="3" Text="Owners" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center" />
+            </Grid>
+
+            <ListView x:Name="QuestionnaireList" SelectionMode="None">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0,4" />
+                        <Setter Property="Background" Value="Transparent" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+
+                <ListViewItem>
+                    <Border Background="White" CornerRadius="8" Padding="16,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="DASS Questionnaire" FontWeight="SemiBold" Foreground="Black" Margin="0,0,0,8" />
+                                <ProgressBar Value="40" Minimum="0" Maximum="100" Height="4" Foreground="#4CB3B3" Background="#F0F0F0" />
+                            </StackPanel>
+                            <Border Grid.Column="2" Background="#0D74FF" CornerRadius="14" Padding="12,4" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <TextBlock Text="12 responses" Foreground="White" FontSize="12" FontWeight="SemiBold" />
+                            </Border>
+                            <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Ellipse Width="28" Height="28" Fill="#DDDDDD" Margin="4,0" />
+                                <Ellipse Width="28" Height="28" Fill="#CCCCCC" Margin="4,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ListViewItem>
+
+                <ListViewItem>
+                    <Border Background="White" CornerRadius="8" Padding="16,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Learning Experience Survey" FontWeight="SemiBold" Foreground="Black" Margin="0,0,0,8" />
+                                <ProgressBar Value="70" Minimum="0" Maximum="100" Height="4" Foreground="#5B6DF0" Background="#F0F0F0" />
+                            </StackPanel>
+                            <Border Grid.Column="2" Background="#0D74FF" CornerRadius="14" Padding="12,4" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <TextBlock Text="27 responses" Foreground="White" FontSize="12" FontWeight="SemiBold" />
+                            </Border>
+                            <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Ellipse Width="28" Height="28" Fill="#DDDDDD" Margin="4,0" />
+                                <Ellipse Width="28" Height="28" Fill="#CCCCCC" Margin="4,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ListViewItem>
+
+                <ListViewItem>
+                    <Border Background="White" CornerRadius="8" Padding="16,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Examination Feedback Survey" FontWeight="SemiBold" Foreground="Black" Margin="0,0,0,8" />
+                                <ProgressBar Value="20" Minimum="0" Maximum="100" Height="4" Foreground="#FF3B7A" Background="#F0F0F0" />
+                            </StackPanel>
+                            <Border Grid.Column="2" Background="#0D74FF" CornerRadius="14" Padding="12,4" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <TextBlock Text="9 responses" Foreground="White" FontSize="12" FontWeight="SemiBold" />
+                            </Border>
+                            <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Ellipse Width="28" Height="28" Fill="#DDDDDD" Margin="4,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ListViewItem>
+
+                <ListViewItem>
+                    <Border Background="White" CornerRadius="8" Padding="16,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Student Health Questionnaire" FontWeight="SemiBold" Foreground="Black" Margin="0,0,0,8" />
+                                <ProgressBar Value="50" Minimum="0" Maximum="100" Height="4" Foreground="#8E53E7" Background="#F0F0F0" />
+                            </StackPanel>
+                            <Border Grid.Column="2" Background="#0D74FF" CornerRadius="14" Padding="12,4" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <TextBlock Text="14 responses" Foreground="White" FontSize="12" FontWeight="SemiBold" />
+                            </Border>
+                            <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Ellipse Width="28" Height="28" Fill="#DDDDDD" Margin="4,0" />
+                                <Ellipse Width="28" Height="28" Fill="#CCCCCC" Margin="4,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ListViewItem>
+
+                <ListViewItem>
+                    <Border Background="White" CornerRadius="8" Padding="16,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Year End Review" FontWeight="SemiBold" Foreground="Black" Margin="0,0,0,8" />
+                                <ProgressBar Value="30" Minimum="0" Maximum="100" Height="4" Foreground="#FFA500" Background="#F0F0F0" />
+                            </StackPanel>
+                            <Border Grid.Column="2" Background="#0D74FF" CornerRadius="14" Padding="12,4" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <TextBlock Text="12 responses" Foreground="White" FontSize="12" FontWeight="SemiBold" />
+                            </Border>
+                            <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Ellipse Width="28" Height="28" Fill="#DDDDDD" Margin="4,0" />
+                                <Ellipse Width="28" Height="28" Fill="#CCCCCC" Margin="4,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ListViewItem>
+            </ListView>
+
+            <Button Content="Upload Questionnaire" 
+                    HorizontalAlignment="Right" 
+                    Width="200" Height="44" 
+                    CornerRadius="22" 
+                    Background="#0D74FF" 
+                    Foreground="White" 
+                    Margin="0,20,0,0" />
+        </StackPanel>
+    </Grid>
+</Page>

@@ -1,11 +1,9 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.2.32210.308
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 15.0.26124.0
-
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvatarFormsApp", "AvatarFormsApp\AvatarFormsApp.csproj", "{CF816AEB-7F1B-4740-B91C-070F8AC04A38}"
 EndProject
-
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BADA71DC-7FFD-4EDC-9F28-FB74AEADC713}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -80,8 +78,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {14B3C430-317B-468C-8AC8-275911DAB61C}

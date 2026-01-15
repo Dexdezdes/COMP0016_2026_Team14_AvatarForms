@@ -31,6 +31,10 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
+        <DefineConstants>$(DefineConstants);DEV_PYTHON_ENV='$(MSBuildProjectDirectory)/../env/Scripts/python.exe'</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
         <ApplicationIdGuid>71833983-4903-4B82-95E0-0761E094209C</ApplicationIdGuid>
         <AppxPackageGuid>71833983-4903-4B82-95E0-0761E094209C</AppxPackageGuid>
         <PublisherName>Group14</PublisherName>
@@ -40,6 +44,7 @@
     <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
         <PackageReference Include="Uno.Material.WinUI" />
         <PackageReference Include="Uno.Toolkit.WinUI" />
+        <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.WinUI.Managed" />
     </ItemGroup>
 
     <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
@@ -64,4 +69,21 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" />
+        <PackageReference Include="Newtonsoft.Json" />
+    </ItemGroup>
+
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+        <PackageReference Include="WinUIEx" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Assets\**\*" Exclude="bin\**;obj\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
 </Project>
