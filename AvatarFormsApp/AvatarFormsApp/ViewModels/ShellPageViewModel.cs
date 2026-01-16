@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Navigation;
 
 namespace AvatarFormsApp.ViewModels;
 
-public partial class ShellViewModel : ObservableRecipient
+public partial class ShellPageViewModel : ObservableRecipient
 {
     [ObservableProperty]
     private bool isBackEnabled;
@@ -25,7 +25,7 @@ public partial class ShellViewModel : ObservableRecipient
         get;
     }
 
-    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService)
+    public ShellPageViewModel(INavigationService navigationService, INavigationViewService navigationViewService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;

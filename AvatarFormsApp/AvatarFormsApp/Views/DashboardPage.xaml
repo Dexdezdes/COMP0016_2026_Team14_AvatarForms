@@ -180,6 +180,7 @@
             </ListView>
 
             <Button Content="Upload Questionnaire" 
+                    Click="OnUploadClick"
                     HorizontalAlignment="Right" 
                     Width="200" Height="44" 
                     CornerRadius="22" 
