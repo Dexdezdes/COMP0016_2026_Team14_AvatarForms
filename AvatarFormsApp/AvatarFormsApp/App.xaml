@@ -10,8 +10,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
 
-                <material:MaterialTheme />
-                <toolkit:ToolkitResources />
 
                 <ResourceDictionary Source="Styles/FontSizes.xaml" />
                 <ResourceDictionary Source="Styles/Thickness.xaml" />
