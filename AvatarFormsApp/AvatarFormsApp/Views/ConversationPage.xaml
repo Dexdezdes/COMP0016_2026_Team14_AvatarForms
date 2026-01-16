@@ -2,9 +2,9 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:AvatarFormsApp"
-      Background="White">
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="White" Padding="0" Margin="0">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="0" Margin="0">
         <StackPanel x:Name="LandingPage" 
                     HorizontalAlignment="Center" 
                     VerticalAlignment="Center" 
@@ -13,7 +13,7 @@
             <TextBlock Text="Welcome to Avatar Forms App!" 
                        FontSize="24" 
                        FontWeight="Bold" 
-                       Foreground="Black"
+                       Foreground="{ThemeResource DefaultTextForegroundThemeBrush}"
                        TextAlignment="Center"/>
             <Button Content="Start Local AI Chat" Width="200" Height="50" Tag="local" Click="OnChatAIClicked" Foreground="White" Background="Blue"/>
             <Button Content="Start Cloud AI Chat" Width="200" Height="50" Tag="cloud" Click="OnChatAIClicked" Foreground="White" Background="Blue"/>
@@ -34,7 +34,7 @@
             </Button>
 
             <ScrollViewer x:Name="ChatScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,10" HorizontalAlignment="Stretch">
-                <TextBlock x:Name="ChatDisplay" TextWrapping="Wrap" FontSize="16" Foreground="Black" HorizontalAlignment="Stretch"/>
+                <TextBlock x:Name="ChatDisplay" TextWrapping="Wrap" FontSize="16" Foreground="{ThemeResource DefaultTextForegroundThemeBrush}" HorizontalAlignment="Stretch"/>
             </ScrollViewer>
 
             <Grid Grid.Row="2" VerticalAlignment="Bottom" Margin="0,10,0,0">
@@ -54,8 +54,8 @@
                         PlaceholderText="Type or click the mic to talk..." 
                         KeyDown="OnInputKeyDown" 
                         TextChanged="OnInputTextChanged"
-                        Foreground="Black" 
-                        Background="White"
+                        Foreground="{ThemeResource DefaultTextForegroundThemeBrush}"
+                        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                         BorderBrush="LightGray"
                         BorderThickness="1"
                         CornerRadius="4"/> 
