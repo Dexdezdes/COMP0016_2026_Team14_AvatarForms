@@ -6,20 +6,17 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea" Padding="20">
-        <StackPanel Margin="0,0,0,0">
-            <Grid Margin="0,0,0,30">
-                <TextBlock Text="Dashboard" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock Text="About" FontSize="18" Margin="0,0,24,0" VerticalAlignment="Center" />
-                    <TextBlock Text="Help" FontSize="18" VerticalAlignment="Center" />
-                </StackPanel>
-            </Grid>
+    <Grid x:Name="ContentArea" Padding="20" Margin="0">
+        <Grid Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <RowDefinition Height="Auto"/> <RowDefinition Height="Auto"/> <RowDefinition Height="*"/>    <RowDefinition Height="Auto"/> </Grid.RowDefinitions>
 
-            <TextBlock Text="Welcome, John Smith" FontSize="24" FontWeight="SemiBold" />
-            <TextBlock Text="Check out latest responses" Foreground="Gray" Margin="0,4,0,24" />
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="Welcome, John Smith" FontSize="24" FontWeight="SemiBold" />
+                <TextBlock Text="Check out latest responses" Foreground="Gray" Margin="0,4,0,24" />
+            </StackPanel>
 
-            <RelativePanel Margin="0,0,0,12">
+            <RelativePanel Grid.Row="1" Margin="0,0,0,12">
                 <StackPanel x:Name="LeftFilters" Orientation="Horizontal">
                     <ComboBox Width="200" Margin="0,0,8,0" SelectedIndex="0">
                         <ComboBoxItem>All Questionnaires</ComboBoxItem>
@@ -39,7 +36,7 @@
                 </StackPanel>
             </RelativePanel>
 
-            <Grid Padding="12,12,48,12">
+            <Grid Grid.Row="2" Padding="12,12,48,12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="200" />
@@ -52,7 +49,7 @@
                 <TextBlock Grid.Column="3" Text="Owners" FontWeight="Bold" Foreground="Gray" HorizontalAlignment="Center" />
             </Grid>
 
-            <ListView x:Name="QuestionnaireList" SelectionMode="None">
+            <ListView Grid.Row="3" x:Name="QuestionnaireList" SelectionMode="None">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -188,7 +185,8 @@
                     CornerRadius="22" 
                     Background="#0D74FF" 
                     Foreground="White" 
-                    Margin="0,20,0,0" />
-        </StackPanel>
+                    Margin="0,20,0,0"
+                    Grid.Row="4" />
+        </Grid>
     </Grid>
 </Page>

@@ -1,4 +1,4 @@
-using AvatarFormsApp.Activation;
+﻿using AvatarFormsApp.Activation;
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Services;
 using AvatarFormsApp.Helpers;
@@ -57,7 +57,7 @@ public partial class App : Application
         }
     #endif
 
-    public static UIElement? AppTitlebar { get; set; }
+
 
     public App()
     {

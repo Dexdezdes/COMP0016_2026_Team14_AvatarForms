@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.IO;
 using AvatarFormsApp.Helpers;
@@ -40,13 +40,4 @@ public sealed partial class MainWindow : MainWindowBase
 
     }
 
-#if WINDOWS
-    private void Settings_ColorValuesChanged(UISettings sender, object args)
-    {
-        dispatcherQueue.TryEnqueue(() =>
-        {
-            TitleBarHelper.ApplySystemThemeToCaptionButtons();
-        });
-    }
-#endif
 }
