@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.IO;
 using AvatarFormsApp.Helpers;
@@ -35,7 +35,6 @@ public sealed partial class MainWindow : MainWindowBase
 
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
-        settings.ColorValuesChanged += Settings_ColorValuesChanged;
     #endif
 
     }
