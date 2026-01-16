@@ -16,6 +16,8 @@ public class PageService : IPageService
     {
         Configure<DashboardPageViewModel, DashboardPage>();
         Configure<ConversationPageViewModel, ConversationPage>();
+        Configure<ShellPageViewModel, ShellPage>();
+        Configure<CreateQuestionnairePageViewModel, CreateQuestionnairePage>();
     }
 
     public Type GetPageType(string key)

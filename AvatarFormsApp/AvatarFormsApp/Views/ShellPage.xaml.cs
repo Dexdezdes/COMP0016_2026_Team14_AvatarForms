@@ -14,12 +14,12 @@ namespace AvatarFormsApp.Views;
 public sealed partial class ShellPage : Page
 {
     public Frame NavigationFrameControl => NavigationFrame;
-    public ShellViewModel ViewModel
+    public ShellPageViewModel ViewModel
     {
         get;
     }
 
-    public ShellPage(ShellViewModel viewModel)
+    public ShellPage(ShellPageViewModel viewModel)
     {
         ViewModel = viewModel;
         InitializeComponent();

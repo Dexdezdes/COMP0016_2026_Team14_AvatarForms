@@ -91,9 +91,12 @@ public partial class App : Application
             services.AddTransient<DashboardPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ConversationPage>();
+            services.AddTransient<CreateQuestionnairePage>();
             services.AddSingleton<MainWindow>();
-            services.AddTransient<ShellViewModel>();
+            services.AddTransient<ShellPageViewModel>();
             services.AddTransient<ConversationPageViewModel>();
+            services.AddTransient<CreateQuestionnairePage>();
+            services.AddTransient<CreateQuestionnairePageViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

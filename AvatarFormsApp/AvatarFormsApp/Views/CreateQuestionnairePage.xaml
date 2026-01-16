@@ -1,0 +1,72 @@
+<Page
+    x:Class="AvatarFormsApp.Views.CreateQuestionnairePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Create Questionnaire" FontSize="22" FontWeight="SemiBold" />
+
+        <!-- Title -->
+        <StackPanel Grid.Row="1" Margin="0,18,0,0">
+            <TextBlock Text="Title:" Margin="0,0,0,6" />
+            <TextBox x:Name="TitleTextBox" PlaceholderText="Enter your questionnaire title..." />
+        </StackPanel>
+
+        <!-- Link or file input -->
+        <StackPanel Grid.Row="2" Margin="0,12,0,0">
+            <TextBlock Text="Questionnaire (link or file):" Margin="0,0,0,6" />
+            <TextBox x:Name="LinkTextBox" PlaceholderText="Insert your questionnaire forms link here..." />
+
+            <TextBlock Text="Or" HorizontalAlignment="Center" Margin="0,8,0,8" />
+
+            <Border BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}" BorderThickness="1" Padding="12" CornerRadius="4">
+                <StackPanel>
+                    <TextBlock Text="Add your .csv/.xlsx questionnaire data here..." Foreground="{ThemeResource SystemControlForegroundBaseLowBrush}" HorizontalAlignment="Center" Margin="0,12" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" Margin="0,8,0,0">
+                        <Button x:Name="BrowseButton" Content="Browse..." Click="BrowseButton_Click" />
+                        <Button x:Name="ClearButton" Content="Clear" Click="ClearButton_Click" />
+                    </StackPanel>
+                    <TextBlock x:Name="PickedFileText" Text="" HorizontalAlignment="Center" Margin="0,12,0,0" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Customize options and action buttons -->
+        <Grid Grid.Row="3" Margin="0,18,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="320" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="Customize Avatar:" FontWeight="SemiBold" />
+                <TextBlock Text="Voice:" Margin="0,8,0,4" />
+                <ComboBox x:Name="VoiceComboBox" Width="240">
+                    <ComboBoxItem>Oliver (Male)</ComboBoxItem>
+                    <ComboBoxItem>Emma (Female)</ComboBoxItem>
+                </ComboBox>
+
+                <TextBlock Text="Primary Language:" Margin="0,12,0,4" />
+                <ComboBox x:Name="LanguageComboBox" Width="240">
+                    <ComboBoxItem>English (United Kingdom)</ComboBoxItem>
+                    <ComboBoxItem>English (United States)</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Spacing="12">
+                <Button Content="Cancel" Click="Cancel_Click" />
+                <Button Content="Create Questionnaire" Click="Create_Click" Background="#0D74FF" Foreground="White" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>
