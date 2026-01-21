@@ -1,223 +1,519 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>Talking Head - minimal example</title>
+  <head>
+    <title>Talking Head - minimal example</title>
 
-  <style>
-    body, html { width:100%; height:100%; max-width: 800px; margin: auto; position: relative; background-color: #202020; color: white; }
-    #avatar { display: block; width:100%; height:100%; }
-    #controls { display: block; position: absolute; top: 10px; left: 10px; right: 10px; height: 50px; }
-    #text { position: absolute; width: Calc( 100% - 110px ); height: 100%; top: 0; left: 0; bottom: 0; right: 110px; font-family: Arial; font-size: 20px; }
-    #speak { display: block; position: absolute; top: 0; bottom: 0; right: 0; height: 100%; width: 100px; font-family: Arial; font-size: 20px; }
-    #loading { display: block; position: absolute; bottom: 10px; left: 10px; right: 10px; height: 50px; font-family: Arial; font-size: 20px; }
-  </style>
-
-  <script type="importmap">
-  { "imports":
-    {
-      "three": "./three.module.js",
-      "three/core": "./three.module.js",
-      "three/addons/": "./jsm/",
-      "talkinghead": "./talkinghead.mjs",
-      "lipsync-en": "./lipsync-en.mjs"
-    }
-  }
-  </script>
-
-  <script type="module">
-    import { TalkingHead } from "talkinghead";
-    import { LipsyncEn } from "lipsync-en";
-
-    let head;
-    const lipsync = new LipsyncEn();
-
-  async function speakSequence(lines, delays) {
-    for (let i = 0; i < lines.length; i++) {
-      if (i > 0) {
-        await new Promise(resolve => setTimeout(resolve, delays[i - 1]));
+    <style>
+      body,
+      html {
+        width: 100%;
+        height: 100%;
+        max-width: 800px;
+        margin: auto;
+        position: relative;
+        background-color: #202020;
+        color: white;
       }
-      await head.speakText(lines[i]);
-    }
-  }
+      #avatar {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      #controls {
+        display: block;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        height: 50px;
+      }
+      #text {
+        position: absolute;
+        width: Calc(100% - 110px);
+        height: 100%;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 110px;
+        font-family: Arial;
+        font-size: 20px;
+      }
+      #speak {
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        height: 100%;
+        width: 100px;
+        font-family: Arial;
+        font-size: 20px;
+      }
+      #loading {
+        display: block;
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        height: 50px;
+        font-family: Arial;
+        font-size: 20px;
+      }
+      #unlock-shield {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.01); /* Nearly invisible */
+        z-index: 999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+      }
+    </style>
 
-  window.speakSequence = speakSequence;
+    <script>
+      // WebView2 messaging shim — runs early
+      (function () {
+        // Graceful no-op if not in WebView2
+        const hasWV = !!(window.chrome && chrome.webview);
+        if (!hasWV) {
+          console.debug("[webview] chrome.webview not available");
+          // Don't spam alert in normal browser
+          return;
+        }
 
+        // Inform immediately that the shim exists
+        //alert("[webview shim] chrome.webview available");
 
-    document.addEventListener('DOMContentLoaded', async function(e) {
+        // Incoming messages from host
+        // --- Combined Interaction Logic ---
 
-      const nodeAvatar = document.getElementById('avatar');
+        // 1. Handle Messages from C# (WebView2)
+        // --- MESSAGE FROM C# HOST ---
+        window.chrome.webview.addEventListener("message", async (event) => {
+          let msg = event.data;
 
-      head = new TalkingHead( nodeAvatar, {
-        lipsyncModules: ["en"],
-        cameraView: "upper",
-        ttsEngine: "none",    
-        ttsEndpoint: ""    
-      });
+          // Handle both string and object formats to prevent crashes
+          if (typeof msg === "string") {
+            try {
+              msg = JSON.parse(msg);
+            } catch (e) {
+              console.error("JSON Parse Error:", e);
+              return;
+            }
+          }
 
-      head.opt.ttsEndpoint = null;
+          console.log("Host Message:", msg);
 
-      // Load and show the avatar
-      const nodeLoading = document.getElementById('loading');
+          if (msg.type === "unlock") {
+            if (window.head && head.audioCtx) {
+              await head.audioCtx.resume();
+              //alert("Audio Unlocked by Host");
+            }
+          }
 
-      var lines = [
-        "Hi there! To start with, could you tell me what your name is?",
-        "Sure, Adam — could you share your last name with me as well? That’ll help me make sure I have your full name correct.",
-        "Thanks, Adam Smith! How was your sleep last night?",
-        "Fair enough. Did you wake up feeling rested, or still a bit tired?",
-        "I see. Do you often wake up feeling tired, or was last night just an exception?",
-      ];
-      var line;
-
-      try {
-        nodeLoading.textContent = "Loading...";
-        await head.showAvatar( {
-          url: './brunette.glb',
-          // url: 'https://models.readyplayer.me/65a8dba831b23abb4f401bae.glb?morphTargets=ARKit,Oculus+Visemes,mouthOpen,mouthSmile,eyesClosed,eyesLookUp,eyesLookDown&textureSizeLimit=1024&textureFormat=png',
-          // url: "ready_player_me_male_avatar__vrchatgame.glb",66473ec24c3b647e2d45ab9b.glb
-          // url: 'https://models.readyplayer.me/664777277ad2faec5b6079f0.glb?morphTargets=ARKit,Oculus+Visemes,mouthOpen,mouthSmile,eyesClosed,eyesLookUp,eyesLookDown&textureSizeLimit=1024&textureFormat=png',
-          // url: 'https://models.readyplayer.me/66473ec24c3b647e2d45ab9b.glb?morphTargets=ARKit,Oculus+Visemes,mouthOpen,mouthSmile,eyesClosed,eyesLookUp,eyesLookDown&textureSizeLimit=1024&textureFormat=png',
-          body: 'F',
-          avatarMood: 'neutral',
-          ttsLang: "en-GB",
-          lipsyncLang: 'en',
-        // await head.showAvatar( {
-        //   url: 'https://drive.google.com/uc?export=download&id=1AlDS5k1sLYVnCGHoCCpceo-RX9U_vNGX',
-        //   body: 'M',
-        //   avatarMood: 'neutral',
-        //   ttsLang: "en-GB",
-        //   ttsVoice: "en-GB-Standard-A",
-        //   lipsyncLang: 'en'
-        }, (ev) => {
-          if ( ev.lengthComputable ) {
-            let val = Math.min(100,Math.round(ev.loaded/ev.total * 100 ));
-            nodeLoading.textContent = "Loading " + val + "%";
+          if (msg.type === "speak") {
+            //alert("Host command: Speak -> " + msg.text);
+            await speakLine(msg.text);
           }
         });
-        nodeLoading.style.display = 'none';
-      } catch (error) {
-        console.log(error);
-        nodeLoading.textContent = error.toString();
-      }
 
-      // // Speak when clicked
-      // const nodeSpeak = document.getElementById('speak');
-      // nodeSpeak.addEventListener('click', function () {
-      //   try {
-      //     const text = document.getElementById('text').value;
-      //     if ( text ) {
-      //       head.speakText( text );
-      //     }
-      //   } catch (error) {
-      //     console.log(error);
-      //   }
-      // });
+        // --- KEYBOARD INTERACTION (Restored) ---
+        window.addEventListener("keydown", async (e) => {
+          if (e.key.toLowerCase() === "s") {
+            //alert("Manual 'S' pressed");
+            console.log("Manual 'S' pressed");
 
-      // Pause animation when document is not visible
-      document.addEventListener("visibilitychange", async function (ev) {
-        if (document.visibilityState === "visible") {
-          head.start();
-        } else {
-          head.stop();
-        }
-      });
+            // Force audio resume on physical interaction
+            if (window.head && head.audioCtx) {
+              await head.audioCtx.resume();
+            }
 
-    // On keypress
-    document.addEventListener('keydown', async function(e) {
-      if (e.key === 's') {
+            const phrases = [
+              "Manual test sequence initiated.",
+              "The keyboard bridge is working correctly.",
+            ];
+
+            for (const phrase of phrases) {
+              await speakLine(phrase);
+            }
+          }
+        });
+
+        // Small helper so page can notify host when it is ready
+        window.__notifyHost = function (obj) {
+          try {
+            sendToHost(obj);
+          } catch (e) {
+            console.warn("postMessage failed", e);
+            //alert("[webview] postMessage failed: " + e);
+          }
+        };
+      })();
+    </script>
+
+    <script>
+      // *** FIX 1: Prevent unlockAudio from crashing on Mac ***
+      window.unlockAudio = async function () {
+        console.log("[unlockAudio] attempting unlock...");
         try {
-          if (head.audioCtx && head.audioCtx.state === 'suspended') {
-            await head.audioCtx.resume();
+          if (window.head && head.audioCtx) {
+            if (head.audioCtx.state === "suspended") {
+              await head.audioCtx.resume();
+              console.log("[unlockAudio] AudioContext resumed");
+            }
           }
 
-          line = lines.shift();
-          if (line) {
-            const utterance = new SpeechSynthesisUtterance(line);
-            const voices = window.speechSynthesis.getVoices();
+          // Guarded check for Mac compatibility
+          if (window.speechSynthesis && typeof SpeechSynthesisUtterance !== 'undefined') {
+              window.speechSynthesis.cancel();
+              const wakeUp = new SpeechSynthesisUtterance(" ");
+              wakeUp.volume = 0;
+              window.speechSynthesis.speak(wakeUp);
+          }
 
-            // 1. FUZZY VOICE SELECTION (The Cross-Platform Fix)
-            // Order: High-quality Mac -> Windows Zira -> Any English Female -> Any English
-            const voice = voices.find(v => v.name.includes('Enhanced') && v.name.includes('Samantha')) ||
-                          voices.find(v => v.name.includes('Samantha')) ||
-                          voices.find(v => v.name.includes('Zira')) ||
-                          voices.find(v => v.name.includes('Female') && v.lang.startsWith('en')) ||
-                          voices.find(v => v.lang.startsWith('en'));
+          const shield = document.getElementById("unlock-shield");
+          if (shield) shield.style.display = "none";
+
+          // Trigger the startup sentence
+          setTimeout(() => {
+            if (window.speakLine) {
+              window.speakLine("Audio system connected. I am ready.");
+            } else {
+              //alert("Error: speakLine function not found yet.");
+            }
+          }, 200);
+        } catch (e) {
+          console.warn("unlockAudio failed", e);
+          //alert("[unlockAudio] failed: " + e);
+        }
+      };
+    </script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./three.module.js",
+          "three/core": "./three.module.js",
+          "three/addons/": "./jsm/",
+          "talkinghead": "./talkinghead.js",
+          "lipsync-en": "./lipsync-en.js"
+        }
+      }
+    </script>
+
+    <script type="module">
+      import { TalkingHead } from "talkinghead";
+      import { LipsyncEn } from "lipsync-en";
+
+      let head;
+      const lipsync = new LipsyncEn();
+      function sendToHost(data) {
+        try {
+            const payload = typeof data === 'string' ? data : JSON.stringify(data);
             
+            if (window.chrome && window.chrome.webview) {
+                // Windows path
+                window.chrome.webview.postMessage(payload);
+            } else if (window.webkit && window.webkit.messageHandlers) {
+                // Mac Catalyst Path
+                // We check for 'unoWebView' as that is what Uno uses by default
+                if (window.webkit.messageHandlers.unoWebView) {
+                    window.webkit.messageHandlers.unoWebView.postMessage(payload);
+                } else if (window.webkit.messageHandlers.bridge) {
+                    window.webkit.messageHandlers.bridge.postMessage(payload);
+                }
+            }
+        } catch (err) {
+            console.error("Bridge Error:", err);
+        }
+    }
+
+      // Helper: exactly the logic used in your original 's' handler
+      async function speakLine(line) {
+        
+        if (!line || !line.toString().trim()) return;
+        const text = line.toString();
+
+        sendToHost({ type: "speak_request", text: text });
+        
+        try {
+          if (window.head && head.audioCtx) {
+            if (head.audioCtx.state === "suspended") {
+              await head.audioCtx.resume();
+            }
+          }
+        } catch (e) {}
+
+        //alert("[speakLine] start: " + text);
+
+        try {
+          // --- STEP 1: ALWAYS GENERATE ANIMATION (Mouth Shapes) ---
+          const v = lipsync.wordsToVisemes(text);
+          if (!v || !v.times || v.times.length === 0) {
+            //alert("[speakLine] No visemes generated for: " + text);
+            return;
+          }
+
+          const timeScale = 67;
+          const animItems = [];
+          v.visemes.forEach((vis, i) => {
+            const t = v.times[i] * timeScale;
+            const d = v.durations[i] * timeScale;
+            animItems.push({
+              template: { name: "viseme" },
+              ts: [t - d / 2, t, t + d],
+              vs: { ["viseme_" + vis]: [null, 0.55, 0] },
+            });
+          });
+
+          const totalDurationSecs = (v.times[v.times.length - 1] * timeScale) / 1000;
+
+          // --- STEP 2: ALWAYS PUSH TO QUEUE (Mouth Moves on ALL platforms) ---
+          if (head && head.audioCtx) {
+            const dummyBuffer = head.audioCtx.createBuffer(
+              1,
+              Math.max(1, head.audioCtx.sampleRate * (totalDurationSecs + 0.5)),
+              head.audioCtx.sampleRate,
+            );
+            head.speechQueue.push({
+              audio: dummyBuffer,
+              words: [{ word: text, start: 0, end: totalDurationSecs * 1000 }],
+              anim: animItems,
+            });
+            if (!head.isSpeaking) head.startSpeaking();
+          }
+
+          // --- STEP 3: TRIGGER AUDIO (Platform Split) ---
+          if (window.speechSynthesis && typeof SpeechSynthesisUtterance !== 'undefined') {
+            // WINDOWS / LIVE SERVER LOGIC
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            let voices = window.speechSynthesis.getVoices() || [];
+            if (voices.length === 0) {
+                await new Promise(r => setTimeout(r, 50));
+                voices = window.speechSynthesis.getVoices();
+            }
+
+            const voice =
+              voices.find((vv) => (vv.name || "").includes("Enhanced") && (vv.name || "").includes("Samantha")) ||
+              voices.find((vv) => (vv.name || "").includes("Samantha")) ||
+              voices.find((vv) => (vv.name || "").includes("Zira")) ||
+              voices.find((vv) => (vv.name || "").includes("Female") && (vv.lang || "").startsWith("en")) ||
+              voices.find((vv) => (vv.lang || "").startsWith("en")) ||
+              voices[0];
             if (voice) utterance.voice = voice;
 
-            // 2. TIMING CALCULATION
-            const timeScale = 67; 
-            const v = lipsync.wordsToVisemes(line);
-            
-            // 3. PRE-MAP WORD BOUNDARIES (The Performance Fix)
-            // We split by spaces but clean punctuation to match the 'onboundary' charIndex
-            const words = line.split(" ");
+            // Preserve word mapping for time-sync
+            const words = text.split(" ");
             let charAcc = 0;
             const wordMap = [];
-
-            words.forEach(word => {
-              const start = line.indexOf(word, charAcc);
+            words.forEach((word) => {
+              const start = text.indexOf(word, charAcc);
               const end = start + word.length;
-              // Get specific timestamp for the end of THIS word
-              const subV = lipsync.wordsToVisemes(line.substring(0, end));
+              const subV = lipsync.wordsToVisemes(text.substring(0, end));
               wordMap.push({
                 start: start,
                 end: end,
-                timestamp: subV.times.length ? subV.times[subV.times.length - 1] * timeScale : 0
+                timestamp: subV.times && subV.times.length ? subV.times[subV.times.length - 1] * timeScale : 0,
               });
               charAcc = end;
             });
 
-            // 4. THE NUDGE (The Sync Fix)
             utterance.onboundary = (event) => {
-              if (event.name === 'word') {
-                // Find the word in our map that contains this character index
+              if (event.name === "word") {
                 const match = wordMap.find(m => event.charIndex >= m.start && event.charIndex <= m.end);
-                if (match) {
-                  head.speakTime = match.timestamp;
-                }
+                if (match && head) head.speakTime = match.timestamp;
               }
             };
 
-            // 5. ANIMATION TRACK CONSTRUCTION
-            const animItems = [];
-            v.visemes.forEach((vis, i) => {
-              const t = v.times[i] * timeScale;
-              const d = v.durations[i] * timeScale;
-              animItems.push({
-                template: { name: 'viseme' },
-                ts: [ t - d/2, t, t + d ], 
-                vs: { ['viseme_' + vis]: [null, 0.55, 0] } // 0.55 is natural for RPM
-              });
-            });
-
-            const totalDurationSecs = (v.times[v.times.length - 1] * timeScale) / 1000;
-            const dummyBuffer = head.audioCtx.createBuffer(1, Math.max(1, head.audioCtx.sampleRate * (totalDurationSecs + 0.5)), head.audioCtx.sampleRate);
-
-            head.speechQueue.push({
-              audio: dummyBuffer,
-              words: [{ word: line, start: 0, end: totalDurationSecs * 1000 }],
-              anim: animItems 
-            });
-
-            if (!head.isSpeaking) head.startSpeaking();
+            window.speechSynthesis.cancel();
             window.speechSynthesis.speak(utterance);
+          } else {
+            // MAC APP FALLBACK: Send to C#
+            sendToHost({ type: "speak_request", text: text });
           }
-        } catch (error) {
-          console.error("Cross-platform Sync Error:", error);
+        } catch (err) {
+          //alert("[speakLine] error: " + err);
         }
       }
-    });
-  });
 
-  </script>
-</head>
+      // Expose the exact same behaviour to the host bridge:
+      window.speakFromApp = function (text) {
+        try {
+          //alert("[speakFromApp] called with: " + text);
+        } catch (e) {
+          console.log("[speakFromApp]", text);
+        }
+        // Mirror user keydown behavior exactly
+        speakLine(text);
+      };
 
-<body>
-  <div id="avatar"></div>
-  <div id="controls">
-    <!-- <input id="text" type="text" value="Hi there. How are you? I'm fine."> -->
-    <!-- <input id="speak" type="button" value="Speak"> -->
-  </div>
-  <div id="loading"></div>
-</body>
+      // Optional: expose a readiness flag once avatar fully loaded
+      window.avatarReady = false;
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const nodeAvatar = document.getElementById("avatar");
+        const nodeLoading = document.getElementById("loading");
+
+        // Construct TalkingHead (same as original)
+        head = new TalkingHead(nodeAvatar, {
+          lipsyncModules: ["en"],
+          cameraView: "upper",
+          ttsEngine: "none",
+          ttsEndpoint: "",
+        });
+        window.head = head;
+        head.opt.ttsEndpoint = null;
+
+        // demo lines for keypress
+        var lines = [
+          "Hi there! To start with, could you tell me what your name is?",
+          "Sure, Adam — could you share your last name with me as well? That’ll help me make sure I have your full name correct.",
+          "Thanks, Adam Smith! How was your sleep last night?",
+          "Fair enough. Did you wake up feeling rested, or still a bit tired?",
+          "I see. Do you often wake up feeling tired, or was last night just an exception?",
+        ];
+
+        try {
+          nodeLoading.textContent = "Loading...";
+          await head.showAvatar(
+            {
+              url: "brunette.bin",
+              body: "F",
+              avatarMood: "neutral",
+              ttsLang: "en-GB",
+              lipsyncLang: "en",
+            },
+            (ev) => {
+              if (ev && ev.lengthComputable) {
+                let val = Math.min(
+                  100,
+                  Math.round((ev.loaded / ev.total) * 100),
+                );
+                nodeLoading.textContent = "Loading " + val + "%";
+              }
+            },
+          );
+          nodeLoading.style.display = "none";
+          //alert("[showAvatar] completed OK");
+        } catch (error) {
+          console.error("showAvatar failed:", error);
+          nodeLoading.textContent =
+            "Avatar load failed: " +
+            (error && error.toString ? error.toString() : String(error));
+          /*alert(
+            "[showAvatar] FAILED: " +
+              (error && error.toString ? error.toString() : String(error)),
+          );*/
+        }
+
+        // ---- AVATAR IS NOW FULLY READY ----
+        window.avatarReady = true;
+        console.log("[avatar] READY");
+        try {
+          //alert("[avatar] READY (window.avatarReady = true)");
+        } catch (e) {
+          console.log("avatar ready");
+        }
+
+        // Optional but VERY useful: notify host explicitly
+        if (window.__notifyHost) {
+          window.__notifyHost({ type: "avatarReady" });
+          //alert("[avatar] notified host via postMessage");
+        }
+
+        setInterval(() => {
+          try {
+            if (head && head.audioCtx && head.audioCtx.state === "suspended") {
+              head.audioCtx.resume();
+              console.log("Audio keepalive resume");
+            }
+          } catch {}
+        }, 3000);
+
+        // Original 's' key behaviour — now calls speakLine
+        document.addEventListener("keydown", async function (e) {
+          // alert each keydown so you can confirm the document sees the key event
+          try {
+            //alert("[keydown] key: " + e.key);
+          } catch (e) {
+            console.log("keydown", e.key);
+          }
+
+          if (e.key === "s") {
+            try {
+              if (
+                head &&
+                head.audioCtx &&
+                head.audioCtx.state === "suspended"
+              ) {
+                try {
+                  await head.audioCtx.resume();
+                } catch (e) {
+                  /* ignore */
+                }
+              }
+              const line = lines.shift();
+              if (line) {
+                speakLine(line);
+              } else {
+                //alert("[keydown] no demo line to speak");
+              }
+            } catch (err) {
+              console.error("Cross-platform Sync Error:", err);
+              //alert("[keydown] handler error: " + err);
+            }
+          }
+        });
+
+        // keep animations alive
+        document.addEventListener("visibilitychange", function () {
+          try {
+            if (
+              document.visibilityState === "visible" &&
+              head &&
+              !head.isStarted
+            )
+              head.start();
+          } catch (e) {
+            console.warn("visibility error", e);
+          }
+        });
+      });
+      window.speakLine = speakLine;
+      window.sendToHost = sendToHost;
+      if (window.sendToHost) {
+          sendToHost({ type: "avatarReady" });
+      }
+    </script>
+  </head>
+
+  <body>
+    <div
+      id="unlock-shield"
+      onclick="
+        this.remove();
+        unlockAudio();
+      "
+    >
+      <div
+        style="
+          background: white;
+          padding: 20px;
+          border-radius: 10px;
+          color: black;
+          font-weight: bold;
+        "
+      >
+        Click Avatar to Connect Audio
+      </div>
+    </div>
+    <div id="avatar"></div>
+    <div id="controls"></div>
+    <div id="loading"></div>
+  </body>
 </html>
