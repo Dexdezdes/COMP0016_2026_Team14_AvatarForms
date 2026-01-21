@@ -238,7 +238,7 @@
         if (!line || !line.toString().trim()) return;
         const text = line.toString();
 
-        sendToHost({ type: "speak_request", text: text });
+        //sendToHost({ type: "speak_request", text: text });
         
         try {
           if (window.head && head.audioCtx) {
@@ -486,9 +486,12 @@
       });
       window.speakLine = speakLine;
       window.sendToHost = sendToHost;
-      if (window.sendToHost) {
-          sendToHost({ type: "avatarReady" });
-      }
+      window.addEventListener('load', () => {
+          setTimeout(() => {
+              sendToHost({ type: "avatarReady" });
+          }, 250); // Small delay gives C# time to attach the event listener
+      }); 
+
     </script>
   </head>
 

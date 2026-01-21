@@ -28,7 +28,6 @@ public sealed partial class ConversationPage : Page
     private Process? _pythonProcess;
     private string? _cachedPythonPath;
 
-    // State Variables
     private bool _isMicEnabled = false;
     private bool _isUserEditing = false;
     private bool _isAiSpeaking = false;
@@ -39,7 +38,6 @@ public sealed partial class ConversationPage : Page
     private System.Collections.Generic.Queue<string> _speechQueue = new();
     private bool _isProcessingQueue = false;
     
-    // AVATAR-RELATED ADDITIONS
     private bool _isWebViewReady = false;
     private SimpleWebServer _webServer;
     private string _speechBuffer = "";
@@ -79,7 +77,6 @@ public sealed partial class ConversationPage : Page
         };
     }
 
-    // ADDED: Avatar initialization
     private async void InitializeAvatar()
     {   
         if (_isAvatarInitialized) return; 
@@ -106,7 +103,6 @@ public sealed partial class ConversationPage : Page
                     {
                         string type = typeProp.GetString();
                         
-                        // This flips the flag you're seeing in debug
                         if (type == "avatarReady")
                         {
                             _isWebViewReady = true;
@@ -115,7 +111,6 @@ public sealed partial class ConversationPage : Page
                             });
                         }
 
-                        // Handle the audio request as discussed previously
                         if (type == "speak_request")
                         {
                             string textToSay = root.GetProperty("text").GetString();
@@ -157,6 +152,7 @@ public sealed partial class ConversationPage : Page
                             window.chrome.webview.postMessage(typeof data === 'string' ? data : JSON.stringify(data));
                         }
                     };
+                    void(0);
                 })();
             ";
                 // 1. NavigationCompleted is the standard way to inject script on Mac
@@ -167,8 +163,7 @@ public sealed partial class ConversationPage : Page
                         // 2. Execute the script immediately after the page loads
                         await AvatarWebView.ExecuteScriptAsync(bridgeScript);
                         
-                        // Optional: Manual log to verify it's working
-                        await AvatarWebView.ExecuteScriptAsync("console.log('Bridge Script Injected on Mac')");
+                        
                     }
                 };  
             #else
@@ -180,7 +175,6 @@ public sealed partial class ConversationPage : Page
             {
                 try
                 {
-                    // Try both methods of getting the message
                     string rawMessage = null;
                     try
                     {
@@ -202,7 +196,6 @@ public sealed partial class ConversationPage : Page
 
                     if (string.IsNullOrEmpty(rawMessage)) return;
 
-                    // Try to parse as JSON
                     using var doc = JsonDocument.Parse(rawMessage);
                     var root = doc.RootElement;
 
@@ -262,7 +255,6 @@ public sealed partial class ConversationPage : Page
             };
 
 
-            // Open DevTools to see JavaScript console
             try { 
                 AvatarWebView.CoreWebView2.OpenDevToolsWindow(); 
                 ChatDisplay.Text += "[INIT] DevTools opened\n";
@@ -317,6 +309,7 @@ public sealed partial class ConversationPage : Page
                             } else {
                                 console.error('[Test] window.sendToHost not defined!');
                             }
+                            void(0);
                         ");
                     }
                 });
@@ -452,11 +445,8 @@ public sealed partial class ConversationPage : Page
                 ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
             });
             
-            // ADDED: Send to avatar FIRST, before TTS
-            // REPLACEMENT CODE FOR SENDING SPEECH TO AVATAR
             if (AvatarWebView?.CoreWebView2 != null)
             {
-                // If the flag is false, we log it but TRY anyway.
                 if (!_isWebViewReady)
                 {
                     DispatcherQueue.TryEnqueue(() => {
@@ -465,7 +455,6 @@ public sealed partial class ConversationPage : Page
                 }
                 try
                 {
-                    // 1. Sanitize text for JavaScript
                     string jsSafeText = safeText.Replace("'", "\\'").Replace("\"", "\\\"");
 
                     DispatcherQueue.TryEnqueue(() => {
@@ -474,12 +463,9 @@ public sealed partial class ConversationPage : Page
                     });
 
                     #if __MACCATALYST__
-                    // MAC FIX: Call the function directly instead of posting a message
-                    // This ensures the JS actually runs even if the event listener is broken
-                    string js = $"window.speakLine('{safeText}');";
+                    string js = $"window.speakLine('{safeText}'); void(0);";
                     await AvatarWebView.ExecuteScriptAsync(js);
                     #else
-                    // WINDOWS: Standard WebView2 message
                     var msg = new { type = "speak", text = safeText };
                     string json = JsonSerializer.Serialize(msg);
                     AvatarWebView.CoreWebView2.PostWebMessageAsString(json);
@@ -525,7 +511,7 @@ public sealed partial class ConversationPage : Page
                 
                 // Wait for avatar animation
                 int wordCount = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
-                int delayMs = Math.Max(2000, wordCount * 600);
+                int delayMs = Math.Min(20, wordCount * 600);
                 
                 DispatcherQueue.TryEnqueue(() => {
                     ChatDisplay.Text += $"[SPEAK] Waiting {delayMs}ms for {wordCount} words...\n";
@@ -557,7 +543,6 @@ public sealed partial class ConversationPage : Page
         });
     }
 
-    // YOUR ORIGINAL Python LOGIC - UNCHANGED
     private void StartAIProcess(string mode)
     {
         try
