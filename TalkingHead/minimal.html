@@ -65,7 +65,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.01); /* Nearly invisible */
+        background: rgba(0, 0, 0, 0.01);
         z-index: 999;
         display: flex;
         justify-content: center;
@@ -75,28 +75,14 @@
     </style>
 
     <script>
-      // WebView2 messaging shim — runs early
       (function () {
-        // Graceful no-op if not in WebView2
         const hasWV = !!(window.chrome && chrome.webview);
         if (!hasWV) {
-          console.debug("[webview] chrome.webview not available");
-          // Don't spam alert in normal browser
           return;
         }
-
-        // Inform immediately that the shim exists
-        //alert("[webview shim] chrome.webview available");
-
-        // Incoming messages from host
-        // --- Combined Interaction Logic ---
-
-        // 1. Handle Messages from C# (WebView2)
-        // --- MESSAGE FROM C# HOST ---
         window.chrome.webview.addEventListener("message", async (event) => {
           let msg = event.data;
 
-          // Handle both string and object formats to prevent crashes
           if (typeof msg === "string") {
             try {
               msg = JSON.parse(msg);
@@ -111,23 +97,18 @@
           if (msg.type === "unlock") {
             if (window.head && head.audioCtx) {
               await head.audioCtx.resume();
-              //alert("Audio Unlocked by Host");
             }
           }
 
           if (msg.type === "speak") {
-            //alert("Host command: Speak -> " + msg.text);
             await speakLine(msg.text);
           }
         });
 
-        // --- KEYBOARD INTERACTION (Restored) ---
         window.addEventListener("keydown", async (e) => {
           if (e.key.toLowerCase() === "s") {
-            //alert("Manual 'S' pressed");
             console.log("Manual 'S' pressed");
 
-            // Force audio resume on physical interaction
             if (window.head && head.audioCtx) {
               await head.audioCtx.resume();
             }
@@ -143,20 +124,17 @@
           }
         });
 
-        // Small helper so page can notify host when it is ready
         window.__notifyHost = function (obj) {
           try {
             sendToHost(obj);
           } catch (e) {
             console.warn("postMessage failed", e);
-            //alert("[webview] postMessage failed: " + e);
           }
         };
       })();
     </script>
 
     <script>
-      // *** FIX 1: Prevent unlockAudio from crashing on Mac ***
       window.unlockAudio = async function () {
         console.log("[unlockAudio] attempting unlock...");
         try {
@@ -167,7 +145,6 @@
             }
           }
 
-          // Guarded check for Mac compatibility
           if (window.speechSynthesis && typeof SpeechSynthesisUtterance !== 'undefined') {
               window.speechSynthesis.cancel();
               const wakeUp = new SpeechSynthesisUtterance(" ");
@@ -178,17 +155,13 @@
           const shield = document.getElementById("unlock-shield");
           if (shield) shield.style.display = "none";
 
-          // Trigger the startup sentence
           setTimeout(() => {
             if (window.speakLine) {
               window.speakLine("Audio system connected. I am ready.");
-            } else {
-              //alert("Error: speakLine function not found yet.");
-            }
+            } 
           }, 200);
         } catch (e) {
           console.warn("unlockAudio failed", e);
-          //alert("[unlockAudio] failed: " + e);
         }
       };
     </script>
@@ -211,16 +184,27 @@
 
       let head;
       const lipsync = new LipsyncEn();
+      window.stopMouth = function() {
+          try {
+              if (!window.head) return;
+              head.stopSpeaking();
+              head.speechQueue = [];
+              
+              if (head.animator && head.animator.blendshapes) {
+                  Object.keys(head.animator.blendshapes).forEach(k => {
+                      if (k.startsWith("viseme_")) head.animator.blendshapes[k] = 0;
+                  });
+              }
+          } catch (e) { console.error("Mouth reset failed:", e); }
+      };
+
       function sendToHost(data) {
         try {
             const payload = typeof data === 'string' ? data : JSON.stringify(data);
             
             if (window.chrome && window.chrome.webview) {
-                // Windows path
                 window.chrome.webview.postMessage(payload);
             } else if (window.webkit && window.webkit.messageHandlers) {
-                // Mac Catalyst Path
-                // We check for 'unoWebView' as that is what Uno uses by default
                 if (window.webkit.messageHandlers.unoWebView) {
                     window.webkit.messageHandlers.unoWebView.postMessage(payload);
                 } else if (window.webkit.messageHandlers.bridge) {
@@ -232,13 +216,36 @@
         }
     }
 
-      // Helper: exactly the logic used in your original 's' handler
+    window.syncWord = function(word) {
+      if (!window.head) return;
+
+      const v = lipsync.wordsToVisemes(word);
+      const timeScale = 67;
+      const animItems = [];
+
+      v.visemes.forEach((vis, i) => {
+          const t = v.times[i] * timeScale;
+          const d = v.durations[i] * timeScale;
+          animItems.push({
+              template: { name: "viseme" },
+              ts: [t - d / 2, t, t + d],
+              vs: { ["viseme_" + vis]: [null, 0.4, 0] },
+          });
+      });
+
+      head.speechQueue.push({
+          audio: head.audioCtx.createBuffer(1, 1, head.audioCtx.sampleRate),
+          words: [{ word: word, start: 0, end: 100 }],
+          anim: animItems,
+      });
+      
+      if (!head.isSpeaking) head.startSpeaking();
+  };
+
       async function speakLine(line) {
         
         if (!line || !line.toString().trim()) return;
         const text = line.toString();
-
-        //sendToHost({ type: "speak_request", text: text });
         
         try {
           if (window.head && head.audioCtx) {
@@ -248,13 +255,9 @@
           }
         } catch (e) {}
 
-        //alert("[speakLine] start: " + text);
-
         try {
-          // --- STEP 1: ALWAYS GENERATE ANIMATION (Mouth Shapes) ---
           const v = lipsync.wordsToVisemes(text);
           if (!v || !v.times || v.times.length === 0) {
-            //alert("[speakLine] No visemes generated for: " + text);
             return;
           }
 
@@ -266,100 +269,94 @@
             animItems.push({
               template: { name: "viseme" },
               ts: [t - d / 2, t, t + d],
-              vs: { ["viseme_" + vis]: [null, 0.55, 0] },
+              vs: { ["viseme_" + vis]: [null, 0.4, 0] },
             });
           });
 
           const totalDurationSecs = (v.times[v.times.length - 1] * timeScale) / 1000;
 
-          // --- STEP 2: ALWAYS PUSH TO QUEUE (Mouth Moves on ALL platforms) ---
-          if (head && head.audioCtx) {
-            const dummyBuffer = head.audioCtx.createBuffer(
-              1,
-              Math.max(1, head.audioCtx.sampleRate * (totalDurationSecs + 0.5)),
-              head.audioCtx.sampleRate,
-            );
-            head.speechQueue.push({
-              audio: dummyBuffer,
-              words: [{ word: text, start: 0, end: totalDurationSecs * 1000 }],
-              anim: animItems,
+
+          if (!(window.speechSynthesis && typeof SpeechSynthesisUtterance !== 'undefined')) {
+            sendToHost({ 
+              type: "speak_request", 
+              text: text
             });
-            if (!head.isSpeaking) head.startSpeaking();
           }
 
-          // --- STEP 3: TRIGGER AUDIO (Platform Split) ---
-          if (window.speechSynthesis && typeof SpeechSynthesisUtterance !== 'undefined') {
-            // WINDOWS / LIVE SERVER LOGIC
-            const utterance = new SpeechSynthesisUtterance(text);
+          const startAnimation = () => {
             
-            let voices = window.speechSynthesis.getVoices() || [];
-            if (voices.length === 0) {
-                await new Promise(r => setTimeout(r, 50));
-                voices = window.speechSynthesis.getVoices();
-            }
-
-            const voice =
-              voices.find((vv) => (vv.name || "").includes("Enhanced") && (vv.name || "").includes("Samantha")) ||
-              voices.find((vv) => (vv.name || "").includes("Samantha")) ||
-              voices.find((vv) => (vv.name || "").includes("Zira")) ||
-              voices.find((vv) => (vv.name || "").includes("Female") && (vv.lang || "").startsWith("en")) ||
-              voices.find((vv) => (vv.lang || "").startsWith("en")) ||
-              voices[0];
-            if (voice) utterance.voice = voice;
-
-            // Preserve word mapping for time-sync
-            const words = text.split(" ");
-            let charAcc = 0;
-            const wordMap = [];
-            words.forEach((word) => {
-              const start = text.indexOf(word, charAcc);
-              const end = start + word.length;
-              const subV = lipsync.wordsToVisemes(text.substring(0, end));
-              wordMap.push({
-                start: start,
-                end: end,
-                timestamp: subV.times && subV.times.length ? subV.times[subV.times.length - 1] * timeScale : 0,
+            if (head && head.audioCtx) {
+              const dummyBuffer = head.audioCtx.createBuffer(
+                1,
+                Math.max(1, head.audioCtx.sampleRate * (totalDurationSecs + 0.5)),
+                head.audioCtx.sampleRate,
+              );
+              head.speechQueue.push({
+                audio: dummyBuffer,
+                words: [{ word: text, start: 0, end: totalDurationSecs * 1000 }],
+                anim: animItems,
               });
-              charAcc = end;
-            });
+              if (!head.isSpeaking) head.startSpeaking();
+            }
+          };
+          
+          startAnimation();
 
-            utterance.onboundary = (event) => {
-              if (event.name === "word") {
-                const match = wordMap.find(m => event.charIndex >= m.start && event.charIndex <= m.end);
-                if (match && head) head.speakTime = match.timestamp;
-              }
+          if (window.speechSynthesis && typeof SpeechSynthesisUtterance !== 'undefined') {
+            const startWindowsAudio = () => {
+              
+              const utterance = new SpeechSynthesisUtterance(text);
+              
+              let voices = window.speechSynthesis.getVoices() || [];
+              const voice =
+                voices.find((vv) => (vv.name || "").includes("Enhanced") && (vv.name || "").includes("Samantha")) ||
+                voices.find((vv) => (vv.name || "").includes("Samantha")) ||
+                voices.find((vv) => (vv.name || "").includes("Zira")) ||
+                voices.find((vv) => (vv.name || "").includes("Female") && (vv.lang || "").startsWith("en")) ||
+                voices.find((vv) => (vv.lang || "").startsWith("en")) ||
+                voices[0];
+              if (voice) utterance.voice = voice;
+
+              const words = text.split(" ");
+              let charAcc = 0;
+              const wordMap = [];
+              words.forEach((word) => {
+                const start = text.indexOf(word, charAcc);
+                const end = start + word.length;
+                const subV = lipsync.wordsToVisemes(text.substring(0, end));
+                wordMap.push({
+                  start: start,
+                  end: end,
+                  timestamp: subV.times && subV.times.length ? subV.times[subV.times.length - 1] * timeScale : 0,
+                });
+                charAcc = end;
+              });
+
+              utterance.onboundary = (event) => {
+                if (event.name === "word") {
+                  const match = wordMap.find(m => event.charIndex >= m.start && event.charIndex <= m.end);
+                  if (match && head) head.speakTime = match.timestamp;
+                }
+              };
+
+              window.speechSynthesis.cancel();
+              window.speechSynthesis.speak(utterance);
             };
-
-            window.speechSynthesis.cancel();
-            window.speechSynthesis.speak(utterance);
-          } else {
-            // MAC APP FALLBACK: Send to C#
-            sendToHost({ type: "speak_request", text: text });
+            
+            startWindowsAudio();
+            
           }
         } catch (err) {
-          //alert("[speakLine] error: " + err);
+          console.error("[speakLine] error:", err);
         }
-      }
-
-      // Expose the exact same behaviour to the host bridge:
-      window.speakFromApp = function (text) {
-        try {
-          //alert("[speakFromApp] called with: " + text);
-        } catch (e) {
-          console.log("[speakFromApp]", text);
-        }
-        // Mirror user keydown behavior exactly
-        speakLine(text);
       };
 
-      // Optional: expose a readiness flag once avatar fully loaded
       window.avatarReady = false;
 
       document.addEventListener("DOMContentLoaded", async function () {
         const nodeAvatar = document.getElementById("avatar");
         const nodeLoading = document.getElementById("loading");
 
-        // Construct TalkingHead (same as original)
         head = new TalkingHead(nodeAvatar, {
           lipsyncModules: ["en"],
           cameraView: "upper",
@@ -369,7 +366,6 @@
         window.head = head;
         head.opt.ttsEndpoint = null;
 
-        // demo lines for keypress
         var lines = [
           "Hi there! To start with, could you tell me what your name is?",
           "Sure, Adam — could you share your last name with me as well? That’ll help me make sure I have your full name correct.",
@@ -399,31 +395,22 @@
             },
           );
           nodeLoading.style.display = "none";
-          //alert("[showAvatar] completed OK");
         } catch (error) {
           console.error("showAvatar failed:", error);
           nodeLoading.textContent =
             "Avatar load failed: " +
             (error && error.toString ? error.toString() : String(error));
-          /*alert(
-            "[showAvatar] FAILED: " +
-              (error && error.toString ? error.toString() : String(error)),
-          );*/
         }
 
-        // ---- AVATAR IS NOW FULLY READY ----
         window.avatarReady = true;
         console.log("[avatar] READY");
         try {
-          //alert("[avatar] READY (window.avatarReady = true)");
         } catch (e) {
           console.log("avatar ready");
         }
 
-        // Optional but VERY useful: notify host explicitly
         if (window.__notifyHost) {
           window.__notifyHost({ type: "avatarReady" });
-          //alert("[avatar] notified host via postMessage");
         }
 
         setInterval(() => {
@@ -435,14 +422,7 @@
           } catch {}
         }, 3000);
 
-        // Original 's' key behaviour — now calls speakLine
         document.addEventListener("keydown", async function (e) {
-          // alert each keydown so you can confirm the document sees the key event
-          try {
-            //alert("[keydown] key: " + e.key);
-          } catch (e) {
-            console.log("keydown", e.key);
-          }
 
           if (e.key === "s") {
             try {
@@ -460,17 +440,13 @@
               const line = lines.shift();
               if (line) {
                 speakLine(line);
-              } else {
-                //alert("[keydown] no demo line to speak");
-              }
+              } 
             } catch (err) {
               console.error("Cross-platform Sync Error:", err);
-              //alert("[keydown] handler error: " + err);
             }
           }
         });
 
-        // keep animations alive
         document.addEventListener("visibilitychange", function () {
           try {
             if (
@@ -489,7 +465,7 @@
       window.addEventListener('load', () => {
           setTimeout(() => {
               sendToHost({ type: "avatarReady" });
-          }, 250); // Small delay gives C# time to attach the event listener
+          }, 250);
       }); 
 
     </script>

@@ -43,6 +43,7 @@ public sealed partial class ConversationPage : Page
     private string _speechBuffer = "";
 
     private bool _isAvatarInitialized = false;
+    private bool _wasMicOnBeforeSpeech = false;
 
 #if WINDOWS
     private SpeechRecognizer _winRecognizer;
@@ -53,6 +54,29 @@ public sealed partial class ConversationPage : Page
     private SFSpeechAudioBufferRecognitionRequest _recognitionRequest;
     private SFSpeechRecognitionTask _recognitionTask;
     private AVAudioEngine _audioEngine = new AVAudioEngine();
+    private AVSpeechSynthesizer _nativeSynth = new AVSpeechSynthesizer();
+
+    private bool _wasMicOnBeforeSpeaking = false;
+    
+    private class SpeechSyncDelegate : AVSpeechSynthesizerDelegate {
+        private readonly Action<string> _onWord;
+        private readonly Action _onStart;
+        private readonly Action _onFinish;
+
+        public SpeechSyncDelegate(Action onStart, Action<string> onWord, Action onFinish) {
+            _onStart = onStart;
+            _onWord = onWord;
+            _onFinish = onFinish;
+        }
+
+        public override void DidStartSpeechUtterance(AVSpeechSynthesizer s, AVSpeechUtterance u) => _onStart?.Invoke();
+        public override void DidFinishSpeechUtterance(AVSpeechSynthesizer s, AVSpeechUtterance u) => _onFinish?.Invoke();
+        
+        public override void WillSpeakRangeOfSpeechString(AVSpeechSynthesizer s, NSRange r, AVSpeechUtterance u) {
+            var word = u.SpeechString.Substring((int)r.Location, (int)r.Length);
+            _onWord?.Invoke(word);
+        }
+    }
 #endif
 
     public ConversationPageViewModel ViewModel { get; }
@@ -62,17 +86,36 @@ public sealed partial class ConversationPage : Page
         try { 
             InitializeComponent(); 
             ViewModel = App.GetService<ConversationPageViewModel>();
-            InitializeAvatar(); // ADDED: Initialize the avatar
+            InitializeAvatar();
         }
         catch (Exception ex) { Console.WriteLine($"[XAML ERROR]: {ex}"); throw; }
 
         _silenceTimer = new DispatcherTimer();
         _silenceTimer.Interval = TimeSpan.FromSeconds(2.0);
-        _silenceTimer.Tick += (s, e) => {
+        _silenceTimer.Tick += (s, e) =>
+        {
             _silenceTimer.Stop();
-            if (AutoSendToggle.IsOn && !_isUserEditing && !_isAiSpeaking && !string.IsNullOrWhiteSpace(UserInput.Text)) 
+            if (!string.IsNullOrWhiteSpace(UserInput.Text))
             {
-                SendMessage(); 
+                SendMessage();
+
+                #if __MACCATALYST__
+                if (_isMicEnabled) 
+                {
+                    StopMacVoiceInput();
+                    
+                    Task.Delay(100).ContinueWith(_ => {
+                        DispatcherQueue.TryEnqueue(() => {
+                            if (_isMicEnabled && !_wasMicOnBeforeSpeaking) 
+                            {
+                                StartMacVoiceInput();
+                            }
+                        });
+                    });
+                }
+                #endif
+                
+                UserInput.Text = "";
             }
         };
     }
@@ -115,9 +158,35 @@ public sealed partial class ConversationPage : Page
                         {
                             string textToSay = root.GetProperty("text").GetString();
                             #if __MACCATALYST__
-                            _ = Task.Run(() => {
-                                Process.Start("/usr/bin/say", $"\"{textToSay.Replace("\"", "")}\"");
-                            });
+                            _wasMicOnBeforeSpeech = _isMicEnabled;
+                            _isMicEnabled = false; 
+                            StopMacVoiceInput(); 
+
+                            _nativeSynth.Delegate = new SpeechSyncDelegate(
+                                onStart: null, 
+                                onWord: (word) => {
+                                    DispatcherQueue.TryEnqueue(async () => {
+                                        await AvatarWebView.ExecuteScriptAsync($"window.syncWord('{word.Replace("'", "\\'")}');");
+                                    });
+                                },
+                                onFinish: () => {
+                                    DispatcherQueue.TryEnqueue(async () => {
+                                        await AvatarWebView.ExecuteScriptAsync("window.stopMouth();");
+                                        
+                                        _isMicEnabled = _wasMicOnBeforeSpeech;
+                                        if (_isMicEnabled) 
+                                        {
+                                            await Task.Delay(200); 
+                                            StartMacVoiceInput();
+                                        }
+                                    });
+                                }
+                            );
+
+                            var utterance = new AVSpeechUtterance(textToSay);
+                            var voice = Array.Find(AVSpeechSynthesisVoice.GetSpeechVoices(), v => v.Name == "Samantha");
+                            if (voice != null) utterance.Voice = voice;
+                            _nativeSynth.SpeakUtterance(utterance);
                             #endif
                         }
                     }
@@ -125,27 +194,21 @@ public sealed partial class ConversationPage : Page
                 catch (Exception ex) { Debug.WriteLine($"Bridge Error: {ex.Message}"); }
             };
             
-            // CRITICAL FOR MAC: Add a custom scheme handler or use ScriptNotify
             #if __MACCATALYST__
-            // On Mac Catalyst with WKWebView, we need to add a script message handler
             ChatDisplay.Text += "[INIT] Setting up Mac message handler...\n";
             
-            // Inject a bridge script that forwards webkit messages to postMessage
             string bridgeScript = @"
                 (function() {
                     console.log('[Bridge] Initializing Mac->WebView2 bridge');
                     
-                    // Intercept webkit bridge messages and forward to WebView2
                     var originalPostMessage = window.webkit?.messageHandlers?.bridge?.postMessage;
                     if (originalPostMessage) {
                         window.webkit.messageHandlers.bridge.postMessage = function(msg) {
                             console.log('[Bridge] Intercepted webkit message:', msg);
-                            // Forward to WebView2
                             window.chrome.webview.postMessage(typeof msg === 'string' ? msg : JSON.stringify(msg));
                         };
                     }
                     
-                    // Also expose a global function for direct posting
                     window.sendToHost = function(data) {
                         console.log('[Bridge] sendToHost called:', data);
                         if (window.chrome && window.chrome.webview) {
@@ -155,12 +218,10 @@ public sealed partial class ConversationPage : Page
                     void(0);
                 })();
             ";
-                // 1. NavigationCompleted is the standard way to inject script on Mac
                 AvatarWebView.NavigationCompleted += async (s, e) =>
                 {
                     if (e.IsSuccess)
                     {
-                        // 2. Execute the script immediately after the page loads
                         await AvatarWebView.ExecuteScriptAsync(bridgeScript);
                         
                         
@@ -216,33 +277,40 @@ public sealed partial class ConversationPage : Page
                             });
                         }
                         else if (msgType == "speak_request")
-                        {
-                            string text = root.GetProperty("text").GetString();
-                            
-                            DispatcherQueue.TryEnqueue(() => {
-                                ChatDisplay.Text += $"[AVATAR] Mac TTS: {text}\n";
-                            });
-                            
-                            #if __MACCATALYST__
-                            try
                             {
-                                var psi = new ProcessStartInfo
-                                {
-                                    FileName = "say",
-                                    Arguments = $"-v Samantha \"{text.Replace("\"", "'")}\"",
-                                    UseShellExecute = false,
-                                    CreateNoWindow = true
-                                };
-                                Process.Start(psi);
+                                string textToSay = root.GetProperty("text").GetString();
+                                #if __MACCATALYST__
+                                _wasMicOnBeforeSpeech = _isMicEnabled;
+                                _isMicEnabled = false; 
+                                StopMacVoiceInput(); 
+
+                                _nativeSynth.Delegate = new SpeechSyncDelegate(
+                                    onStart: null, 
+                                    onWord: (word) => {
+                                        DispatcherQueue.TryEnqueue(async () => {
+                                            await AvatarWebView.ExecuteScriptAsync($"window.syncWord('{word.Replace("'", "\\'")}');");
+                                        });
+                                    },
+                                    onFinish: () => {
+                                        DispatcherQueue.TryEnqueue(async () => {
+                                            await AvatarWebView.ExecuteScriptAsync("window.stopMouth();");
+                                            
+                                            _isMicEnabled = _wasMicOnBeforeSpeech;
+                                            if (_isMicEnabled) 
+                                            {
+                                                await Task.Delay(200); 
+                                                StartMacVoiceInput();
+                                            }
+                                        });
+                                    }
+                                );
+
+                                var utterance = new AVSpeechUtterance(textToSay);
+                                var voice = Array.Find(AVSpeechSynthesisVoice.GetSpeechVoices(), v => v.Name == "Samantha");
+                                if (voice != null) utterance.Voice = voice;
+                                _nativeSynth.SpeakUtterance(utterance);
+                                #endif
                             }
-                            catch (Exception ex)
-                            {
-                                DispatcherQueue.TryEnqueue(() => {
-                                    ChatDisplay.Text += $"[ERROR] say command: {ex.Message}\n";
-                                });
-                            }
-                            #endif
-                        }
                     }
                 }
                 catch (Exception ex)
@@ -301,7 +369,6 @@ public sealed partial class ConversationPage : Page
                     }
                     else
                     {
-                        // Try to execute a test script to verify JavaScript is working
                         _ = AvatarWebView.CoreWebView2.ExecuteScriptAsync(@"
                             console.log('[Test] Script execution working');
                             if (window.sendToHost) {
@@ -323,36 +390,6 @@ public sealed partial class ConversationPage : Page
             ChatDisplay.Text += $"[ERROR] Avatar setup: {ex.Message}\n";
             ChatDisplay.Text += $"[ERROR] Stack: {ex.StackTrace}\n";
         }
-        AvatarWebView.CoreWebView2.WebMessageReceived += (s, ev) =>
-        {
-            try
-            {
-                string json = ev.TryGetWebMessageAsString();
-                using var doc = JsonDocument.Parse(json);
-                var root = doc.RootElement;
-
-                if (root.GetProperty("type").GetString() == "speak_request")
-                {
-                    string textToSay = root.GetProperty("text").GetString();
-                    #if __MACCATALYST__
-                    // This calls your native 'say' command logic
-                    Task.Run(() => {
-                        try {
-                            var process = new Process();
-                            process.StartInfo.FileName = "/usr/bin/say";
-                            process.StartInfo.Arguments = $"\"{textToSay.Replace("\"", "")}\"";
-                            process.Start();
-                            process.WaitForExit();
-                        } catch { }
-                    });
-                    #endif
-                }
-            }
-            catch (Exception ex) 
-            { 
-                Debug.WriteLine($"Bridge Error: {ex.Message}"); 
-            }
-        };
     }
 
     private void OnAutoSendToggled(object sender, RoutedEventArgs e)
@@ -500,8 +537,6 @@ public sealed partial class ConversationPage : Page
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Create("MACCATALYST")))
                 {
-                    // On Mac, the JavaScript will handle TTS via speak_request message
-                    // Just wait for animation timing
                     DispatcherQueue.TryEnqueue(() => {
                         ChatDisplay.Text += $"[MAC] Waiting for avatar animation...\n";
                     });
@@ -509,15 +544,7 @@ public sealed partial class ConversationPage : Page
 
                 if (proc != null) await proc.WaitForExitAsync();
                 
-                // Wait for avatar animation
                 int wordCount = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
-                int delayMs = Math.Min(20, wordCount * 600);
-                
-                DispatcherQueue.TryEnqueue(() => {
-                    ChatDisplay.Text += $"[SPEAK] Waiting {delayMs}ms for {wordCount} words...\n";
-                });
-                
-                await Task.Delay(delayMs);
             }
             catch (Exception ex)
             {
@@ -824,7 +851,6 @@ public sealed partial class ConversationPage : Page
                                     AVAudioSessionCategoryOptions.AllowBluetooth);
             audioSession.SetActive(true);
 
-            await Task.Delay(100);
 
             _recognitionRequest = new SFSpeechAudioBufferRecognitionRequest { ShouldReportPartialResults = true };
             
