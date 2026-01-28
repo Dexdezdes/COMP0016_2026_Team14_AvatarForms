@@ -1,6 +1,28 @@
+print("Python is starting up...", flush=True)
 import os
 from dotenv import load_dotenv
 import ollama
+from ollama import Client
+import socket
+
+UTM_MAC_IP = "192.168.64.1" # Standard UTM Gateway
+LOCAL_IP = "127.0.0.1"
+
+def check_connection(ip, port):
+    try:
+        with socket.create_connection((ip, port), timeout=1):
+            return True
+    except:
+        return False
+
+# Determine which IP to use
+target_ip = UTM_MAC_IP if check_connection(UTM_MAC_IP, 11434) else LOCAL_IP
+print(f"Using Ollama at: {target_ip}")
+
+# Create a dedicated client object
+# This prevents the "overwriting" issue entirely
+ollama_client = Client(host=f"http://{target_ip}:11434")
+
 
 load_dotenv()
 
@@ -31,15 +53,6 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-OLLAMA_HOST = os.getenv("OLLAMA_HOST")
-
-if OLLAMA_HOST and not OLLAMA_HOST.startswith("http"):
-    OLLAMA_HOST = f"http://{OLLAMA_HOST}"
-
-if OLLAMA_HOST:
-    print(f"Connecting to Ollama host: {OLLAMA_HOST}")
-    ollama.host = OLLAMA_HOST
-
 default_params = {
     "num_predict": 64,
     "temperature": 0.1,
@@ -65,7 +78,7 @@ def thinkStrip(text):
 def runAgent(agent, messages):
     full_messages = agent.messages + messages
 
-    response = ollama.chat(
+    response = ollama_client.chat(
         model=agent.model,
         messages=full_messages,
         options=agent.params
@@ -105,12 +118,16 @@ testInterview = Interview(
 )
 
 def setupInterview(interview):
+    print("Setting up the interview requirements...", flush=True)
     for question in interview.questions:
         req_message = [
             {"role": "system", "content": f"A verbal interview is being conducted with the context: '{interview.context}' \nIn this context, define the information the user would need to provide for a complete satisfactory answer to the question: '{question}'. Write a short set of validation criteria."}
         ]
         requirements = runAgent(RequirementDefiner, req_message)
         interview.requirements.append(requirements)
+        print(requirements)
+
+    print("Requirements ready. Starting interview now.", flush=True)
 
     Talker.system_prompt += f"You are currently conducting a verbal interview with the context: '{interview.context}'"
 

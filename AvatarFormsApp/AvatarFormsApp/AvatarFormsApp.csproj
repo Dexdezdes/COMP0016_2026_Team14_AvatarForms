@@ -1,4 +1,4 @@
-<Project Sdk="Uno.Sdk">
+﻿<Project Sdk="Uno.Sdk">
     <PropertyGroup>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFrameworks>
         <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-maccatalyst</TargetFrameworks>
@@ -13,8 +13,6 @@
         <UseInterpreter>true</UseInterpreter>
         <SupportedOSPlatformVersion Condition="!$([MSBuild]::IsOSPlatform('windows'))">15.0</SupportedOSPlatformVersion>
 
-        <UnoThemesVersion>5.2.13</UnoThemesVersion>
-        <UnoToolkitVersion>5.2.14</UnoToolkitVersion>
         <UnoFeatures>Material;Toolkit;</UnoFeatures>
         <UnoPackageId>AvatarFormsApp</UnoPackageId>
         
@@ -33,12 +31,14 @@
     <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
         <DefineConstants>$(DefineConstants);DEV_PYTHON_ENV='$(MSBuildProjectDirectory)/../env/Scripts/python.exe'</DefineConstants>
     </PropertyGroup>
-
+    
     <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
         <ApplicationIdGuid>71833983-4903-4B82-95E0-0761E094209C</ApplicationIdGuid>
         <AppxPackageGuid>71833983-4903-4B82-95E0-0761E094209C</AppxPackageGuid>
         <PublisherName>Group14</PublisherName>
         <AppxPackagePublisherName>CN=Group14</AppxPackagePublisherName>
+        <WebView2EnableMsixTooling>true</WebView2EnableMsixTooling>
+        <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
     </PropertyGroup>
     
     <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
@@ -68,14 +68,21 @@
             <LogicalName>Local/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="../../TalkingHead/**/*">
+            <Link>TalkingHead/%(RecursiveDir)%(FileName)%(Extension)</Link>
+            <LogicalName>TalkingHead/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="Newtonsoft.Json" />
+        <PackageReference Include="System.Speech" />
     </ItemGroup>
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+        <Reference Include="System.Speech" />
         <PackageReference Include="WinUIEx" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" />
     </ItemGroup>
@@ -85,5 +92,10 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+    <Target Name="RemoveWebView2FromReferenceCopyLocal" AfterTargets="ResolveAssemblyReferences" Condition="$([MSBuild]::IsOSPlatform('windows'))">
+        <ItemGroup>
+            <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(FileName)%(Extension)' == 'Microsoft.Web.WebView2.Core.dll'" />
+        </ItemGroup>
+    </Target>
 
 </Project>

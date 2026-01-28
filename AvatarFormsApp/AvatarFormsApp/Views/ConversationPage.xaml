@@ -22,7 +22,8 @@
         <Grid x:Name="ChatInterface" Visibility="Collapsed" Margin="0"> 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/> 
-                <RowDefinition Height="*"/>    
+                <RowDefinition Height="1*"/>    
+                <RowDefinition Height="1*"/>  
                 <RowDefinition Height="Auto"/> 
             </Grid.RowDefinitions>
 
@@ -33,11 +34,18 @@
                 </StackPanel>
             </Button>
 
-            <ScrollViewer x:Name="ChatScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,10" HorizontalAlignment="Stretch">
+            <WebView2 x:Name="AvatarWebView" 
+              Grid.Row="1" 
+              Margin="10"
+              HorizontalAlignment="Stretch" 
+              VerticalAlignment="Stretch"
+              DefaultBackgroundColor="Transparent"/>
+
+            <ScrollViewer x:Name="ChatScroll" Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0,10" HorizontalAlignment="Stretch">
                 <TextBlock x:Name="ChatDisplay" TextWrapping="Wrap" FontSize="16" Foreground="{ThemeResource DefaultTextForegroundThemeBrush}" HorizontalAlignment="Stretch"/>
             </ScrollViewer>
 
-            <Grid Grid.Row="2" VerticalAlignment="Bottom" Margin="0,10,0,0">
+            <Grid Grid.Row="3" VerticalAlignment="Bottom" Margin="0,10,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
