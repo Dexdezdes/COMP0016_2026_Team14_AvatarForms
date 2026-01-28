@@ -181,6 +181,7 @@
     <script type="module">
       import { TalkingHead } from "talkinghead";
       import { LipsyncEn } from "lipsync-en";
+      window.speakLine = speakLine;
 
       let head;
       const lipsync = new LipsyncEn();
@@ -216,6 +217,19 @@
         }
     }
 
+    window.processNativeSpeech = function(text) {
+        console.log("[JS] processNativeSpeech called with:", text);
+        
+        if (window.sendToHost) {
+            window.sendToHost({
+                type: "speak_request",
+                text: text
+            });
+        } else {
+            console.error("Bridge not connected, cannot request speech");
+        }
+    };
+
     window.syncWord = function(word) {
       if (!window.head) return;
 
@@ -243,6 +257,10 @@
   };
 
       async function speakLine(line) {
+        if (!window.head || !lipsync) {
+            console.warn("Avatar is still initializing, skipping line...");
+            return;
+          }
         
         if (!line || !line.toString().trim()) return;
         const text = line.toString();
@@ -275,13 +293,10 @@
 
           const totalDurationSecs = (v.times[v.times.length - 1] * timeScale) / 1000;
 
-
-          if (!(window.speechSynthesis && typeof SpeechSynthesisUtterance !== 'undefined')) {
-            sendToHost({ 
-              type: "speak_request", 
-              text: text
-            });
-          }
+          sendToHost({ 
+            type: "speak_request", 
+            text: text
+          });
 
           const startAnimation = () => {
             
@@ -301,51 +316,7 @@
           };
           
           startAnimation();
-
-          if (window.speechSynthesis && typeof SpeechSynthesisUtterance !== 'undefined') {
-            const startWindowsAudio = () => {
-              
-              const utterance = new SpeechSynthesisUtterance(text);
-              
-              let voices = window.speechSynthesis.getVoices() || [];
-              const voice =
-                voices.find((vv) => (vv.name || "").includes("Enhanced") && (vv.name || "").includes("Samantha")) ||
-                voices.find((vv) => (vv.name || "").includes("Samantha")) ||
-                voices.find((vv) => (vv.name || "").includes("Zira")) ||
-                voices.find((vv) => (vv.name || "").includes("Female") && (vv.lang || "").startsWith("en")) ||
-                voices.find((vv) => (vv.lang || "").startsWith("en")) ||
-                voices[0];
-              if (voice) utterance.voice = voice;
-
-              const words = text.split(" ");
-              let charAcc = 0;
-              const wordMap = [];
-              words.forEach((word) => {
-                const start = text.indexOf(word, charAcc);
-                const end = start + word.length;
-                const subV = lipsync.wordsToVisemes(text.substring(0, end));
-                wordMap.push({
-                  start: start,
-                  end: end,
-                  timestamp: subV.times && subV.times.length ? subV.times[subV.times.length - 1] * timeScale : 0,
-                });
-                charAcc = end;
-              });
-
-              utterance.onboundary = (event) => {
-                if (event.name === "word") {
-                  const match = wordMap.find(m => event.charIndex >= m.start && event.charIndex <= m.end);
-                  if (match && head) head.speakTime = match.timestamp;
-                }
-              };
-
-              window.speechSynthesis.cancel();
-              window.speechSynthesis.speak(utterance);
-            };
-            
-            startWindowsAudio();
-            
-          }
+          
         } catch (err) {
           console.error("[speakLine] error:", err);
         }
@@ -404,10 +375,6 @@
 
         window.avatarReady = true;
         console.log("[avatar] READY");
-        try {
-        } catch (e) {
-          console.log("avatar ready");
-        }
 
         if (window.__notifyHost) {
           window.__notifyHost({ type: "avatarReady" });
@@ -460,7 +427,6 @@
           }
         });
       });
-      window.speakLine = speakLine;
       window.sendToHost = sendToHost;
       window.addEventListener('load', () => {
           setTimeout(() => {

@@ -1,6 +1,25 @@
+print("Python is starting up...", flush=True)
 import os
 from dotenv import load_dotenv
 import ollama
+import socket
+
+UTM_MAC_IP = "192.168.64.1" # Standard UTM Gateway
+LOCAL_IP = "127.0.0.1"
+
+def check_connection(ip, port):
+    try:
+        with socket.create_connection((ip, port), timeout=1):
+            return True
+    except:
+        return False
+
+if check_connection(UTM_MAC_IP, 11434):
+    print(f"Connected to Mac GPU at {UTM_MAC_IP}", flush=True)
+    ollama.host = f"http://{UTM_MAC_IP}:11434"
+else:
+    print(f"Mac not found. Using Local Ollama.", flush=True)
+    ollama.host = f"http://{LOCAL_IP}:11434"
 
 load_dotenv()
 
@@ -76,21 +95,21 @@ def runAgent(agent, messages):
 
 Talker = Agent(
     name="Talker",
-    model="gemma3:4b",
+    model="gemma3:1b",
     params=default_params,
     system_prompt="You are a straightforward AI interviewer. Your job is to ask questions in a concise but friendly manner, not wasting the time of the respondent by being overly verbose. You adapt your tone based on the context provided and the user's previous answers. Always be polite, respect privacy and don't pry."
 )
 
 Nitpicker = Agent(
     name="Nitpicker",
-    model="gemma3:4b",
+    model="gemma3:1b",
     params=default_params,
     system_prompt="You are a detail-oriented judge who decides whether or not an answer provides complete information to a given question and is satisfactory or if a follow-up question / clarification is required. You adhere to the requirements provided but can be flexible based on context."
 )
 
 RequirementDefiner = Agent(
     name="RequirementDefiner",
-    model="gemma3:4b",
+    model="gemma3:1b",
     params=default_params,
     system_prompt="You are an AI that defines very short requirements for a satisfactory answer to a question. You will be provided questionnaire questions that are to be asked by an interviewer, to be answered by the user."
 )
@@ -105,12 +124,16 @@ testInterview = Interview(
 )
 
 def setupInterview(interview):
+    print("Setting up the interview requirements...", flush=True)
     for question in interview.questions:
         req_message = [
             {"role": "system", "content": f"A verbal interview is being conducted with the context: '{interview.context}' \nIn this context, define the information the user would need to provide for a complete satisfactory answer to the question: '{question}'. Write a short set of validation criteria."}
         ]
         requirements = runAgent(RequirementDefiner, req_message)
         interview.requirements.append(requirements)
+        print(requirements)
+
+    print("Requirements ready. Starting interview now.", flush=True)
 
     Talker.system_prompt += f"You are currently conducting a verbal interview with the context: '{interview.context}'"
 

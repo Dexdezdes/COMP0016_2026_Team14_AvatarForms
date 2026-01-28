@@ -13,6 +13,8 @@ using System.Text.Json;
 using Microsoft.Web.WebView2.Core;
 #if WINDOWS
 using Windows.Media.SpeechRecognition;
+using Microsoft.Web.WebView2.Core;
+using System.Speech.Synthesis;
 #endif
 
 #if __MACCATALYST__
@@ -47,6 +49,10 @@ public sealed partial class ConversationPage : Page
 
 #if WINDOWS
     private SpeechRecognizer _winRecognizer;
+    private Windows.Media.SpeechSynthesis.SpeechSynthesizer _synth;
+    private Windows.Media.Playback.MediaPlayer _speechPlayer;
+    private System.Speech.Synthesis.SpeechSynthesizer _systemSynth;
+    private TaskCompletionSource<bool> _speechCompletionTcs;
 #endif
 
 #if __MACCATALYST__
@@ -127,9 +133,31 @@ public sealed partial class ConversationPage : Page
         try
         {
             ChatDisplay.Text += "[INIT] Starting avatar setup...\n";
-            
-            await AvatarWebView.EnsureCoreWebView2Async();
-            
+
+#if WINDOWS
+            try
+            {
+                // 1. Create the options
+                var options = new Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions
+                {
+                    AdditionalBrowserArguments = "--ignore-gpu-blocklist --enable-gpu-rasterization"
+                };
+
+                // 2. Create the environment using the specific WinUI 3 static method
+                // If 'CreateAsync' still fails with 3 args, try this exact line:
+                var env = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateWithOptionsAsync(null, null, options);
+
+                // 3. Initialize the WebView
+                await AvatarWebView.EnsureCoreWebView2Async(env);
+            }
+            catch (Exception ex)
+            {
+                ChatDisplay.Text += $"[WEBVIEW SETUP ERROR]: {ex.Message}\n";
+            }
+#else
+    await AvatarWebView.EnsureCoreWebView2Async();
+#endif
+
             ChatDisplay.Text += "[INIT] CoreWebView2 ready\n";
             
             AvatarWebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = true;
@@ -157,7 +185,7 @@ public sealed partial class ConversationPage : Page
                         if (type == "speak_request")
                         {
                             string textToSay = root.GetProperty("text").GetString();
-                            #if __MACCATALYST__
+#if __MACCATALYST__
                             _wasMicOnBeforeSpeech = _isMicEnabled;
                             _isMicEnabled = false; 
                             StopMacVoiceInput(); 
@@ -187,16 +215,91 @@ public sealed partial class ConversationPage : Page
                             var voice = Array.Find(AVSpeechSynthesisVoice.GetSpeechVoices(), v => v.Name == "Samantha");
                             if (voice != null) utterance.Voice = voice;
                             _nativeSynth.SpeakUtterance(utterance);
-                            #endif
+#elif WINDOWS
+                            Task.Run(async () => {
+                                try
+                                {
+                                    string safeText = textToSay.Replace("\"", "'").Replace("\r", " ").Replace("\n", " ");
+
+                                    DispatcherQueue.TryEnqueue(() => {
+                                        ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Starting: {safeText}\n";
+                                    });
+
+                                    var completionTcs = new TaskCompletionSource<bool>();
+
+                                    // Store the TCS so ProcessSpeechQueue can wait on it
+                                    _speechCompletionTcs = completionTcs;
+
+                                    DispatcherQueue.TryEnqueue(() => {
+                                        try
+                                        {
+                                            // Initialize System.Speech synthesizer
+                                            if (_systemSynth == null)
+                                            {
+                                                _systemSynth = new System.Speech.Synthesis.SpeechSynthesizer();
+                                                _systemSynth.SetOutputToDefaultAudioDevice();
+                                            }
+
+                                            // Hook up the word boundary event
+                                            void OnSpeakProgress(object sender, System.Speech.Synthesis.SpeakProgressEventArgs e)
+                                            {
+                                                if (e.Text != null)
+                                                {
+                                                    string word = e.Text;
+                                                    DispatcherQueue.TryEnqueue(async () => {
+                                                        await AvatarWebView.ExecuteScriptAsync($"window.syncWord('{word.Replace("'", "\\'")}');");
+                                                    });
+                                                }
+                                            }
+
+                                            void OnSpeakCompleted(object sender, System.Speech.Synthesis.SpeakCompletedEventArgs e)
+                                            {
+                                                DispatcherQueue.TryEnqueue(async () => {
+                                                    ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Speech completed\n";
+                                                    await AvatarWebView.ExecuteScriptAsync("window.stopMouth();");
+                                                });
+
+                                                _systemSynth.SpeakProgress -= OnSpeakProgress;
+                                                _systemSynth.SpeakCompleted -= OnSpeakCompleted;
+                                                completionTcs.TrySetResult(true);
+                                            }
+
+                                            _systemSynth.SpeakProgress += OnSpeakProgress;
+                                            _systemSynth.SpeakCompleted += OnSpeakCompleted;
+
+                                            // Speak asynchronously with word timing events
+                                            _systemSynth.SpeakAsync(safeText);
+
+                                            ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Speaking with real word timing...\n";
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            ChatDisplay.Text += $"[ERROR] System.Speech setup failed: {ex.Message}\n";
+                                            completionTcs.TrySetException(ex);
+                                        }
+                                    });
+
+                                    // Wait for speech to complete
+                                    await completionTcs.Task;
+
+                                    DispatcherQueue.TryEnqueue(() => {
+                                        ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Finished\n";
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    DispatcherQueue.TryEnqueue(() => {
+                                        ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST ERROR]: {ex.Message}\n";
+                                        ChatDisplay.Text += $"Stack: {ex.StackTrace}\n";
+                                    });
+                                }
+                            });
+#endif
                         }
                     }
                 }
                 catch (Exception ex) { Debug.WriteLine($"Bridge Error: {ex.Message}"); }
             };
-            
-            #if __MACCATALYST__
-            ChatDisplay.Text += "[INIT] Setting up Mac message handler...\n";
-            
             string bridgeScript = @"
                 (function() {
                     console.log('[Bridge] Initializing Mac->WebView2 bridge');
@@ -218,6 +321,11 @@ public sealed partial class ConversationPage : Page
                     void(0);
                 })();
             ";
+
+#if __MACCATALYST__
+            ChatDisplay.Text += "[INIT] Setting up Mac message handler...\n";
+            
+            
                 AvatarWebView.NavigationCompleted += async (s, e) =>
                 {
                     if (e.IsSuccess)
@@ -227,8 +335,8 @@ public sealed partial class ConversationPage : Page
                         
                     }
                 };  
-            #else
-                await AvatarWebView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(bridgeScript);
+#else
+            await AvatarWebView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(bridgeScript);
                 ChatDisplay.Text += "[INIT] Bridge script injected\n";
             #endif
             
@@ -412,14 +520,18 @@ public sealed partial class ConversationPage : Page
             for (int i = 0; i <= 9; i++)
             {
                 string probePath = Path.GetFullPath(Path.Combine(baseDir, new string('.', i * 3).Replace("...", "../"), "env/Scripts/python.exe"));
-                if (File.Exists(probePath)) return _cachedPythonPath = probePath;
+                if (File.Exists(probePath))
+                {
+                    ChatDisplay.Text += $"[SUCCESS] Python found at: {probePath}\n";
+                    return _cachedPythonPath = probePath;
+                }
             }
             string buildVenvPath = Path.Combine(baseDir, "env", "Scripts", "python.exe");
             if (File.Exists(buildVenvPath)) return buildVenvPath;
 
             string sourceVenvPath = Path.GetFullPath(Path.Combine(baseDir, "..\\..\\..\\..\\env\\Scripts\\python.exe"));
             if (File.Exists(sourceVenvPath)) return sourceVenvPath;
-
+            ChatDisplay.Text += $"[WARNING] Virtual env not found. Falling back to system 'python'\n";
             return "python";
         }
         else
@@ -455,7 +567,6 @@ public sealed partial class ConversationPage : Page
             _ = ProcessSpeechQueue();
         }
     }
-
     private async Task ProcessSpeechQueue()
     {
         _isProcessingQueue = true;
@@ -464,52 +575,58 @@ public sealed partial class ConversationPage : Page
         bool wasMicOn = _isMicEnabled;
         if (wasMicOn)
         {
-            #if __MACCATALYST__
-            StopMacVoiceInput();
-            #elif WINDOWS
+#if __MACCATALYST__
+        StopMacVoiceInput();
+#elif WINDOWS
             await StopWindowsVoiceInput();
-            #endif
+#endif
         }
 
         while (_speechQueue.Count > 0)
         {
             string text = _speechQueue.Dequeue();
             string safeText = text.Replace("\"", "'").Replace("\r", " ").Replace("\n", " ");
-            
+
             DispatcherQueue.TryEnqueue(() => {
                 ChatDisplay.Text += $"\n[SPEAK] Dequeued: '{safeText}'\n";
                 ChatDisplay.Text += $"[SPEAK] WebView ready: {_isWebViewReady}\n";
                 ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
             });
-            
+
             if (AvatarWebView?.CoreWebView2 != null)
             {
-                if (!_isWebViewReady)
-                {
-                    DispatcherQueue.TryEnqueue(() => {
-                        ChatDisplay.Text += "[DEBUG] Flag was false, but forcing send to WebView...\n";
-                    }); 
-                }
                 try
                 {
                     string jsSafeText = safeText.Replace("'", "\\'").Replace("\"", "\\\"");
 
                     DispatcherQueue.TryEnqueue(() => {
-                        ChatDisplay.Text += $"[C#->JS] sending speak command...\n";
+                        ChatDisplay.Text += $"[C#->JS] sending to processNativeSpeech...\n";
                         ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
                     });
 
-                    #if __MACCATALYST__
-                    string js = $"window.speakLine('{safeText}'); void(0);";
-                    await AvatarWebView.ExecuteScriptAsync(js);
-                    #else
-                    var msg = new { type = "speak", text = safeText };
-                    string json = JsonSerializer.Serialize(msg);
-                    AvatarWebView.CoreWebView2.PostWebMessageAsString(json);
-                    #endif
+#if __MACCATALYST__
+                string js = $"window.speakLine('{jsSafeText}'); void(0);";
+                await AvatarWebView.ExecuteScriptAsync(js);
+                
+                // For Mac, estimate wait time since we don't have a completion signal
+                int wordCount = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+                int estimatedMs = wordCount * 400;
+                await Task.Delay(estimatedMs);
+#else
+                    // Send to JavaScript which will trigger speak_request back to C#
+                    await AvatarWebView.ExecuteScriptAsync($"window.processNativeSpeech('{jsSafeText}');");
+
+                    if (_speechCompletionTcs != null)
+                    {
+                        await _speechCompletionTcs.Task;
+                        DispatcherQueue.TryEnqueue(() => {
+                            ChatDisplay.Text += $"[QUEUE] Speech actually finished, moving to next item\n";
+                        });
+                    }
+#endif
 
                     DispatcherQueue.TryEnqueue(() => {
-                        ChatDisplay.Text += $"[C#->JS] ✓ Sent command\n";
+                        ChatDisplay.Text += $"[C#->JS] ✓ Completed\n";
                     });
                 }
                 catch (Exception ex)
@@ -519,53 +636,19 @@ public sealed partial class ConversationPage : Page
                     });
                 }
             }
-            
-            try 
-            {
-                Process? proc = null;
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    string psCommand = $"Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('{safeText}')";
-                    proc = Process.Start(new ProcessStartInfo 
-                    { 
-                        FileName = "powershell", 
-                        Arguments = $"-Command \"{psCommand}\"", 
-                        CreateNoWindow = true, 
-                        UseShellExecute = false 
-                    });
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Create("MACCATALYST")))
-                {
-                    DispatcherQueue.TryEnqueue(() => {
-                        ChatDisplay.Text += $"[MAC] Waiting for avatar animation...\n";
-                    });
-                }
-
-                if (proc != null) await proc.WaitForExitAsync();
-                
-                int wordCount = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Speech Error: {ex.Message}");
-                DispatcherQueue.TryEnqueue(() => {
-                    ChatDisplay.Text += $"[ERROR] TTS: {ex.Message}\n";
-                });
-            }
         }
 
         _isAiSpeaking = false;
         _isProcessingQueue = false;
 
         DispatcherQueue.TryEnqueue(async () => {
-            if (wasMicOn && _isMicEnabled) 
+            if (wasMicOn && _isMicEnabled)
             {
-                #if __MACCATALYST__
-                await StartMacVoiceInput();
-                #elif WINDOWS
+#if __MACCATALYST__
+            await StartMacVoiceInput();
+#elif WINDOWS
                 await StartWindowsVoiceInput();
-                #endif
+#endif
             }
         });
     }
@@ -672,7 +755,10 @@ public sealed partial class ConversationPage : Page
             _pythonProcess.BeginOutputReadLine();
             _pythonProcess.BeginErrorReadLine();
         }
-        catch (Exception ex) { ChatDisplay.Text += $"[RUNTIME ERROR]: {ex.Message}\n"; }
+        catch (Exception ex) { 
+            ChatDisplay.Text += $"[RUNTIME ERROR]: {ex.Message}\n";
+           
+        }
     }
 
     private void SendMessage()

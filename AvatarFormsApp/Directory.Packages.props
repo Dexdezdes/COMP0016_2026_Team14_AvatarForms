@@ -1,5 +1,6 @@
 <Project ToolsVersion="15.0">
   <ItemGroup>
+    <PackageVersion Include="System.Speech" Version="10.0.2" />
     <PackageVersion Include="Uno.WinUI" Version="5.2.161" />
     <PackageVersion Include="Uno.Material.WinUI" Version="5.3.1" />
     <PackageVersion Include="Uno.Toolkit.WinUI" Version="8.3.2" />
