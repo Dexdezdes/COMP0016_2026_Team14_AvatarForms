@@ -162,144 +162,6 @@ public sealed partial class ConversationPage : Page
             
             AvatarWebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = true;
             AvatarWebView.CoreWebView2.Settings.IsWebMessageEnabled = true;
-            AvatarWebView.CoreWebView2.WebMessageReceived += (s, ev) =>
-            {
-                try
-                {
-                    string json = ev.TryGetWebMessageAsString();
-                    using var doc = JsonDocument.Parse(json);
-                    var root = doc.RootElement;
-
-                    if (root.TryGetProperty("type", out var typeProp))
-                    {
-                        string type = typeProp.GetString();
-                        
-                        if (type == "avatarReady")
-                        {
-                            _isWebViewReady = true;
-                            DispatcherQueue.TryEnqueue(() => {
-                                ChatDisplay.Text += "[SYSTEM] Avatar reported READY. Logic unblocked.\n";
-                            });
-                        }
-
-                        if (type == "speak_request")
-                        {
-                            string textToSay = root.GetProperty("text").GetString();
-#if __MACCATALYST__
-                            _wasMicOnBeforeSpeech = _isMicEnabled;
-                            _isMicEnabled = false; 
-                            StopMacVoiceInput(); 
-
-                            _nativeSynth.Delegate = new SpeechSyncDelegate(
-                                onStart: null, 
-                                onWord: (word) => {
-                                    DispatcherQueue.TryEnqueue(async () => {
-                                        await AvatarWebView.ExecuteScriptAsync($"window.syncWord('{word.Replace("'", "\\'")}');");
-                                    });
-                                },
-                                onFinish: () => {
-                                    DispatcherQueue.TryEnqueue(async () => {
-                                        await AvatarWebView.ExecuteScriptAsync("window.stopMouth();");
-                                        
-                                        _isMicEnabled = _wasMicOnBeforeSpeech;
-                                        if (_isMicEnabled) 
-                                        {
-                                            await Task.Delay(200); 
-                                            StartMacVoiceInput();
-                                        }
-                                    });
-                                }
-                            );
-
-                            var utterance = new AVSpeechUtterance(textToSay);
-                            var voice = Array.Find(AVSpeechSynthesisVoice.GetSpeechVoices(), v => v.Name == "Samantha");
-                            if (voice != null) utterance.Voice = voice;
-                            _nativeSynth.SpeakUtterance(utterance);
-#elif WINDOWS
-                            Task.Run(async () => {
-                                try
-                                {
-                                    string safeText = textToSay.Replace("\"", "'").Replace("\r", " ").Replace("\n", " ");
-
-                                    DispatcherQueue.TryEnqueue(() => {
-                                        ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Starting: {safeText}\n";
-                                    });
-
-                                    var completionTcs = new TaskCompletionSource<bool>();
-
-                                    // Store the TCS so ProcessSpeechQueue can wait on it
-                                    _speechCompletionTcs = completionTcs;
-
-                                    DispatcherQueue.TryEnqueue(() => {
-                                        try
-                                        {
-                                            // Initialize System.Speech synthesizer
-                                            if (_systemSynth == null)
-                                            {
-                                                _systemSynth = new System.Speech.Synthesis.SpeechSynthesizer();
-                                                _systemSynth.SetOutputToDefaultAudioDevice();
-                                            }
-
-                                            // Hook up the word boundary event
-                                            void OnSpeakProgress(object sender, System.Speech.Synthesis.SpeakProgressEventArgs e)
-                                            {
-                                                if (e.Text != null)
-                                                {
-                                                    string word = e.Text;
-                                                    DispatcherQueue.TryEnqueue(async () => {
-                                                        await AvatarWebView.ExecuteScriptAsync($"window.syncWord('{word.Replace("'", "\\'")}');");
-                                                    });
-                                                }
-                                            }
-
-                                            void OnSpeakCompleted(object sender, System.Speech.Synthesis.SpeakCompletedEventArgs e)
-                                            {
-                                                DispatcherQueue.TryEnqueue(async () => {
-                                                    ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Speech completed\n";
-                                                    await AvatarWebView.ExecuteScriptAsync("window.stopMouth();");
-                                                });
-
-                                                _systemSynth.SpeakProgress -= OnSpeakProgress;
-                                                _systemSynth.SpeakCompleted -= OnSpeakCompleted;
-                                                completionTcs.TrySetResult(true);
-                                            }
-
-                                            _systemSynth.SpeakProgress += OnSpeakProgress;
-                                            _systemSynth.SpeakCompleted += OnSpeakCompleted;
-
-                                            // Speak asynchronously with word timing events
-                                            _systemSynth.SpeakAsync(safeText);
-
-                                            ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Speaking with real word timing...\n";
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            ChatDisplay.Text += $"[ERROR] System.Speech setup failed: {ex.Message}\n";
-                                            completionTcs.TrySetException(ex);
-                                        }
-                                    });
-
-                                    // Wait for speech to complete
-                                    await completionTcs.Task;
-
-                                    DispatcherQueue.TryEnqueue(() => {
-                                        ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Finished\n";
-                                    });
-                                }
-                                catch (Exception ex)
-                                {
-                                    DispatcherQueue.TryEnqueue(() => {
-                                        ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST ERROR]: {ex.Message}\n";
-                                        ChatDisplay.Text += $"Stack: {ex.StackTrace}\n";
-                                    });
-                                }
-                            });
-#endif
-                        }
-                    }
-                }
-                catch (Exception ex) { Debug.WriteLine($"Bridge Error: {ex.Message}"); }
-            };
             string bridgeScript = @"
                 (function() {
                     console.log('[Bridge] Initializing Mac->WebView2 bridge');
@@ -386,39 +248,117 @@ public sealed partial class ConversationPage : Page
                         }
                         else if (msgType == "speak_request")
                             {
-                                string textToSay = root.GetProperty("text").GetString();
-                                #if __MACCATALYST__
-                                _wasMicOnBeforeSpeech = _isMicEnabled;
-                                _isMicEnabled = false; 
-                                StopMacVoiceInput(); 
+                            string textToSay = root.GetProperty("text").GetString();
+#if __MACCATALYST__
+                            _wasMicOnBeforeSpeech = _isMicEnabled;
+                            _isMicEnabled = false; 
+                            StopMacVoiceInput(); 
 
-                                _nativeSynth.Delegate = new SpeechSyncDelegate(
-                                    onStart: null, 
-                                    onWord: (word) => {
-                                        DispatcherQueue.TryEnqueue(async () => {
-                                            await AvatarWebView.ExecuteScriptAsync($"window.syncWord('{word.Replace("'", "\\'")}');");
-                                        });
-                                    },
-                                    onFinish: () => {
-                                        DispatcherQueue.TryEnqueue(async () => {
-                                            await AvatarWebView.ExecuteScriptAsync("window.stopMouth();");
-                                            
-                                            _isMicEnabled = _wasMicOnBeforeSpeech;
-                                            if (_isMicEnabled) 
+                            _nativeSynth.Delegate = new SpeechSyncDelegate(
+                                onStart: null, 
+                                onWord: (word) => {
+                                    DispatcherQueue.TryEnqueue(async () => {
+                                        await AvatarWebView.ExecuteScriptAsync($"window.syncWord('{word.Replace("'", "\\'")}');");
+                                    });
+                                },
+                                onFinish: () => {
+                                    DispatcherQueue.TryEnqueue(async () => {
+                                        await AvatarWebView.ExecuteScriptAsync("window.stopMouth();");
+                                        
+                                        _isMicEnabled = _wasMicOnBeforeSpeech;
+                                        if (_isMicEnabled) 
+                                        {
+                                            await Task.Delay(200); 
+                                            StartMacVoiceInput();
+                                        }
+                                    });
+                                }
+                            );
+
+                            var utterance = new AVSpeechUtterance(textToSay);
+                            var voice = Array.Find(AVSpeechSynthesisVoice.GetSpeechVoices(), v => v.Name == "Samantha");
+                            if (voice != null) utterance.Voice = voice;
+                            _nativeSynth.SpeakUtterance(utterance);
+#elif WINDOWS
+                            Task.Run(async () => {
+                                try
+                                {
+                                    string safeText = textToSay.Replace("\"", "'").Replace("\r", " ").Replace("\n", " ");
+
+                                    DispatcherQueue.TryEnqueue(() => {
+                                        ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Starting: {safeText}\n";
+                                    });
+
+                                    _speechCompletionTcs = new TaskCompletionSource<bool>();
+                                    var completionTcs = _speechCompletionTcs;
+
+                                    DispatcherQueue.TryEnqueue(() => {
+                                        try
+                                        {
+                                            // Initialize System.Speech synthesizer
+                                            if (_systemSynth == null)
                                             {
-                                                await Task.Delay(200); 
-                                                StartMacVoiceInput();
+                                                _systemSynth = new System.Speech.Synthesis.SpeechSynthesizer();
+                                                _systemSynth.SetOutputToDefaultAudioDevice();
                                             }
-                                        });
-                                    }
-                                );
 
-                                var utterance = new AVSpeechUtterance(textToSay);
-                                var voice = Array.Find(AVSpeechSynthesisVoice.GetSpeechVoices(), v => v.Name == "Samantha");
-                                if (voice != null) utterance.Voice = voice;
-                                _nativeSynth.SpeakUtterance(utterance);
-                                #endif
-                            }
+                                            // Hook up the word boundary event
+                                            void OnSpeakProgress(object sender, System.Speech.Synthesis.SpeakProgressEventArgs e)
+                                            {
+                                                if (e.Text != null)
+                                                {
+                                                    string word = e.Text;
+                                                    DispatcherQueue.TryEnqueue(async () => {
+                                                        await AvatarWebView.ExecuteScriptAsync($"window.syncWord('{word.Replace("'", "\\'")}');");
+                                                    });
+                                                }
+                                            }
+
+                                            void OnSpeakCompleted(object sender, System.Speech.Synthesis.SpeakCompletedEventArgs e)
+                                            {
+                                                DispatcherQueue.TryEnqueue(async () => {
+                                                    ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Speech completed\n";
+                                                    await AvatarWebView.ExecuteScriptAsync("window.stopMouth();");
+                                                });
+
+                                                _systemSynth.SpeakProgress -= OnSpeakProgress;
+                                                _systemSynth.SpeakCompleted -= OnSpeakCompleted;
+                                                _isAiSpeaking = false;
+                                                completionTcs.TrySetResult(true);
+                                            }
+
+                                            _systemSynth.SpeakProgress += OnSpeakProgress;
+                                            _systemSynth.SpeakCompleted += OnSpeakCompleted;
+
+                                            // Speak asynchronously with word timing events
+                                            _systemSynth.SpeakAsync(safeText);
+
+                                            ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Speaking with real word timing...\n";
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            ChatDisplay.Text += $"[ERROR] System.Speech setup failed: {ex.Message}\n";
+                                            completionTcs.TrySetException(ex);
+                                        }
+                                    });
+
+                                    // Wait for speech to complete
+                                    await completionTcs.Task;
+
+                                    DispatcherQueue.TryEnqueue(() => {
+                                        ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST] Finished\n";
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    DispatcherQueue.TryEnqueue(() => {
+                                        ChatDisplay.Text += $"[WINDOWS SPEAK_REQUEST ERROR]: {ex.Message}\n";
+                                        ChatDisplay.Text += $"Stack: {ex.StackTrace}\n";
+                                    });
+                                }
+                            });
+#endif
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -569,6 +509,8 @@ public sealed partial class ConversationPage : Page
     }
     private async Task ProcessSpeechQueue()
     {
+        if (_isProcessingQueue) return; // Prevent multiple instances
+
         _isProcessingQueue = true;
         _isAiSpeaking = true;
 
@@ -582,56 +524,56 @@ public sealed partial class ConversationPage : Page
 #endif
         }
 
-        while (_speechQueue.Count > 0)
+        // Keep processing until queue is empty
+        do
         {
-            string text = _speechQueue.Dequeue();
-            string safeText = text.Replace("\"", "'").Replace("\r", " ").Replace("\n", " ");
-
-            DispatcherQueue.TryEnqueue(() => {
-                ChatDisplay.Text += $"\n[SPEAK] Dequeued: '{safeText}'\n";
-                ChatDisplay.Text += $"[SPEAK] WebView ready: {_isWebViewReady}\n";
-                ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
-            });
-
-            if (AvatarWebView?.CoreWebView2 != null)
+            while (_speechQueue.Count > 0)
             {
-                try
-                {
-                    string jsSafeText = safeText.Replace("'", "\\'").Replace("\"", "\\\"");
+                string text = _speechQueue.Dequeue();
+                string safeText = text.Replace("\"", "'").Replace("\r", " ").Replace("\n", " ");
 
-                    DispatcherQueue.TryEnqueue(() => {
-                        ChatDisplay.Text += $"[C#->JS] sending to processNativeSpeech...\n";
-                        ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
-                    });
+                DispatcherQueue.TryEnqueue(() => {
+                    ChatDisplay.Text += $"\n[SPEAK] Dequeued: '{safeText}'\n";
+                    ChatDisplay.Text += $"[SPEAK] WebView ready: {_isWebViewReady}\n";
+                    ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
+                });
+
+                if (AvatarWebView?.CoreWebView2 != null)
+                {
+                    try
+                    {
+                        string jsSafeText = safeText.Replace("'", "\\'").Replace("\"", "\\\"");
+
+                        DispatcherQueue.TryEnqueue(() => {
+                            ChatDisplay.Text += $"[C#->JS] sending to processNativeSpeech...\n";
+                            ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
+                        });
 
 #if __MACCATALYST__
-                string js = $"window.speakLine('{jsSafeText}'); void(0);";
-                await AvatarWebView.ExecuteScriptAsync(js);
+                    string js = $"window.speakLine('{jsSafeText}'); void(0);";
+                    await AvatarWebView.ExecuteScriptAsync(js);
 #else
-                    // Send to JavaScript which will trigger speak_request back to C#
-                    await AvatarWebView.ExecuteScriptAsync($"window.processNativeSpeech('{jsSafeText}');");
+                        _speechCompletionTcs = new TaskCompletionSource<bool>();
 
-                    if (_speechCompletionTcs != null)
-                    {
-                        await _speechCompletionTcs.Task;
-                        DispatcherQueue.TryEnqueue(() => {
-                            ChatDisplay.Text += $"[QUEUE] Speech actually finished, moving to next item\n";
-                        });
-                    }
+                        await AvatarWebView.ExecuteScriptAsync($"window.processNativeSpeech('{jsSafeText}');");
+
+                        var completionTcs = _speechCompletionTcs;
+                        await completionTcs.Task;
 #endif
 
-                    DispatcherQueue.TryEnqueue(() => {
-                        ChatDisplay.Text += $"[C#->JS] ✓ Completed\n";
-                    });
-                }
-                catch (Exception ex)
-                {
-                    DispatcherQueue.TryEnqueue(() => {
-                        ChatDisplay.Text += $"[ERROR] Avatar send failed: {ex.Message}\n";
-                    });
+                        DispatcherQueue.TryEnqueue(() => {
+                            ChatDisplay.Text += $"[C#->JS] ✓ Completed\n";
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        DispatcherQueue.TryEnqueue(() => {
+                            ChatDisplay.Text += $"[ERROR] Avatar send failed: {ex.Message}\n";
+                        });
+                    }
                 }
             }
-        }
+        } while (_speechQueue.Count > 0); // Check again in case new items arrived
 
         _isAiSpeaking = false;
         _isProcessingQueue = false;
@@ -691,33 +633,36 @@ public sealed partial class ConversationPage : Page
             _pythonProcess = new Process { StartInfo = start, EnableRaisingEvents = true };
 
             _pythonProcess.OutputDataReceived += (s, e) => {
-            if (!string.IsNullOrEmpty(e.Data))
-            {
-                string cleanedData = Regex.Replace(e.Data, @"\x1B\[[^@-~]*[@-~]", string.Empty);
-                cleanedData = Regex.Replace(cleanedData, @"[^\u0000-\u007F]+", string.Empty);
-                
-                DispatcherQueue.TryEnqueue(() => {
-                    ChatDisplay.Text += $"{cleanedData}\n";
-                    
-                    if (cleanedData.Trim().StartsWith("Talker:", StringComparison.OrdinalIgnoreCase))
-                    {
-                        string speechText = cleanedData.Replace("Talker:", "", StringComparison.OrdinalIgnoreCase).Trim();
-                        speechText = speechText.Replace("\r", " ").Replace("\n", " ");
-                        SpeakText(speechText);
-                        _isTalkerActive = true;
-                    } else if (!cleanedData.Trim().StartsWith("Critic:", StringComparison.OrdinalIgnoreCase) && _isTalkerActive)
-                    {
-                        cleanedData = cleanedData.Replace("\r", " ").Replace("\n", " ");
-                        SpeakText(cleanedData);
-                    } else
-                    {
-                        _isTalkerActive = false;
-                    }
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    string cleanedData = Regex.Replace(e.Data, @"\x1B\[[^@-~]*[@-~]", string.Empty);
+                    cleanedData = Regex.Replace(cleanedData, @"[^\u0000-\u007F]+", string.Empty);
 
-                    ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
-                });
-            }
-        };
+                    DispatcherQueue.TryEnqueue(() => {
+                        ChatDisplay.Text += $"{cleanedData}\n";
+
+                        if (cleanedData.Trim().StartsWith("Talker:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            string speechText = cleanedData.Replace("Talker:", "", StringComparison.OrdinalIgnoreCase).Trim();
+                            speechText = speechText.Replace("\r", " ").Replace("\n", " ");
+                            SpeakText(speechText);
+                            _isTalkerActive = true;
+                        }
+                        else if (cleanedData.Trim().StartsWith("Critic:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            _isTalkerActive = false;
+                        }
+                        else if (_isTalkerActive && !string.IsNullOrWhiteSpace(cleanedData.Trim()))
+                        {
+                            // Only speak if it's a continuation line (not empty, not a prefix)
+                            cleanedData = cleanedData.Replace("\r", " ").Replace("\n", " ").Trim();
+                            SpeakText(cleanedData);
+                        }
+
+                        ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
+                    });
+                }
+            };
 
             _pythonProcess.ErrorDataReceived += (s, e) => {
                 if (!string.IsNullOrEmpty(e.Data))

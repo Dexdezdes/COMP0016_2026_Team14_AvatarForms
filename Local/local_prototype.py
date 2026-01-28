@@ -2,6 +2,7 @@ print("Python is starting up...", flush=True)
 import os
 from dotenv import load_dotenv
 import ollama
+from ollama import Client
 import socket
 
 UTM_MAC_IP = "192.168.64.1" # Standard UTM Gateway
@@ -14,12 +15,14 @@ def check_connection(ip, port):
     except:
         return False
 
-if check_connection(UTM_MAC_IP, 11434):
-    print(f"Connected to Mac GPU at {UTM_MAC_IP}", flush=True)
-    ollama.host = f"http://{UTM_MAC_IP}:11434"
-else:
-    print(f"Mac not found. Using Local Ollama.", flush=True)
-    ollama.host = f"http://{LOCAL_IP}:11434"
+# Determine which IP to use
+target_ip = UTM_MAC_IP if check_connection(UTM_MAC_IP, 11434) else LOCAL_IP
+print(f"Using Ollama at: {target_ip}")
+
+# Create a dedicated client object
+# This prevents the "overwriting" issue entirely
+ollama_client = Client(host=f"http://{target_ip}:11434")
+
 
 load_dotenv()
 
@@ -50,15 +53,6 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-OLLAMA_HOST = os.getenv("OLLAMA_HOST")
-
-if OLLAMA_HOST and not OLLAMA_HOST.startswith("http"):
-    OLLAMA_HOST = f"http://{OLLAMA_HOST}"
-
-if OLLAMA_HOST:
-    print(f"Connecting to Ollama host: {OLLAMA_HOST}")
-    ollama.host = OLLAMA_HOST
-
 default_params = {
     "num_predict": 64,
     "temperature": 0.1,
@@ -84,7 +78,7 @@ def thinkStrip(text):
 def runAgent(agent, messages):
     full_messages = agent.messages + messages
 
-    response = ollama.chat(
+    response = ollama_client.chat(
         model=agent.model,
         messages=full_messages,
         options=agent.params
