@@ -607,11 +607,6 @@ public sealed partial class ConversationPage : Page
 #if __MACCATALYST__
                 string js = $"window.speakLine('{jsSafeText}'); void(0);";
                 await AvatarWebView.ExecuteScriptAsync(js);
-                
-                // For Mac, estimate wait time since we don't have a completion signal
-                int wordCount = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
-                int estimatedMs = wordCount * 400;
-                await Task.Delay(estimatedMs);
 #else
                     // Send to JavaScript which will trigger speak_request back to C#
                     await AvatarWebView.ExecuteScriptAsync($"window.processNativeSpeech('{jsSafeText}');");
