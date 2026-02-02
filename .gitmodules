@@ -1,0 +1,3 @@
+[submodule "AvatarFormsApp/HeadTTS"]
+	path = AvatarFormsApp/HeadTTS
+	url = https://github.com/met4citizen/HeadTTS.git
