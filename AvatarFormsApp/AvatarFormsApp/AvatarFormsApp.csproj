@@ -1,4 +1,4 @@
-<Project Sdk="Uno.Sdk">
+﻿<Project Sdk="Uno.Sdk">
     <PropertyGroup>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFrameworks>
         <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-maccatalyst</TargetFrameworks>
@@ -73,6 +73,11 @@
             <LogicalName>TalkingHead/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="../../HeadTTS/**/*">
+            <Link>HeadTTS/%(RecursiveDir)%(FileName)%(Extension)</Link>
+            <LogicalName>HeadTTS/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" />
@@ -91,6 +96,16 @@
         <Content Include="Assets\**\*" Exclude="bin\**;obj\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Views\AvatarPage.xaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="Views\AvatarPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
     </ItemGroup>
 
 </Project>

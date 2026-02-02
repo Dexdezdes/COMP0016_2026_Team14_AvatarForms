@@ -1,17 +1,10 @@
-﻿using AvatarFormsApp.Activation;
+using AvatarFormsApp.Activation;
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Services;
-using AvatarFormsApp.Helpers;
 using AvatarFormsApp.Models;
-using AvatarFormsApp.Services;
 using AvatarFormsApp.ViewModels;
 using AvatarFormsApp.Views;
-
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Controls;
 
 namespace AvatarFormsApp;
 
