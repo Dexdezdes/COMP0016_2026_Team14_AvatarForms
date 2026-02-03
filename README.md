@@ -4,12 +4,17 @@ This project uses a C# WinUI 3 frontend and a Python-based AI backend powered by
 
 ## Setup Instructions
 
-### 1. Install Ollama
+### 0. Install Ollama (for the old version without llamafile)
 Download and install Ollama from [ollama.com](https://ollama.com).
-Once installed, pull the required model (Dex uses gemma3:1b because of Ram constraints change local_prototype.py if needed):
+Once installed, pull the required model (Dex uses gemma3:4b because of Ram constraints change local_prototype.py if needed):
 ```bash
-ollama pull gemma3:1b
+ollama pull gemma3:4b
 ```
+
+### 1. Install llamafile
+Download the gemma3:4b model named google_gemma-3-4b-it-Q6_K.llamafile and put the file in the Llamafile directory inside the AvatarFormsApp directory
+
+https://mozilla-ai.github.io/llamafile/example_llamafiles/
 
 ### 2. Import the github project into Visual Studio
 Clone from github and paste the url of this repository.
