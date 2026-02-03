@@ -9,7 +9,7 @@
                     HorizontalAlignment="Center" 
                     VerticalAlignment="Center" 
                     Spacing="20"
-                    Visibility="Visible">
+                    Canvas.ZIndex="2">
             <TextBlock Text="Welcome to Avatar Forms App!" 
                        FontSize="24" 
                        FontWeight="Bold" 
@@ -19,11 +19,11 @@
             <Button Content="Start Cloud AI Chat" Width="200" Height="50" Tag="cloud" Click="OnChatAIClicked" Foreground="White" Background="Blue"/>
         </StackPanel>
 
-        <Grid x:Name="ChatInterface" Visibility="Collapsed" Margin="0"> 
+        <Grid x:Name="ChatInterface" Opacity="0" IsHitTestVisible="False" Canvas.ZIndex="1" Margin="0"> 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/> 
-                <RowDefinition Height="1*"/>    
-                <RowDefinition Height="1*"/>  
+                <RowDefinition Height="450"/>    
+                <RowDefinition Height="*"/>  
                 <RowDefinition Height="Auto"/> 
             </Grid.RowDefinitions>
 

@@ -28,6 +28,7 @@ namespace AvatarFormsApp.Views;
 public sealed partial class ConversationPage : Page
 {
     private Process? _pythonProcess;
+    private Process? _llamafileProcess;
     private string? _cachedPythonPath;
 
     private bool _isMicEnabled = false;
@@ -41,6 +42,8 @@ public sealed partial class ConversationPage : Page
     private bool _isProcessingQueue = false;
     
     private bool _isWebViewReady = false;
+    private bool _isBridgeInjected = false;
+    private CoreWebView2Environment? _fixedEnv;
     private SimpleWebServer _webServer;
     private string _speechBuffer = "";
 
@@ -138,14 +141,14 @@ public sealed partial class ConversationPage : Page
             try
             {
                 // 1. Create the options
-                var options = new Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions
+                _fixedEnv = new Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions
                 {
                     AdditionalBrowserArguments = "--ignore-gpu-blocklist --enable-gpu-rasterization"
                 };
-
+                AvatarWebView.CoreWebView2.MemoryUsageTargetLevel = CoreWebView2MemoryUsageTargetLevel.Low;
                 // 2. Create the environment using the specific WinUI 3 static method
                 // If 'CreateAsync' still fails with 3 args, try this exact line:
-                var env = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateWithOptionsAsync(null, null, options);
+                var env = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateWithOptionsAsync(null, null, _fixedEnv);
 
                 // 3. Initialize the WebView
                 await AvatarWebView.EnsureCoreWebView2Async(env);
@@ -190,13 +193,16 @@ public sealed partial class ConversationPage : Page
             
                 AvatarWebView.NavigationCompleted += async (s, e) =>
                 {
-                    if (e.IsSuccess)
+                    if (e.IsSuccess && !_isBridgeInjected)
                     {
+                        _isBridgeInjected = true; 
                         await AvatarWebView.ExecuteScriptAsync(bridgeScript);
                         
-                        
+                        DispatcherQueue.TryEnqueue(() => {
+                            ChatDisplay.Text += "[AVATAR] Bridge Injected Successfully.\n";
+                        });
                     }
-                };  
+                };
 #else
             await AvatarWebView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(bridgeScript);
                 ChatDisplay.Text += "[INIT] Bridge script injected\n";
@@ -590,7 +596,7 @@ public sealed partial class ConversationPage : Page
         });
     }
 
-    private void StartAIProcess(string mode)
+    private async Task StartAIProcess(string mode)
     {
         try
         {
@@ -599,6 +605,74 @@ public sealed partial class ConversationPage : Page
             string fileName = mode == "cloud" ? "cloud_prototype.py" : "local_prototype.py";
 
             string scriptPath = Path.Combine(baseDir, subFolder, fileName);
+            string llamafileName = "google_gemma-3-4b-it-Q6_K.llamafile";
+            string llamafilePath = Path.Combine(baseDir, "Llamafile", llamafileName);
+
+            if (!File.Exists(llamafilePath) && !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                llamafilePath = Path.GetFullPath(Path.Combine(baseDir, "..", "Resources", "Llamafile", llamafileName));
+            }
+            
+            if (!File.Exists(llamafilePath))
+            {
+                ChatDisplay.Text += $"[ERROR] File not found at: {llamafilePath}\n";
+                return;
+            }
+            if (File.Exists(llamafilePath))
+            {
+                ChatDisplay.Text += $"[Success] File found at: {llamafilePath}\n";
+            }
+
+            if (File.Exists(llamafilePath))
+            {
+                #if __MACCATALYST__
+                Process.Start("chmod", $"+x \"{llamafilePath}\"").WaitForExit();
+                #endif
+
+                var llamaStartInfo = new ProcessStartInfo
+                {
+                    FileName = llamafilePath,
+                    Arguments = "", 
+                    WorkingDirectory = Path.GetDirectoryName(llamafilePath),
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                #if __MACCATALYST__
+                llamaStartInfo.FileName = "/bin/sh";
+                llamaStartInfo.Arguments = $"-c \"\\\"{llamafilePath}\\\"\""; 
+                #else
+                llamaStartInfo.FileName = llamafilePath;
+                llamaStartInfo.Arguments = "";
+                #endif
+
+                ChatDisplay.Text += "[SYSTEM] Llamafile engine starting...\n";
+                _llamafileProcess = new Process { StartInfo = llamaStartInfo, EnableRaisingEvents = true };
+
+                _llamafileProcess.OutputDataReceived += (s, e) => {
+                    if (!string.IsNullOrEmpty(e.Data)) 
+                        DispatcherQueue.TryEnqueue(() => {
+                            ChatDisplay.Text += $"[LLAMAFILE]: {e.Data}\n";
+                            ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
+                        });
+                };
+                _llamafileProcess.ErrorDataReceived += (s, e) => {
+                    if (!string.IsNullOrEmpty(e.Data)) 
+                        DispatcherQueue.TryEnqueue(() => {
+                            ChatDisplay.Text += $"[LLAMAFILE ERR]: {e.Data}\n";
+                            ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
+                        });
+                };
+
+                _llamafileProcess.Start();
+                _llamafileProcess.BeginOutputReadLine();
+                _llamafileProcess.BeginErrorReadLine();
+
+                await Task.Delay(5000);
+            }
 
             if (!File.Exists(scriptPath) && !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -637,6 +711,7 @@ public sealed partial class ConversationPage : Page
                 {
                     string cleanedData = Regex.Replace(e.Data, @"\x1B\[[^@-~]*[@-~]", string.Empty);
                     cleanedData = Regex.Replace(cleanedData, @"[^\u0000-\u007F]+", string.Empty);
+                    cleanedData = cleanedData.Replace("<end_of_turn>", "").Trim();
 
                     DispatcherQueue.TryEnqueue(() => {
                         ChatDisplay.Text += $"{cleanedData}\n";
@@ -722,8 +797,15 @@ public sealed partial class ConversationPage : Page
         if (sender is Button b)
         {
             string mode = b.Tag?.ToString() ?? "local";
-            LandingPage.Visibility = Visibility.Collapsed;
-            ChatInterface.Visibility = Visibility.Visible;
+            // Use Opacity/IsHitTestVisible instead of Visibility.Collapsed
+            LandingPage.Opacity = 0;
+            LandingPage.IsHitTestVisible = false; 
+            Canvas.SetZIndex(LandingPage, 1);
+            
+            ChatInterface.Opacity = 1;
+            ChatInterface.IsHitTestVisible = true;
+            Canvas.SetZIndex(ChatInterface, 2);
+
             StartAIProcess(mode);
         }
     }
@@ -949,7 +1031,12 @@ public sealed partial class ConversationPage : Page
 
         ChatDisplay.Text = "";
         UserInput.Text = "";
-        ChatInterface.Visibility = Visibility.Collapsed;
-        LandingPage.Visibility = Visibility.Visible;
+        LandingPage.Opacity = 1;
+        LandingPage.IsHitTestVisible = true;
+        Canvas.SetZIndex(LandingPage, 2);
+
+        ChatInterface.Opacity = 0;
+        ChatInterface.IsHitTestVisible = false;
+        Canvas.SetZIndex(ChatInterface, 1);
     }
 }

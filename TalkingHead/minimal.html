@@ -59,19 +59,6 @@
         font-family: Arial;
         font-size: 20px;
       }
-      #unlock-shield {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.01);
-        z-index: 999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-      }
     </style>
 
     <script>
@@ -132,38 +119,6 @@
           }
         };
       })();
-    </script>
-
-    <script>
-      window.unlockAudio = async function () {
-        console.log("[unlockAudio] attempting unlock...");
-        try {
-          if (window.head && head.audioCtx) {
-            if (head.audioCtx.state === "suspended") {
-              await head.audioCtx.resume();
-              console.log("[unlockAudio] AudioContext resumed");
-            }
-          }
-
-          if (window.speechSynthesis && typeof SpeechSynthesisUtterance !== 'undefined') {
-              window.speechSynthesis.cancel();
-              const wakeUp = new SpeechSynthesisUtterance(" ");
-              wakeUp.volume = 0;
-              window.speechSynthesis.speak(wakeUp);
-          }
-
-          const shield = document.getElementById("unlock-shield");
-          if (shield) shield.style.display = "none";
-
-          setTimeout(() => {
-            if (window.speakLine) {
-              window.speakLine("Audio system connected. I am ready.");
-            } 
-          }, 200);
-        } catch (e) {
-          console.warn("unlockAudio failed", e);
-        }
-      };
     </script>
 
     <script type="importmap">
@@ -438,24 +393,6 @@
   </head>
 
   <body>
-    <div
-      id="unlock-shield"
-      onclick="
-        this.remove();
-        unlockAudio();
-      "
-    >
-      <div
-        style="
-          background: white;
-          padding: 20px;
-          border-radius: 10px;
-          color: black;
-          font-weight: bold;
-        "
-      >
-        Click Avatar to Connect Audio
-      </div>
     </div>
     <div id="avatar"></div>
     <div id="controls"></div>

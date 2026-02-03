@@ -73,6 +73,11 @@
             <LogicalName>TalkingHead/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="../../Llamafile/**/*">
+            <Link>Llamafile/%(RecursiveDir)%(FileName)%(Extension)</Link>
+            <LogicalName>Llamafile/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" />

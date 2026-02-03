@@ -1,28 +1,35 @@
 print("Python is starting up...", flush=True)
 import os
-from dotenv import load_dotenv
-import ollama
-from ollama import Client
 import socket
+import sys
+import traceback
+from dotenv import load_dotenv
+from openai import OpenAI
+import time
 
-UTM_MAC_IP = "192.168.64.1" # Standard UTM Gateway
-LOCAL_IP = "127.0.0.1"
+client = OpenAI(
+    base_url="http://127.0.0.1:8080/v1",
+    api_key="sk-no-key-required"
+)
 
-def check_connection(ip, port):
-    try:
-        with socket.create_connection((ip, port), timeout=1):
-            return True
-    except:
-        return False
+def fast_port_check(port=8080):
+    # Check both IPv4 and IPv6 loopbacks
+    for host in ["127.0.0.1", "localhost", "::1"]:
+        try:
+            with socket.create_connection((host, port), timeout=0.5):
+                print(f"SUCCESS: Engine found on {host}:{port}", flush=True)
+                return host
+        except:
+            continue
+    print(f"PORT CLOSED on all local interfaces at port {port}.", flush=True)
+    return None
 
-# Determine which IP to use
-target_ip = UTM_MAC_IP if check_connection(UTM_MAC_IP, 11434) else LOCAL_IP
-print(f"Using Ollama at: {target_ip}")
+host_found = fast_port_check()
+if not host_found:
+    sys.exit(1)
 
-# Create a dedicated client object
-# This prevents the "overwriting" issue entirely
-ollama_client = Client(host=f"http://{target_ip}:11434")
-
+# Update client to use the host we actually found
+client.base_url = f"http://{host_found}:8080/v1"
 
 load_dotenv()
 
@@ -54,12 +61,11 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 default_params = {
-    "num_predict": 64,
-    "temperature": 0.1,
+    "max_tokens": 256,
+    "temperature": 0.6,
     "top_p": 1.0,
     "repeat_penalty": 1.0,
-    "num_ctx": 1024,
-    "stop": ["<think>", "\n\n<think>"]
+    "num_ctx": 2000
 }
 
 def updateTemperature(base, temperature):
@@ -75,17 +81,19 @@ def thinkStrip(text):
         text = text[:start] + text[end:]
     return text.strip()
 
-def runAgent(agent, messages):
-    full_messages = agent.messages + messages
-
-    response = ollama_client.chat(
-        model=agent.model,
-        messages=full_messages,
-        options=agent.params
-    )
-
-    text = response["message"]["content"]
-    return thinkStrip(text)
+def runAgent(agent, history):
+    try:
+        response = client.chat.completions.create(
+            model="LLaMA_CPP", 
+            messages=history,
+            # Use .get() to provide fallbacks if the key isn't in default_params
+            temperature=agent.params.get("temperature", 0.1),
+            max_tokens=agent.params.get("max_tokens", 128)
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"Error calling Llamafile: {e}", flush=True)
+        return "Error: Could not connect to AI engine."
 
 Talker = Agent(
     name="Talker",
