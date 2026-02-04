@@ -43,7 +43,7 @@ public sealed partial class ConversationPage : Page
     
     private bool _isWebViewReady = false;
     private bool _isBridgeInjected = false;
-    private CoreWebView2Environment? _fixedEnv;
+    private CoreWebView2EnvironmentOptions? _fixedEnv;
     private SimpleWebServer _webServer;
     private string _speechBuffer = "";
 
@@ -143,15 +143,16 @@ public sealed partial class ConversationPage : Page
                 // 1. Create the options
                 _fixedEnv = new Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions
                 {
-                    AdditionalBrowserArguments = "--ignore-gpu-blocklist --enable-gpu-rasterization"
+                    AdditionalBrowserArguments = "--ignore-gpu-blocklist --enable-gpu-rasterization --use-angle=d3d11"
                 };
-                AvatarWebView.CoreWebView2.MemoryUsageTargetLevel = CoreWebView2MemoryUsageTargetLevel.Low;
+                
                 // 2. Create the environment using the specific WinUI 3 static method
                 // If 'CreateAsync' still fails with 3 args, try this exact line:
                 var env = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateWithOptionsAsync(null, null, _fixedEnv);
 
                 // 3. Initialize the WebView
                 await AvatarWebView.EnsureCoreWebView2Async(env);
+                AvatarWebView.CoreWebView2.MemoryUsageTargetLevel = CoreWebView2MemoryUsageTargetLevel.Low;
             }
             catch (Exception ex)
             {
@@ -647,7 +648,9 @@ public sealed partial class ConversationPage : Page
                 #else
                 llamaStartInfo.FileName = llamafilePath;
                 llamaStartInfo.Arguments = "";
-                #endif
+                llamaStartInfo.EnvironmentVariables["LLAMA_ARG_N_GPU_LAYERS"] = "35";
+                llamaStartInfo.EnvironmentVariables["LLAMA_ARG_NO_BROWSER"] = "true";
+#endif
 
                 ChatDisplay.Text += "[SYSTEM] Llamafile engine starting...\n";
                 _llamafileProcess = new Process { StartInfo = llamaStartInfo, EnableRaisingEvents = true };
@@ -668,6 +671,7 @@ public sealed partial class ConversationPage : Page
                 };
 
                 _llamafileProcess.Start();
+                _llamafileProcess.PriorityClass = ProcessPriorityClass.High;
                 _llamafileProcess.BeginOutputReadLine();
                 _llamafileProcess.BeginErrorReadLine();
 
@@ -767,6 +771,7 @@ public sealed partial class ConversationPage : Page
             }
 
             _pythonProcess.Start();
+            _pythonProcess.PriorityClass = ProcessPriorityClass.High;
             _pythonProcess.BeginOutputReadLine();
             _pythonProcess.BeginErrorReadLine();
         }

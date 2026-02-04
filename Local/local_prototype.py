@@ -13,22 +13,20 @@ client = OpenAI(
 )
 
 def fast_port_check(port=8080):
-    # Check both IPv4 and IPv6 loopbacks
-    for host in ["127.0.0.1", "localhost", "::1"]:
-        try:
-            with socket.create_connection((host, port), timeout=0.5):
-                print(f"SUCCESS: Engine found on {host}:{port}", flush=True)
-                return host
-        except:
-            continue
-    print(f"PORT CLOSED on all local interfaces at port {port}.", flush=True)
-    return None
+    print(f"Waiting for Llamafile engine on port {port}...", flush=True)
+    while True:
+        for host in ["127.0.0.1", "localhost", "::1"]:
+            try:
+                with socket.create_connection((host, port), timeout=0.5):
+                    print(f"SUCCESS: Engine found on {host}:{port}", flush=True)
+                    return host
+            except (socket.timeout, ConnectionRefusedError):
+                continue
+        
+        print("Engine not ready yet. Retrying in 3 seconds...", flush=True)
+        time.sleep(3)
 
 host_found = fast_port_check()
-if not host_found:
-    sys.exit(1)
-
-# Update client to use the host we actually found
 client.base_url = f"http://{host_found}:8080/v1"
 
 load_dotenv()
