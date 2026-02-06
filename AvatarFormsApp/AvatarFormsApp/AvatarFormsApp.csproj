@@ -4,7 +4,9 @@
         <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-maccatalyst</TargetFrameworks>
         <OutputType>Exe</OutputType>
         <UnoSingleProject>true</UnoSingleProject>
-
+        <RuntimeIdentifier Condition="$([MSBuild]::IsOSPlatform('windows'))">win-x64</RuntimeIdentifier>
+        <PlatformTarget Condition="$([MSBuild]::IsOSPlatform('windows'))">x64</PlatformTarget>
+        
         <PublishTrimmed Condition="!$([MSBuild]::IsOSPlatform('windows'))">true</PublishTrimmed>
         <PublishTrimmed Condition="$([MSBuild]::IsOSPlatform('windows'))">false</PublishTrimmed>
         <MtouchLink>None</MtouchLink>
@@ -22,6 +24,9 @@
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <ApplicationVersion>1</ApplicationVersion>
         <ApplicationTitle>AvatarFormsApp</ApplicationTitle>
+        <WindowsPackageType>MSIX</WindowsPackageType>
+        <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+        <Platforms>AnyCPU;x64</Platforms>
    </PropertyGroup>
 
     <PropertyGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
@@ -29,6 +34,9 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
+        <PackageCertificateKeyFile>Group14Key.pfx</PackageCertificateKeyFile>
+        <PackageCertificatePassword>avatarforms</PackageCertificatePassword>
+        <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
         <DefineConstants>$(DefineConstants);DEV_PYTHON_ENV='$(MSBuildProjectDirectory)/../env/Scripts/python.exe'</DefineConstants>
     </PropertyGroup>
     

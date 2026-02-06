@@ -12,14 +12,14 @@
 
   <Identity
     Name="a826cb1b-dda8-4faf-bc9c-f610a8ef77a8"
-    Publisher="CN=muazm"
+    Publisher="CN=Group14"
     Version="1.0.0.0" />
     
   <mp:PhoneIdentity PhoneProductId="a826cb1b-dda8-4faf-bc9c-f610a8ef77a8" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
     
   <Properties>
     <DisplayName>AvatarFormsApp</DisplayName>
-    <PublisherDisplayName>muazm</PublisherDisplayName>
+    <PublisherDisplayName>group14</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

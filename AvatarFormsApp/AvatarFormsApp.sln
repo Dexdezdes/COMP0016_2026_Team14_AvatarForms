@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11312.151 d18.0
+VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvatarFormsApp", "AvatarFormsApp\AvatarFormsApp.csproj", "{CF816AEB-7F1B-4740-B91C-070F8AC04A38}"
 EndProject
@@ -48,9 +48,9 @@ Global
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|iPhoneSimulator.Deploy.0 = Debug|Any CPU
-		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|x64.Build.0 = Debug|Any CPU
-		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|x64.Deploy.0 = Debug|Any CPU
+		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|x64.ActiveCfg = Debug|x64
+		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|x64.Build.0 = Debug|x64
+		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|x64.Deploy.0 = Debug|x64
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|x86.Build.0 = Debug|Any CPU
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Debug|x86.Deploy.0 = Debug|Any CPU
@@ -69,9 +69,9 @@ Global
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|iPhoneSimulator.Deploy.0 = Release|Any CPU
-		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|x64.ActiveCfg = Release|Any CPU
-		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|x64.Build.0 = Release|Any CPU
-		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|x64.Deploy.0 = Release|Any CPU
+		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|x64.ActiveCfg = Release|x64
+		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|x64.Build.0 = Release|x64
+		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|x64.Deploy.0 = Release|x64
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|x86.ActiveCfg = Release|Any CPU
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|x86.Build.0 = Release|Any CPU
 		{CF816AEB-7F1B-4740-B91C-070F8AC04A38}.Release|x86.Deploy.0 = Release|Any CPU

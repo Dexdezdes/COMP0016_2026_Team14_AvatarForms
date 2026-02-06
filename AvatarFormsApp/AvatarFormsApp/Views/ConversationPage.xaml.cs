@@ -133,6 +133,9 @@ public sealed partial class ConversationPage : Page
     {   
         if (_isAvatarInitialized) return; 
         _isAvatarInitialized = true;
+
+        string userDataFolder = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "AvatarFormsApp_WebView2");
+        System.IO.Directory.CreateDirectory(userDataFolder);
         try
         {
             ChatDisplay.Text += "[INIT] Starting avatar setup...\n";
@@ -148,24 +151,27 @@ public sealed partial class ConversationPage : Page
                 
                 // 2. Create the environment using the specific WinUI 3 static method
                 // If 'CreateAsync' still fails with 3 args, try this exact line:
-                var env = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateWithOptionsAsync(null, null, _fixedEnv);
+                var env = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateWithOptionsAsync(null, userDataFolder, _fixedEnv);
 
                 // 3. Initialize the WebView
                 await AvatarWebView.EnsureCoreWebView2Async(env);
                 AvatarWebView.CoreWebView2.MemoryUsageTargetLevel = CoreWebView2MemoryUsageTargetLevel.Low;
+                AvatarWebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = true;
+                AvatarWebView.CoreWebView2.Settings.IsWebMessageEnabled = true;
             }
             catch (Exception ex)
             {
                 ChatDisplay.Text += $"[WEBVIEW SETUP ERROR]: {ex.Message}\n";
+                return;
             }
 #else
     await AvatarWebView.EnsureCoreWebView2Async();
+    AvatarWebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = true;
+    AvatarWebView.CoreWebView2.Settings.IsWebMessageEnabled = true;
 #endif
 
             ChatDisplay.Text += "[INIT] CoreWebView2 ready\n";
             
-            AvatarWebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = true;
-            AvatarWebView.CoreWebView2.Settings.IsWebMessageEnabled = true;
             string bridgeScript = @"
                 (function() {
                     console.log('[Bridge] Initializing Mac->WebView2 bridge');
