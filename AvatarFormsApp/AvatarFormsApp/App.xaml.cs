@@ -1,4 +1,4 @@
-﻿using AvatarFormsApp.Activation;
+using AvatarFormsApp.Activation;
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Services;
 using AvatarFormsApp.Helpers;
@@ -132,6 +132,7 @@ public partial class App : Application
     {
         base.OnLaunched(args);
         var window = App.MainWindow;
+        window.SetIcon("Assets/Icons/favicon.ico");
 
         var shell = App.GetService<ShellPage>();
         window.Content = shell;

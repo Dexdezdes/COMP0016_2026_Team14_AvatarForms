@@ -99,7 +99,6 @@
     </ItemGroup>
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-        <Reference Include="System.Speech" />
         <PackageReference Include="WinUIEx" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" />
     </ItemGroup>
@@ -114,5 +113,26 @@
             <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(FileName)%(Extension)' == 'Microsoft.Web.WebView2.Core.dll'" />
         </ItemGroup>
     </Target>
+
+    <PropertyGroup>
+        <UnoIcon>Assets\Icons\appicon.png</UnoIcon>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
+        <ApplicationIcon>Assets\Icons\favicon.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="Assets\Icons\favicon.ico">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <UnoIcon Include="Assets\Icons\appicon.png" />
+        <Content Include="Assets\Icons\favicon.ico">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
 </Project>

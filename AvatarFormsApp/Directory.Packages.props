@@ -5,7 +5,7 @@
     <PackageVersion Include="Uno.Material.WinUI" Version="5.3.1" />
     <PackageVersion Include="Uno.Toolkit.WinUI" Version="8.3.2" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageVersion Include="WinUIEx" Version="2.3.2" />

@@ -9,6 +9,7 @@
 [Bb]in/
 [Obj]/
 Generated Files/
+BuildOutput/
 
 # User-specific files
 *.user
