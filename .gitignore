@@ -10,6 +10,7 @@
 [Obj]/
 Generated Files/
 BuildOutput/
+Output/
 
 # User-specific files
 *.user

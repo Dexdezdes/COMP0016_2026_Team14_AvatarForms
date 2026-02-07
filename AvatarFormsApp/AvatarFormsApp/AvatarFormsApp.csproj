@@ -24,7 +24,9 @@
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <ApplicationVersion>1</ApplicationVersion>
         <ApplicationTitle>AvatarFormsApp</ApplicationTitle>
-        <WindowsPackageType>MSIX</WindowsPackageType>
+        <WindowsPackageType>None</WindowsPackageType>
+        <PublishSingleFile>false</PublishSingleFile>
+        <PublishTrimmed>false</PublishTrimmed>
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
         <Platforms>AnyCPU;x64</Platforms>
    </PropertyGroup>

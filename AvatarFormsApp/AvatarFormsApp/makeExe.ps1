@@ -26,7 +26,14 @@ $setupExe = ".\Output\Avatarformsapp_Setup.exe"
 $pfxPath = ".\Group14Key.pfx"
 $password = "avatarforms"
 
-Write-Host "--- Digitally Signing Installer ---" -ForegroundColor Cyan
-& "signtool.exe" sign /f $pfxPath /p $password /t http://timestamp.digicert.com /v $setupExe
+# --- If signtool not found, change the version 10.0.26100.0 to the latest one in the directory path before it ---
+$signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe"
 
-Write-Host "Success: Signed installer created at $setupExe" -ForegroundColor Green
+Write-Host "--- Digitally Signing Installer ---" -ForegroundColor Cyan
+& $signtool sign /f $pfxPath /p $password /fd sha256 /t http://timestamp.digicert.com /v $setupExe
+
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "✅ Success: Signed installer created at $setupExe" -ForegroundColor Green
+} else {
+    Write-Host "❌ Signing Failed! Check the errors above." -ForegroundColor Red
+}

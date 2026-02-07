@@ -1,6 +1,6 @@
 [Setup]
 ; --- Basic Metadata ---
-AppId={{8B321945-C943-4C21-9B3E-B68C134017F8}
+AppId={{8B321945-C943-4C21-9B3E-B68C134017F8}}
 AppName=Avatarformsapp
 AppVersion=1.0
 AppPublisher=Group14
@@ -10,21 +10,24 @@ UninstallDisplayIcon={app}\Avatarformsapp.exe
 OutputBaseFilename=Avatarformsapp_Setup
 
 ; --- High-Capacity Configuration ---
-; Essential for 3.4GB payload to avoid 32-bit pointer overflows
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesInstallIn64BitMode=x64compatible
 Compression=lzma2/ultra64
 SolidCompression=yes
 InternalCompressLevel=ultra
-; Ensures the installer doesn't trigger "Out of memory" on extraction
 LZMAUseSeparateProcess=yes
 
 ; --- UI/Security ---
 PrivilegesRequired=admin
-SetupIconFile=AppIcon.ico
+SetupIconFile=Assets\Icons\favicon.ico
 
 [Files]
-; Source points to the 'BuildOutput' folder created by your PS script
-Source: ".\BuildOutput\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; 1. Small files + solidbreak 
+; FIX: The 'solidbreak' flag tells Inno Setup "Put the UI files in a fast-access block"
+Source: ".\BuildOutput\*"; DestDir: "{app}"; Excludes: "*.llamafile"; Flags: ignoreversion recursesubdirs createallsubdirs solidbreak
+
+; 2. The Heavy Model (Stored, not compressed)
+; This stays at the end so it doesn't block the installer from opening.
+Source: ".\BuildOutput\Llamafile\google_gemma-3-4b-it-Q6_K.llamafile"; DestDir: "{app}\Llamafile"; Flags: nocompression ignoreversion
 
 [Icons]
 Name: "{group}\Avatarformsapp"; Filename: "{app}\Avatarformsapp.exe"
