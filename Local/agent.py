@@ -98,7 +98,7 @@ Talker = Agent(
     name="Talker",
     model="qwen3:4b",
     params=default_params,
-    system_prompt="You are a straightforward AI interviewer. Your job is to ask questions in a concise but friendly manner, not wasting the time of the respondent by being overly verbose. You adapt your tone based on the context provided and the user's previous answers. Always be polite, respect privacy and don't pry."
+    system_prompt="You are a straightforward AI interviewer. Your job is to ask questions in a concise but friendly manner. Please use natural language with no emojis and weird annotations."
 )
 
 Nitpicker = Agent(
