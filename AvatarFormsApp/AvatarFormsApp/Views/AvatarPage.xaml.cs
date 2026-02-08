@@ -27,7 +27,7 @@ public sealed partial class AvatarPage : Page
         InitializeComponent();
         AutoSendToggle.IsOn = true;
         InitializeAvatar();
-        StartAIProcess("local");
+        StartAIProcess();
     }
 
     private async void InitializeAvatar()
@@ -250,14 +250,12 @@ public sealed partial class AvatarPage : Page
         return _cachedPythonPath = "python";
     }
 
-    private void StartAIProcess(string mode)
+    private void StartAIProcess()
     {
         try
         {
             string baseDir = AppContext.BaseDirectory;
-            string subFolder = mode == "cloud" ? "Cloud" : "Local";
-            string fileName = mode == "cloud" ? "cloud_prototype.py" : "agent.py";
-            string scriptPath = Path.Combine(baseDir, subFolder, fileName);
+            string scriptPath = Path.Combine(baseDir, "Local", "agent.py");
 
             if (!File.Exists(scriptPath))
             {

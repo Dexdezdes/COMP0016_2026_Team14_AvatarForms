@@ -58,19 +58,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="../../Cloud/**/*">
-            <Link>Cloud/%(RecursiveDir)%(FileName)%(Extension)</Link>
-            <LogicalName>Cloud/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
         <Content Include="../../Local/**/*">
             <Link>Local/%(RecursiveDir)%(FileName)%(Extension)</Link>
             <LogicalName>Local/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="../../TalkingHead/**/*">
-            <Link>TalkingHead/%(RecursiveDir)%(FileName)%(Extension)</Link>
-            <LogicalName>TalkingHead/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="../../HeadTTS/**/*">
