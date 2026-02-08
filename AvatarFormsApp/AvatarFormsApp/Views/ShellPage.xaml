@@ -1,14 +1,15 @@
 ﻿<Page
-    x:Class="AvatarFormsApp.Views.ShellPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:helpers="using:AvatarFormsApp.Helpers"
-    xmlns:behaviors="using:AvatarFormsApp.Behaviors"
-    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-    xmlns:interactions="using:Microsoft.Xaml.Interactions.Core"
-    Loaded="OnLoaded">
+x:Class="AvatarFormsApp.Views.ShellPage"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+xmlns:helpers="using:AvatarFormsApp.Helpers"
+xmlns:behaviors="using:AvatarFormsApp.Behaviors"
+xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+xmlns:interactions="using:Microsoft.Xaml.Interactions.Core"
+xmlns:models="using:AvatarFormsApp.Models"
+Loaded="OnLoaded">
     <Page.Resources>
         <Thickness x:Key="NavigationViewContentMargin">0</Thickness>
         <Thickness x:Key="NavigationViewMinimalContentMargin">0</Thickness>
@@ -48,17 +49,24 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <!-- Avatars section with subitems -->
-                <NavigationViewItem x:Name="Nav_Avatars" Content="Avatars">
+                <!-- Questionnaires section with dropdown -->
+                <NavigationViewItem x:Name="Nav_Questionnaires" Content="Questionnaires">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe77b;" />
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8a5;" />
                     </NavigationViewItem.Icon>
                     <NavigationViewItem.MenuItems>
-                        <NavigationViewItem Content="DASS Questionnaire" />
-                        <NavigationViewItem Content="Learning Experience Survey" />
-                        <NavigationViewItem Content="Examination Feedback Survey" />
-                        <NavigationViewItem Content="Student Health Questionnaire" />
-                        <NavigationViewItem Content="Year End Review" />
+                        <!-- Dynamically bind questionnaires from database -->
+                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.AvailableQuestionnaires, Mode=OneWay}">
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="models:Questionnaire">
+                                    <NavigationViewItem Content="{x:Bind Name}" Tag="{x:Bind Id}">
+                                        <NavigationViewItem.Icon>
+                                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8a5;" FontSize="12" />
+                                        </NavigationViewItem.Icon>
+                                    </NavigationViewItem>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
                     </NavigationViewItem.MenuItems>
                 </NavigationViewItem>
 
@@ -68,11 +76,18 @@
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8d7;" />
                     </NavigationViewItem.Icon>
                     <NavigationViewItem.MenuItems>
-                        <NavigationViewItem Content="DASS Questionnaire" />
-                        <NavigationViewItem Content="Learning Experience Survey" />
-                        <NavigationViewItem Content="Examination Feedback Survey" />
-                        <NavigationViewItem Content="Student Health Questionnaire" />
-                        <NavigationViewItem Content="Year End Review" />
+                        <!-- Dynamically bind questionnaires from database -->
+                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.AvailableQuestionnaires, Mode=OneWay}">
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="models:Questionnaire">
+                                    <NavigationViewItem Content="{x:Bind Name}" Tag="{x:Bind Id}">
+                                        <NavigationViewItem.Icon>
+                                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8a5;" FontSize="12" />
+                                        </NavigationViewItem.Icon>
+                                    </NavigationViewItem>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
                     </NavigationViewItem.MenuItems>
                 </NavigationViewItem>
 

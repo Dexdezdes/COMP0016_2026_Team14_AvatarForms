@@ -76,6 +76,11 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="System.Speech" />
