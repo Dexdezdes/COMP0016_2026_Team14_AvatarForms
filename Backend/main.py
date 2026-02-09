@@ -1,10 +1,22 @@
-
 from agents import Model, TalkerAgent, EvaluatorAgent, RAG_Agent
+from sockets import stream_message, start_server, websocket_handler, wait_for_browser_connection
 from formatting import bcolors
 
 import os
+import asyncio
+import socket
+import time
+from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv()
+
+# Llamafile should be in the same directory as this file
+
+client = OpenAI(
+    base_url="http://127.0.0.1:8081/v1",
+    api_key="sk-no-key-required"
+)
+
 # LOCAL_API_URL
 # FIREWORKS_API_KEY
 
@@ -64,11 +76,11 @@ class AvatarFormsInterviewer:
             "stream": False
         }
         if self.is_local:
-            url = os.getenv("LOCAL_API_URL")
-            if not url:
-                raise ValueError("LOCAL_API_URL environment variable not set")
-
-            return Model(url=url, model=self.cloud_model, api_key=None, params=params)
+            # Use the llamafile URL and endpoint
+            llamafile_url = f"http://127.0.0.1:8081/v1/chat/completions"
+            model_name = "LLaMA_CPP"
+            
+            return Model(url=llamafile_url, model=model_name, api_key=None, params=params)
         
         else:
             if not self.cloud_model:
@@ -204,54 +216,92 @@ class AvatarFormsInterviewer:
 
         return final_answers
 
+async def main():
+    # Start WebSocket server
+    server = await start_server()
+
+    # Wait for browser (HeadTTS) to connect
+    await wait_for_browser_connection()
+
+    # Setup interview after browser is connected
+    questions = [
+        "What is your full name?",
+        "How did you sleep last night?",
+    ]
+
+    interview_context = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know them."
+    interviewer = AvatarFormsInterviewer(is_local=True, cutoff=4)
+    interviewer.build_interview(questions, interview_context)
+
+    # Start interview
+    first_question = interviewer.start_interview()
+    print(f"{bcolors.OKBLUE}Talker: {first_question}{bcolors.ENDC}")
+    await stream_message("speech", first_question)
+
+    # Interview loop
+    while True:
+        response = await asyncio.to_thread(input)
+        # print(interviewer.conversation_history)
+        speech_line, continue_interview = interviewer.respond(response)
+        print(f"{bcolors.OKBLUE}Talker: {speech_line}{bcolors.ENDC}")
+        await stream_message("speech", speech_line)
+
+        if not continue_interview:
+            print(f"{bcolors.OKGREEN}Interview complete.{bcolors.ENDC}")
+            final_answers = interviewer.collect_final_answers()
+            # Dict of questions and answers
+            for question, answer in final_answers.items():
+                print(f"{bcolors.OKGREEN}Q: {question}{bcolors.ENDC}")
+                print(f"A: {answer}\n")
+                
+            break
+
+    # Keep server running after interview completes
+    print(f"\n{bcolors.OKGREEN}Server will continue running. Press Ctrl+C to stop.{bcolors.ENDC}")
+    try:
+        await asyncio.Future()
+    except asyncio.CancelledError:
+        pass
 
 
 ### Example usage ###
 if __name__ == "__main__":
+    # Run async main with WebSocket support
+    asyncio.run(main())
+
+    # # OR use synchronous version (comment out asyncio.run(main()) above):
     # questions = [
     #     "What is your name?",
     #     "Describe your hometown.",
     #     "Describe a challenging situation you have faced and how you handled it.",
     #     "What are your hobbies and interests?",
     # ]
-    questions = [
-        "What is your full name?",
-        "How did you sleep last night?",
-        # "Do you generally sleep well?",
-        # "How are you feeling today?",
-    ]
+    # questions = [
+    #     "What is your full name?",
+    #     "How did you sleep last night?",
+    #     # "Do you generally sleep well?",
+    #     # "How are you feeling today?",
+    # ]
 
-    interview_context = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know them."
+    # interview_context = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know them."
 
-    interviewer = AvatarFormsInterviewer(is_local=False, cutoff=4)
-    interviewer.build_interview(questions, interview_context)
-
-    # # OR
-    # json_input = xxx
     # interviewer = AvatarFormsInterviewer(is_local=False, cutoff=4)
-    # interviewer.build_from_json(json_input)
+    # interviewer.build_interview(questions, interview_context)
 
-    ### ---------------------------------------------------------------
+    # # Start interview
+    # first_question = interviewer.start_interview()
+    # print(f"Talker: {first_question}")
+    # while True:
+    #     response = input("User: ") # Replace with actual user input in production
+    #     # print(interviewer.conversation_history)
+    #     speech_line, continue_interview = interviewer.respond(response)
+    #     print(f"Talker: {speech_line}") # Output to UI in production
 
-    # interviewer.run_interview_whole(verbose=True)
-
-    first_question = interviewer.start_interview()
-    print(f"Talker: {first_question}")
-    while True:
-        response = input("User: ") # Replace with actual user input in production
-        # print(interviewer.conversation_history)
-        speech_line, continue_interview = interviewer.respond(response)
-        print(f"Talker: {speech_line}") # Output to UI in production
-
-        if not continue_interview:
-            print("Interview complete.")
-            final_answers = interviewer.collect_final_answers()
-            # Dict of questions and answers
-            for question, answer in final_answers.items():
-                print(f"{bcolors.OKGREEN}Q: {question}{bcolors.ENDC}")
-                print(f"A: {answer}\n")
-            break
-
-
-            
-            
+    #     if not continue_interview:
+    #         print("Interview complete.")
+    #         final_answers = interviewer.collect_final_answers()
+    #         # Dict of questions and answers
+    #         for question, answer in final_answers.items():
+    #             print(f"{bcolors.OKGREEN}Q: {question}{bcolors.ENDC}")
+    #             print(f"A: {answer}\n")
+    #         break 

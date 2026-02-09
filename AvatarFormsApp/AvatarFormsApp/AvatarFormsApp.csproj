@@ -58,9 +58,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="../../Local/**/*">
-            <Link>Local/%(RecursiveDir)%(FileName)%(Extension)</Link>
-            <LogicalName>Local/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
+        <Content Include="../../Backend/**/*">
+            <Link>Backend/%(RecursiveDir)%(FileName)%(Extension)</Link>
+            <LogicalName>Backend/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="../../HeadTTS/**/*">

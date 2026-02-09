@@ -94,6 +94,10 @@ public partial class App : Application
             {
                 var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 var dbPath = Path.Combine(appDataPath, "AvatarFormsApp", "questionnaires.db");
+                
+                // Ensure directory exists
+                Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
+                
                 options.UseSqlite($"Data Source={dbPath}");
             });
 

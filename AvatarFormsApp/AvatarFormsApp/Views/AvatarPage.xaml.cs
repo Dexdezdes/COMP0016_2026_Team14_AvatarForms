@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -14,6 +15,7 @@ namespace AvatarFormsApp.Views;
 public sealed partial class AvatarPage : Page
 {
     private Process? _pythonProcess;
+    private Process? _llamafileProcess;
     private string? _cachedPythonPath;
     private SimpleWebServer? _webServer;
     private SpeechRecognizer? _speechRecognizer;
@@ -21,13 +23,13 @@ public sealed partial class AvatarPage : Page
     private bool _isMicEnabled;
     private bool _isTalkerActive;
     private bool _autoSendEnabled = true;
+    private bool _isAudioConnected = false;
 
     public AvatarPage()
     {
         InitializeComponent();
         AutoSendToggle.IsOn = true;
         InitializeAvatar();
-        StartAIProcess();
     }
 
     private async void InitializeAvatar()
@@ -108,6 +110,20 @@ public sealed partial class AvatarPage : Page
             // Navigate to HeadTTS index.html
             LogToConsole("[NAV] Navigating to HeadTTS index.html...");
             AvatarWebView.CoreWebView2.Navigate("http://127.0.0.1:5501/index.html");
+
+            // Show audio connection overlay after avatar loads
+            await Task.Delay(2000); // Wait for page to load
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (AudioConnectionOverlay != null)
+                {
+                    AudioConnectionOverlay.Visibility = Visibility.Visible;
+                    LogToConsole("[AVATAR] Audio connection overlay shown");
+                }
+            });
+
+            // Start AI process after avatar is fully initialized
+            StartAIProcess();
         }
         catch (Exception ex)
         {
@@ -250,18 +266,91 @@ public sealed partial class AvatarPage : Page
         return _cachedPythonPath = "python";
     }
 
-    private void StartAIProcess()
+    private async Task<bool> IsPortAvailable(int port, int maxRetries = 30, int delayMs = 1000)
+    {
+        for (int i = 0; i < maxRetries; i++)
+        {
+            try
+            {
+                using var client = new System.Net.Sockets.TcpClient();
+                await client.ConnectAsync("127.0.0.1", port);
+                LogToConsole($"[PORT CHECK] Port {port} is ready");
+                return true;
+            }
+            catch
+            {
+                if (i == 0)
+                {
+                    LogToConsole($"[PORT CHECK] Waiting for port {port}...");
+                }
+                await Task.Delay(delayMs);
+            }
+        }
+        LogToConsole($"[PORT CHECK] Timeout waiting for port {port}");
+        return false;
+    }
+
+    private void StartLlamafileServer()
     {
         try
         {
-            string baseDir = AppContext.BaseDirectory;
-            string scriptPath = Path.Combine(baseDir, "Local", "agent.py");
-
-            if (!File.Exists(scriptPath))
+            string backendPath = Path.Combine(AppContext.BaseDirectory, "Backend");
+            if (!Directory.Exists(backendPath))
             {
-                LogToConsole($"[ERROR] Python script not found: {scriptPath}");
+                LogToConsole("[ERROR] Backend folder not found");
                 return;
             }
+
+            var llamafilePath = Directory.GetFiles(backendPath, "*.llamafile").FirstOrDefault();
+            if (string.IsNullOrEmpty(llamafilePath))
+            {
+                LogToConsole("[ERROR] No .llamafile found in Backend folder");
+                return;
+            }
+
+            LogToConsole($"[LLAMAFILE] Found: {llamafilePath}");
+
+            var start = new ProcessStartInfo
+            {
+                FileName = llamafilePath,
+                Arguments = "--server --host 127.0.0.1 --port 8081 --ctx-size 4096 -ngl 9999 --nobrowser",
+                WorkingDirectory = Path.GetDirectoryName(llamafilePath),
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true
+            };
+
+            _llamafileProcess = new Process { StartInfo = start, EnableRaisingEvents = true };
+            _llamafileProcess.Start();
+            _llamafileProcess.BeginOutputReadLine();
+            _llamafileProcess.BeginErrorReadLine();
+
+            LogToConsole("[LLAMAFILE] Server process started on port 8081");
+        }
+        catch (Exception ex)
+        {
+            LogToConsole($"[LLAMAFILE ERROR] Failed to start: {ex.Message}");
+        }
+    }
+
+    private async void StartAIProcess()
+    {
+        try
+        {
+            // Start llamafile server first
+            StartLlamafileServer();
+
+            // Wait for llamafile to be ready
+            bool llamafileReady = await IsPortAvailable(8081);
+            if (!llamafileReady)
+            {
+                LogToConsole("[ERROR] Llamafile server did not start in time");
+                return;
+            }
+
+            string baseDir = AppContext.BaseDirectory;
+            string scriptPath = Path.Combine(AppContext.BaseDirectory, "Backend", "main.py");
 
             var start = new ProcessStartInfo
             {
@@ -462,11 +551,47 @@ public sealed partial class AvatarPage : Page
         }
     }
 
+    private void OnConnectAudioClicked(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            // Hide the overlay
+            if (AudioConnectionOverlay != null)
+            {
+                AudioConnectionOverlay.Visibility = Visibility.Collapsed;
+            }
+
+            _isAudioConnected = true;
+            LogToConsole("[AVATAR] Audio connected - TTS enabled");
+
+            // Execute JavaScript to enable audio in HeadTTS
+            if (AvatarWebView?.CoreWebView2 != null)
+            {
+                AvatarWebView.CoreWebView2.ExecuteScriptAsync(@"
+                    if (typeof enableAudio === 'function') {
+                        enableAudio();
+                    } else {
+                        console.log('Audio enabled by user interaction');
+                    }
+                ");
+            }
+        }
+        catch (Exception ex)
+        {
+            LogToConsole($"[ERROR] Failed to connect audio: {ex.Message}");
+        }
+    }
+
     private async void OnBackClicked(object sender, RoutedEventArgs e)
     {
         if (_pythonProcess != null && !_pythonProcess.HasExited)
         {
             try { _pythonProcess.Kill(); } catch { }
+        }
+
+        if (_llamafileProcess != null && !_llamafileProcess.HasExited)
+        {
+            try { _llamafileProcess.Kill(); } catch { }
         }
 
         _isMicEnabled = false;

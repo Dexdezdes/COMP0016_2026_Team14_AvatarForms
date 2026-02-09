@@ -267,35 +267,6 @@
       // Load the currently chosen person
       await loadPerson();
 
-      // Automatically resume audio context after avatar loads
-      // This ensures audio works without manual user interaction
-      setTimeout(async () => {
-        try {
-          if (head.audioCtx && head.audioCtx.state === 'suspended') {
-            await head.audioCtx.resume();
-            console.log('[AUDIO] AudioContext resumed successfully');
-          }
-          
-          // Simulate click to ensure all permissions are granted
-          document.body.click();
-          console.log('[INIT] Auto-click executed for audio activation');
-        } catch (error) {
-          console.error('[AUDIO] Failed to activate audio:', error);
-        }
-      }, 500);
-
-      // Add click listener to resume audio if it's suspended
-      document.addEventListener('click', async () => {
-        if (head.audioCtx && head.audioCtx.state === 'suspended') {
-          try {
-            await head.audioCtx.resume();
-            console.log('[AUDIO] AudioContext resumed after user interaction');
-          } catch (error) {
-            console.error('[AUDIO] Failed to resume AudioContext:', error);
-          }
-        }
-      }, { once: false });
-
       // Pause animation when document is not visible
       document.addEventListener("visibilitychange", async function (ev) {
         if (document.visibilityState === "visible") {
