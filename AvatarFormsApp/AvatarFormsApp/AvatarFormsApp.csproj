@@ -63,6 +63,11 @@
             <LogicalName>Local/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="../../Backend/**/*">
+            <Link>Backend/%(RecursiveDir)%(FileName)%(Extension)</Link>
+            <LogicalName>Backend/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Content Include="../../HeadTTS/**/*">
             <Link>HeadTTS/%(RecursiveDir)%(FileName)%(Extension)</Link>
             <LogicalName>HeadTTS/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
