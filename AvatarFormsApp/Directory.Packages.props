@@ -2,6 +2,8 @@
   <ItemGroup>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2" />
+    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.10" />
+    <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.3719.77" />
     <PackageVersion Include="System.Speech" Version="10.0.2" />
     <PackageVersion Include="Uno.WinUI" Version="5.2.161" />
     <PackageVersion Include="Uno.Material.WinUI" Version="5.3.1" />
