@@ -76,7 +76,9 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
         <PackageReference Include="Microsoft.Extensions.Hosting" />
+        <PackageReference Include="Microsoft.Web.WebView2" />
         <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="System.Speech" />
     </ItemGroup>
@@ -92,11 +94,4 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-    
-    <Target Name="RemoveWebView2FromReferenceCopyLocal" AfterTargets="ResolveAssemblyReferences" Condition="$([MSBuild]::IsOSPlatform('windows'))">
-        <ItemGroup>
-            <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(FileName)%(Extension)' == 'Microsoft.Web.WebView2.Core.dll'" />
-        </ItemGroup>
-    </Target>
-
 </Project>
