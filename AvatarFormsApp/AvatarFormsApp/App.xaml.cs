@@ -5,6 +5,14 @@ using AvatarFormsApp.Models;
 using AvatarFormsApp.ViewModels;
 using AvatarFormsApp.Views;
 using Microsoft.Extensions.Hosting;
+using AvatarFormsApp.Data; // ADD THIS
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.EntityFrameworkCore; // ADD THIS
 
 namespace AvatarFormsApp;
 
@@ -79,6 +87,19 @@ public partial class App : Application
             // Core Services
             services.AddSingleton<IFileService, FileService>();
 
+            // *** DATABASE SERVICES - ADD THESE ***
+            // Register DbContext with SQLite
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                var dbPath = Path.Combine(appDataPath, "AvatarFormsApp", "questionnaires.db");
+                options.UseSqlite($"Data Source={dbPath}");
+            });
+
+            // Register Questionnaire Service
+            services.AddScoped<IQuestionnaireService, QuestionnaireService>();
+            // *** END DATABASE SERVICES ***
+
             // Views and ViewModels
             services.AddTransient<DashboardPageViewModel>();
             services.AddTransient<DashboardPage>();
@@ -124,6 +145,16 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
+        
+        // *** INITIALIZE DATABASE - ADD THIS ***
+        // Ensure database is created on first launch
+        using (var scope = Host.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+        }
+        // *** END DATABASE INITIALIZATION ***
+        
         var window = App.MainWindow;
 
         var shell = App.GetService<ShellPage>();

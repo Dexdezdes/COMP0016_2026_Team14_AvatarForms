@@ -1,7 +1,8 @@
-﻿using AvatarFormsApp.ViewModels;
-
-using Microsoft.UI.Xaml.Controls;
+using AvatarFormsApp.ViewModels;
 using AvatarFormsApp.Contracts.Services;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+
 namespace AvatarFormsApp.Views;
 
 public sealed partial class DashboardPage : Page
@@ -18,7 +19,15 @@ public sealed partial class DashboardPage : Page
 
     private void OnUploadClick(object sender, RoutedEventArgs e)
     { 
-        // Use the NavigationService to change the content inside your ShellPage's Frame
         App.GetService<INavigationService>().NavigateTo("CreateQuestionnairePageViewModel");
+    }
+
+    private void OnFilterButtonClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is string filterTag)
+        {
+            // Update the ViewModel filter property directly
+            ViewModel.SelectedFilter = filterTag;
+        }
     }
 }

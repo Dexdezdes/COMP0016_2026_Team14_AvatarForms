@@ -1,5 +1,7 @@
 <Project ToolsVersion="15.0">
   <ItemGroup>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2" />
     <PackageVersion Include="System.Speech" Version="10.0.2" />
     <PackageVersion Include="Uno.WinUI" Version="5.2.161" />
     <PackageVersion Include="Uno.Material.WinUI" Version="5.3.1" />
