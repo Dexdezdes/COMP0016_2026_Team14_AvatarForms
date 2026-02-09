@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:AvatarFormsApp.Models"
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea" Padding="20">
@@ -17,23 +18,62 @@
             <TextBlock Text="Check out latest responses" Foreground="Gray" Margin="0,4,0,12" />
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,6,0,12">
-                <ComboBox Width="200" Margin="0,0,8,0" SelectedIndex="0">
-                    <ComboBoxItem>All Questionnaires</ComboBoxItem>
-                    <ComboBoxItem>Pending</ComboBoxItem>
-                    <ComboBoxItem>Closed</ComboBoxItem>
-                </ComboBox>
-                <Button Content="Pending" Foreground="White" Background="Transparent" BorderBrush="Transparent" Margin="0,0,8,0" />
-                <Button Content="Closed" Foreground="White" Background="Transparent" BorderBrush="Transparent" Margin="0,0,8,0" />
-
-                <ComboBox Width="140" Margin="12,0" HorizontalAlignment="Right">
-                    <ComboBoxItem>Sort by name (A-Z)</ComboBoxItem>
-                    <ComboBoxItem>Sort by responses</ComboBoxItem>
+                <!-- Filter ComboBox with Binding -->
+                <ComboBox x:Name="FilterComboBox"
+                          Width="200" 
+                          Margin="0,0,8,0" 
+                          SelectedIndex="0"
+                          SelectedItem="{x:Bind ViewModel.SelectedFilter, Mode=TwoWay}">
+                    <x:String>All Questionnaires</x:String>
+                    <x:String>Pending</x:String>
+                    <x:String>Closed</x:String>
                 </ComboBox>
 
-                <TextBox Width="220" PlaceholderText="Search for questionnaires..." HorizontalAlignment="Right" Margin="12,0" />
+                <!-- Sort ComboBox with Binding -->
+                <ComboBox x:Name="SortComboBox"
+                          Width="180" 
+                          Margin="12,0" 
+                          HorizontalAlignment="Right"
+                          SelectedIndex="0"
+                          SelectedItem="{x:Bind ViewModel.SelectedSort, Mode=TwoWay}">
+                    <x:String>Sort by name (A-Z)</x:String>
+                    <x:String>Sort by name (Z-A)</x:String>
+                    <x:String>Sort by responses</x:String>
+                </ComboBox>
+
+                <!-- Search TextBox with Binding -->
+                <TextBox x:Name="SearchBox"
+                         Width="220" 
+                         PlaceholderText="Search for questionnaires..." 
+                         HorizontalAlignment="Right" 
+                         Margin="12,0"
+                         Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
 
-            <ListView x:Name="QuestionnaireList" Margin="0" SelectionMode="Single">
+            <!-- Empty State -->
+            <StackPanel x:Name="EmptyState"
+                        Visibility="{x:Bind ViewModel.HasQuestionnaires, Mode=OneWay, Converter={StaticResource BoolToVisibilityInverseConverter}}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Margin="0,60,0,0">
+                <FontIcon Glyph="&#xE8F1;" FontSize="64" Foreground="Gray" HorizontalAlignment="Center" />
+                <TextBlock Text="No questionnaires available" 
+                           FontSize="18" 
+                           Foreground="Gray" 
+                           Margin="0,16,0,8"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="Upload a questionnaire to get started" 
+                           FontSize="14" 
+                           Foreground="Gray" 
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Questionnaire List -->
+            <ListView x:Name="QuestionnaireList" 
+                      Margin="0" 
+                      SelectionMode="Single"
+                      ItemsSource="{x:Bind ViewModel.FilteredQuestionnaires, Mode=OneWay}"
+                      Visibility="{x:Bind ViewModel.HasQuestionnaires, Mode=OneWay}">
                 <ListView.Header>
                     <Grid Padding="6,6,6,12">
                         <Grid.ColumnDefinitions>
@@ -43,112 +83,43 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Questionnaire" FontWeight="Bold" Margin="16,0,0,0" />
                         <TextBlock Grid.Column="1" Margin="15,0,0,0" Text="Responses" FontWeight="Bold" HorizontalAlignment="Left" />
-                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="Owners" FontWeight="Bold" HorizontalAlignment="Left" />
+                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="Status" FontWeight="Bold" HorizontalAlignment="Left" />
                     </Grid>
                 </ListView.Header>
 
-                <ListViewItem>
-                    <Grid Padding="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" /><ColumnDefinition Width="140" /><ColumnDefinition Width="120" />
-                        </Grid.ColumnDefinitions>
-                        <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                            <Rectangle Width="4" Fill="#4CB3B3" Margin="0,0,12,0" RadiusX="2" RadiusY="2" />
-                            <StackPanel Grid.Column="1">
-                                <TextBlock Text="DASS Questionnaire" FontWeight="SemiBold" />
-                                <ProgressBar Value="100" Minimum="0" Maximum="100" Height="2" Foreground="#4CB3B3" Margin="0,8,12,0" />
-                            </StackPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Questionnaire">
+                        <Grid Padding="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Width="4" Fill="{x:Bind Color}" Margin="0,0,12,0" RadiusX="2" RadiusY="2" />
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{x:Bind Name}" FontWeight="SemiBold" />
+                                    <ProgressBar Value="100" Minimum="0" Maximum="100" Height="2" Foreground="{x:Bind Color}" Margin="0,8,12,0" />
+                                </StackPanel>
+                            </Grid>
+                            
+                            <TextBlock Grid.Column="1" 
+                                       Text="0"
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center" />
+                            
+                            <TextBlock Grid.Column="2"
+                                       Text="{x:Bind Status}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
                         </Grid>
-                        <TextBlock Grid.Column="1" Text="12 responses" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Grid Width="28" Height="28" Margin="4,0"><Ellipse Fill="#FF6B6B" /><FontIcon Glyph="&#xE77B;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" /></Grid>
-                            <Grid Width="28" Height="28" Margin="4,0"><Ellipse Fill="#4ECDC4" /><FontIcon Glyph="&#xE77B;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" /></Grid>
-                        </StackPanel>
-                    </Grid>
-                </ListViewItem>
-
-                <ListViewItem>
-                    <Grid Padding="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" /><ColumnDefinition Width="140" /><ColumnDefinition Width="120" />
-                        </Grid.ColumnDefinitions>
-                        <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                            <Rectangle Width="4" Fill="#5B6DF0" Margin="0,0,12,0" RadiusX="2" RadiusY="2" />
-                            <StackPanel Grid.Column="1">
-                                <TextBlock Text="Learning Experience Survey" FontWeight="SemiBold" />
-                                <ProgressBar Value="100" Minimum="0" Maximum="100" Height="2" Foreground="#5B6DF0" Margin="0,8,12,0" />
-                            </StackPanel>
-                        </Grid>
-                        <TextBlock Grid.Column="1" Text="27 responses" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Grid Width="28" Height="28" Margin="4,0"><Ellipse Fill="#95E1D3" /><FontIcon Glyph="&#xE77B;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" /></Grid>
-                        </StackPanel>
-                    </Grid>
-                </ListViewItem>
-
-                <ListViewItem>
-                    <Grid Padding="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" /><ColumnDefinition Width="140" /><ColumnDefinition Width="120" />
-                        </Grid.ColumnDefinitions>
-                        <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                            <Rectangle Width="4" Fill="#FF3B7A" Margin="0,0,12,0" RadiusX="2" RadiusY="2" />
-                            <StackPanel Grid.Column="1">
-                                <TextBlock Text="Examination Feedback Survey" FontWeight="SemiBold" />
-                                <ProgressBar Value="100" Minimum="0" Maximum="100" Height="2" Foreground="#FF3B7A" Margin="0,8,12,0" />
-                            </StackPanel>
-                        </Grid>
-                        <TextBlock Grid.Column="1" Text="9 responses" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Grid Width="28" Height="28" Margin="4,0"><Ellipse Fill="#A8E6CF" /><FontIcon Glyph="&#xE77B;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" /></Grid>
-                        </StackPanel>
-                    </Grid>
-                </ListViewItem>
-
-                <ListViewItem>
-                    <Grid Padding="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" /><ColumnDefinition Width="140" /><ColumnDefinition Width="120" />
-                        </Grid.ColumnDefinitions>
-                        <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                            <Rectangle Width="4" Fill="#8E53E7" Margin="0,0,12,0" RadiusX="2" RadiusY="2" />
-                            <StackPanel Grid.Column="1">
-                                <TextBlock Text="Student Health Questionnaire" FontWeight="SemiBold" />
-                                <ProgressBar Value="100" Minimum="0" Maximum="100" Height="2" Foreground="#8E53E7" Margin="0,8,12,0" />
-                            </StackPanel>
-                        </Grid>
-                        <TextBlock Grid.Column="1" Text="14 responses" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Grid Width="28" Height="28" Margin="4,0"><Ellipse Fill="#6BCB77" /><FontIcon Glyph="&#xE77B;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" /></Grid>
-                            <Grid Width="28" Height="28" Margin="4,0"><Ellipse Fill="#4D96FF" /><FontIcon Glyph="&#xE77B;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" /></Grid>
-                        </StackPanel>
-                    </Grid>
-                </ListViewItem>
-
-                <ListViewItem>
-                    <Grid Padding="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" /><ColumnDefinition Width="140" /><ColumnDefinition Width="120" />
-                        </Grid.ColumnDefinitions>
-                        <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                            <Rectangle Width="4" Fill="#FFA500" Margin="0,0,12,0" RadiusX="2" RadiusY="2" />
-                            <StackPanel Grid.Column="1">
-                                <TextBlock Text="Year End Review" FontWeight="SemiBold" />
-                                <ProgressBar Value="100" Minimum="0" Maximum="100" Height="2" Foreground="#FFA500" Margin="0,8,12,0" />
-                            </StackPanel>
-                        </Grid>
-                        <TextBlock Grid.Column="1" Text="12 responses" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Grid Width="28" Height="28" Margin="4,0"><Ellipse Fill="#FF6B9D" /><FontIcon Glyph="&#xE77B;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" /></Grid>
-                            <Grid Width="28" Height="28" Margin="4,0"><Ellipse Fill="#C44569" /><FontIcon Glyph="&#xE77B;" FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" /></Grid>
-                        </StackPanel>
-                    </Grid>
-                </ListViewItem>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
             </ListView>
 
             <Button Content="Upload Questionnaire"
