@@ -55,6 +55,7 @@ def bracketStrip(text):
 
 def outputToJSON(text):
     try:
+        text = thinkStrip(text)
         return json.loads(text)
     except json.JSONDecodeError:
         print("\033[91mError: Output is not valid JSON!\033[0m")

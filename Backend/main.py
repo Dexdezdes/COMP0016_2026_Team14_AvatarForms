@@ -1,12 +1,21 @@
 
 from agents import Model, TalkerAgent, EvaluatorAgent, RAG_Agent
-from sockets import stream_message, start_server, websocket_handler
+from sockets import stream_message, start_server, websocket_handler, wait_for_browser_connection
 from formatting import bcolors
 
 import os
 import asyncio
+import socket
+import time
+from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv()
+
+client = OpenAI(
+    base_url="http://127.0.0.1:8081/v1",
+    api_key="sk-no-key-required"
+)
+
 # LOCAL_API_URL
 # FIREWORKS_API_KEY
 
@@ -66,11 +75,11 @@ class AvatarFormsInterviewer:
             "stream": False
         }
         if self.is_local:
-            url = os.getenv("LOCAL_API_URL")
-            if not url:
-                raise ValueError("LOCAL_API_URL environment variable not set")
-
-            return Model(url=url, model=self.cloud_model, api_key=None, params=params)
+            # Use the llamafile URL and endpoint
+            llamafile_url = f"http://127.0.0.1:8081/v1/chat/completions"
+            model_name = "LLaMA_CPP"
+            
+            return Model(url=llamafile_url, model=model_name, api_key=None, params=params)
         
         else:
             if not self.cloud_model:
@@ -210,16 +219,17 @@ async def main():
     # Start WebSocket server
     server = await start_server()
 
-    # Setup interview
+    # Wait for browser (HeadTTS) to connect
+    await wait_for_browser_connection()
+
+    # Setup interview after browser is connected
     questions = [
         "What is your full name?",
         "How did you sleep last night?",
-        "Do you generally sleep well?",
-        "How are you feeling today?",
     ]
 
     interview_context = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know them."
-    interviewer = AvatarFormsInterviewer(is_local=False, cutoff=4)
+    interviewer = AvatarFormsInterviewer(is_local=True, cutoff=4)
     interviewer.build_interview(questions, interview_context)
 
     # Start interview
@@ -229,10 +239,10 @@ async def main():
 
     # Interview loop
     while True:
-        response = await asyncio.to_thread(input, "User: ")
+        response = await asyncio.to_thread(input)
         # print(interviewer.conversation_history)
         speech_line, continue_interview = interviewer.respond(response)
-        print(f"{bcolors.OKBLUE}Talker: {speech_line}{bcolors.ENDC}")  # Output to UI in production
+        print(f"{bcolors.OKBLUE}Talker: {speech_line}{bcolors.ENDC}")
         await stream_message("speech", speech_line)
 
         if not continue_interview:
@@ -242,14 +252,15 @@ async def main():
             for question, answer in final_answers.items():
                 print(f"{bcolors.OKGREEN}Q: {question}{bcolors.ENDC}")
                 print(f"A: {answer}\n")
-                break
+                
+            break
 
-        # Keep server running after interview completes
-        print(f"\n{bcolors.OKGREEN}Server will continue running. Press Ctrl+C to stop.{bcolors.ENDC}")
-        try:
-            await asyncio.Future()
-        except asyncio.CancelledError:
-            pass
+    # Keep server running after interview completes
+    print(f"\n{bcolors.OKGREEN}Server will continue running. Press Ctrl+C to stop.{bcolors.ENDC}")
+    try:
+        await asyncio.Future()
+    except asyncio.CancelledError:
+        pass
 
 
 ### Example usage ###
