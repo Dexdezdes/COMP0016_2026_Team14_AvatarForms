@@ -1,4 +1,3 @@
-
 from agents import Model, TalkerAgent, EvaluatorAgent, RAG_Agent
 from sockets import stream_message, start_server, websocket_handler, wait_for_browser_connection
 from formatting import bcolors
@@ -10,6 +9,8 @@ import time
 from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv()
+
+# Llamafile should be in the same directory as this file
 
 client = OpenAI(
     base_url="http://127.0.0.1:8081/v1",
