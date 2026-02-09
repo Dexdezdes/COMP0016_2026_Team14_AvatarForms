@@ -92,15 +92,11 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="Views\AvatarPage.xaml" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Page Update="Views\AvatarPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-    </ItemGroup>
+    
+    <Target Name="RemoveWebView2FromReferenceCopyLocal" AfterTargets="ResolveAssemblyReferences" Condition="$([MSBuild]::IsOSPlatform('windows'))">
+        <ItemGroup>
+            <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(FileName)%(Extension)' == 'Microsoft.Web.WebView2.Core.dll'" />
+        </ItemGroup>
+    </Target>
 
 </Project>

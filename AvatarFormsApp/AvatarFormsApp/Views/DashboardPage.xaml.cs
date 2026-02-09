@@ -1,5 +1,6 @@
 using AvatarFormsApp.ViewModels;
 using AvatarFormsApp.Contracts.Services;
+using AvatarFormsApp.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -67,6 +68,16 @@ public sealed partial class DashboardPage : Page
                     await errorDialog.ShowAsync();
                 }
             }
+        }
+    }
+
+    private void OnQuestionnaireClick(object sender, ItemClickEventArgs e)
+    {
+        if (e.ClickedItem is Questionnaire questionnaire)
+        {
+            App.GetService<INavigationService>().NavigateTo(
+                typeof(QuestionnaireDetailPageViewModel).Name, 
+                questionnaire.Id);
         }
     }
 }

@@ -73,7 +73,9 @@
                       Margin="0" 
                       SelectionMode="Single"
                       ItemsSource="{x:Bind ViewModel.FilteredQuestionnaires, Mode=OneWay}"
-                      Visibility="{x:Bind ViewModel.HasQuestionnaires, Mode=OneWay}">
+                      Visibility="{x:Bind ViewModel.HasQuestionnaires, Mode=OneWay}"
+                      ItemClick="OnQuestionnaireClick"
+                      IsItemClickEnabled="True">
                 <ListView.Header>
                     <Grid Padding="6,6,6,12">
                         <Grid.ColumnDefinitions>
