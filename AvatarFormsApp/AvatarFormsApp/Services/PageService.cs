@@ -1,4 +1,4 @@
-﻿using AvatarFormsApp.Contracts.Services;
+using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.ViewModels;
 using AvatarFormsApp.Views;
 
@@ -18,6 +18,7 @@ public class PageService : IPageService
         Configure<ConversationPageViewModel, ConversationPage>();
         Configure<ShellPageViewModel, ShellPage>();
         Configure<CreateQuestionnairePageViewModel, CreateQuestionnairePage>();
+        Configure<AvatarPageViewModel, AvatarPage>();
     }
 
     public Type GetPageType(string key)

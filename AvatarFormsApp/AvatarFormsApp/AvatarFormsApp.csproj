@@ -58,19 +58,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="../../Cloud/**/*">
-            <Link>Cloud/%(RecursiveDir)%(FileName)%(Extension)</Link>
-            <LogicalName>Cloud/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
         <Content Include="../../Local/**/*">
             <Link>Local/%(RecursiveDir)%(FileName)%(Extension)</Link>
             <LogicalName>Local/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="../../TalkingHead/**/*">
-            <Link>TalkingHead/%(RecursiveDir)%(FileName)%(Extension)</Link>
-            <LogicalName>TalkingHead/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
+        <Content Include="../../HeadTTS/**/*">
+            <Link>HeadTTS/%(RecursiveDir)%(FileName)%(Extension)</Link>
+            <LogicalName>HeadTTS/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
@@ -97,10 +92,15 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-    <Target Name="RemoveWebView2FromReferenceCopyLocal" AfterTargets="ResolveAssemblyReferences" Condition="$([MSBuild]::IsOSPlatform('windows'))">
-        <ItemGroup>
-            <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="'%(FileName)%(Extension)' == 'Microsoft.Web.WebView2.Core.dll'" />
-        </ItemGroup>
-    </Target>
+
+    <ItemGroup>
+      <None Remove="Views\AvatarPage.xaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="Views\AvatarPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
 
 </Project>

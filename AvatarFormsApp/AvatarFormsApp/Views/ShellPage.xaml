@@ -93,7 +93,7 @@ Loaded="OnLoaded">
 
                 <NavigationViewItem x:Name="Nav_Conversation" 
                             Content="AI Chat"
-                            Tag="ConversationPageViewModel">
+                            Tag="AvatarPageViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE8BD;" />
                     </NavigationViewItem.Icon>

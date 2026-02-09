@@ -1,20 +1,13 @@
-using System;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using AvatarFormsApp.ViewModels;
 using System.Text.Json;
-using Microsoft.Web.WebView2.Core;
+
 #if WINDOWS
 using Windows.Media.SpeechRecognition;
-using Microsoft.Web.WebView2.Core;
-using System.Speech.Synthesis;
+
 #endif
 
 #if __MACCATALYST__
@@ -129,7 +122,6 @@ public sealed partial class ConversationPage : Page
     private async void InitializeAvatar()
     {   
         if (_isAvatarInitialized) return; 
-        _isAvatarInitialized = true;
         try
         {
             ChatDisplay.Text += "[INIT] Starting avatar setup...\n";
@@ -158,6 +150,13 @@ public sealed partial class ConversationPage : Page
     await AvatarWebView.EnsureCoreWebView2Async();
 #endif
 
+            if (AvatarWebView.CoreWebView2 == null)
+            {
+                ChatDisplay.Text += "[ERROR] CoreWebView2 failed to initialize.\n";
+                return;
+            }
+
+            _isAvatarInitialized = true;
             ChatDisplay.Text += "[INIT] CoreWebView2 ready\n";
             
             AvatarWebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = true;
@@ -435,6 +434,7 @@ public sealed partial class ConversationPage : Page
         }
         catch (Exception ex)
         {
+            _isAvatarInitialized = false;
             ChatDisplay.Text += $"[ERROR] Avatar setup: {ex.Message}\n";
             ChatDisplay.Text += $"[ERROR] Stack: {ex.StackTrace}\n";
         }
@@ -443,6 +443,13 @@ public sealed partial class ConversationPage : Page
     private void OnAutoSendToggled(object sender, RoutedEventArgs e)
     {
 
+    }
+
+    private void OnConsoleToggleChanged(object sender, RoutedEventArgs e)
+    {
+        if (ConsoleOverlay == null || ConsoleToggle == null) return;
+        var isOpen = ConsoleToggle.IsChecked == true;
+        ConsoleOverlay.Visibility = isOpen ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private string GetPythonPath()
@@ -730,7 +737,6 @@ public sealed partial class ConversationPage : Page
     
     private void OnSendClicked(object sender, RoutedEventArgs e) => SendMessage();
     private void OnInputKeyDown(object sender, KeyRoutedEventArgs e) { if (e.Key == Windows.System.VirtualKey.Enter) SendMessage(); }
-
     private void OnInputTextChanged(object sender, TextChangedEventArgs e) {
         if (UserInput.FocusState != FocusState.Unfocused) {
             _isUserEditing = true;

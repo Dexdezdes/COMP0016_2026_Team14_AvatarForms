@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="icon" href="data:,">
+
+  <title>HeadTTS - TalkingHead Demo</title>
+
+  <style>
+    body, html { width:100%; height:100%; height:100dvh; margin: 0; padding: 0; position: relative; background-color: #202020; color: white; overflow: hidden; }
+    #avatar { display: block; width:100%; height: 100%;  height:100dvh; margin: 0; padding: 0; }
+    #info { display: block; position: absolute; bottom: 10px; left: 10px; right: 10px; font-family: Arial; font-size: 20px; }
+    #subtitles {
+      position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%);
+      font-family: Arial; font-size: max( min(5vh,5vw), 24px );
+      line-height: max( min(6vh,6vh), 20px ); z-index: 30;
+      height: Calc( 2 * max( min(6vh,6vh), 20px ));
+      max-height: Calc( 2 * max( min(6vh,6vh), 20px ));
+      width: 80%; text-align: center; overflow: hidden;
+    }
+  </style>
+
+  <script type="importmap">
+  { "imports":
+    {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js/+esm",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+      "talkinghead": "https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.7/modules/talkinghead.mjs",
+      "headtts": "./modules/headtts.mjs"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import { TalkingHead } from "talkinghead";
+    import { HeadTTS } from "headtts";
+
+    // Globals
+    let head; // TalkingHead instance
+    let headtts; // HeadTTS instance
+    const el = {}; // DOM elements based in `id` property
+
+    // Avatars
+    const persons = {
+
+      "julia": {
+        avatar: {
+          url: "./avatars/julia.glb",
+          body: "F",
+          avatarMood: "neutral"
+        },
+        view: {
+          cameraY: 0
+        },
+        setup: {
+          voice: "af_bella",
+          language: "en-us",
+          speed: 1,
+          audioEncoding: "wav"
+        }
+      },
+
+      "david": {
+        avatar: {
+          url: "./avatars/david.glb",
+          body: "M",
+          avatarMood: "neutral"
+        },
+        view: {
+          cameraY: -0.04 // David is taller, so compensate
+        },
+        setup: {
+          voice: "am_fenrir",
+          language: "en-us",
+          speed: 1,
+          audioEncoding: "wav"
+        }
+      }
+    };
+
+    /**
+    * Load the currently selected avatar and voice.
+    */
+    async function loadPerson() {
+
+      // Default to Julia
+      const person = persons["julia"];
+
+      // Progress info
+      const info = { head: "-", headtts:"-" };
+      const updateInfo = (name,ev) => {
+        if ( ev ) {
+          if ( ev.lengthComputable ) {
+            info[name] = Math.min(100,Math.round(ev.loaded/ev.total * 100 )) + "%";
+          } else {
+            info[name] = Math.round(ev.loaded / 1000) + "KB";
+          }
+        }
+        let s = "Loading: " + info.head + " / " + info.headtts;
+        if ( info.hasOwnProperty("error") ) {
+          s += " ERROR:<br>&gt; " + info.error.replaceAll("\n","<br>&gt; ");
+        }
+        el.info.innerHTML = s;
+      }
+
+      // Load and show the avatar
+      try {
+        el.info.style.display = 'block';
+        el.info.textContent = "Loading...";
+
+        await Promise.all([
+          head.showAvatar( person.avatar, updateInfo.bind(null,"head") ),
+          headtts.connect( null, updateInfo.bind(null,"headtts"))
+        ]);
+
+        // Setup view
+        head.setView(head.viewName, person.view );
+        head.cameraClock = 999; // Hack to prevent smooth transition
+
+        // Setup voice
+        headtts.setup( person.setup );
+
+        el.info.style.display = 'none';
+      } catch (error) {
+        console.log(error);
+        info.error = error.message?.slice() || "Unknown error.";
+        updateInfo();
+      }
+
+    }
+
+    // SUBTITLES
+    let timerSubtitles; // Subtitles clear timer
+
+    /**
+    * Add the given word to subtitles and reset the clear timer.
+    * Play hand gestures for pre-defined keywords.
+    *
+    * @param {Object} msg HeadTTS response message
+    * @param {string} word Word that is been currently spoken
+    * @param {number} [ms=2000] Timeout for clearing subtitles, in milliseconds
+    */
+    function addSubtitle(msg, word, ms=2000) {
+
+      // Add the word and scroll to bottom
+      if ( word ) {
+        el.subtitles.textContent += word;
+        el.subtitles.scrollTop = el.subtitles.scrollHeight;
+      }
+
+      // Timeout to clear subtitles
+      if ( timerSubtitles ) {
+        clearTimeout(timerSubtitles);
+        timerSubtitles = null;
+      }
+      timerSubtitles = setTimeout( clearSubtitles, ms );
+    }
+
+
+    /**
+    * Clear subtitles.
+    *
+    * @param {number} [ms=0] Timeout for clearing subtitles, in milliseconds
+    */
+    function clearSubtitles(ms=0) {
+
+      if ( timerSubtitles ) {
+        clearTimeout(timerSubtitles);
+        timerSubtitles = null;
+      }
+      if ( ms > 0 ) {
+        timerSubtitles = setTimeout( clearSubtitles, ms );
+      } else {
+        el.subtitles.textContent = "";
+      }
+
+    }
+
+    // WEB PAGE LOADED
+    document.addEventListener('DOMContentLoaded', async function(e) {
+
+      // Get all DOM elements with an `id`
+      document.querySelectorAll('[id]').forEach( x => el[x.id] = x );
+
+      // Instantiate the TalkingHead class
+      head = new TalkingHead( el.avatar, {
+        ttsEndpoint: "N/A",
+        lipsyncModules: [],
+        cameraView: "upper",
+        mixerGainSpeech: 3,
+        cameraRotateEnable: false
+      });
+
+      // Instantiate HeadTTS text-to-speech class
+      headtts = new HeadTTS({
+        endpoints: ["webgpu", "ws://127.0.0.1:8882/", "wasm"], // Endpoints
+        languages: ["en-us"], // Language to be pre-loaded
+        voices: ["af_bella","am_fenrir"], // Voices to be pre-loaded
+        voiceURL: "../voices", // Use local voice files
+        audioCtx: head.audioCtx, // Share audio context with TalkingHead
+        trace: 0,
+      });
+
+      let ws = null;
+      let reconnectInterval = null;
+
+      function connectWebSocket() {
+        ws = new WebSocket('ws://localhost:8883');
+
+        ws.onopen = () => {
+          console.log('✓ Connected to agent WebSocket');
+          if (reconnectInterval) {
+            clearInterval(reconnectInterval);
+            reconnectInterval = null;
+          }
+        };
+
+        ws.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+
+          if (message.type === 'speech') {
+            headtts.synthesize({
+              input: message.content
+            });
+          }
+        };
+
+        ws.onerror = (error) => {
+          console.error('✗ WebSocket error:', error.type);
+        };
+
+        ws.onclose = () => {
+          console.log('✗ Disconnected from agent. Attempting to reconnect...');
+          if (!reconnectInterval) {
+            reconnectInterval = setInterval(() => {
+              console.log('Reconnecting...');
+              connectWebSocket();
+            }, 2000);
+          }
+        };
+      }
+
+      // Initial connection
+      connectWebSocket();
+
+      // For debugging
+      window.head = head;
+      window.headtts = headtts;
+
+      // Speak and lipsync
+      headtts.onmessage = (message) => {
+        if ( message.type === "audio" ) {
+          try {
+            head.speakMarker( clearSubtitles );
+            head.speakAudio( message.data, {}, addSubtitle.bind(null,message) );
+          } catch(error) {
+            console.log(error);
+          }
+        } else if ( message.type === "custom" ) {
+          console.error("Received custom message, data=", message.data );
+        } else if ( message.type === "error" ) {
+          console.error("Received error message, error=", (message.data?.error || "Unknown error."));
+        }
+      }
+
+      // Load the currently chosen person
+      await loadPerson();
+
+      // Automatically resume audio context after avatar loads
+      // This ensures audio works without manual user interaction
+      setTimeout(async () => {
+        try {
+          if (head.audioCtx && head.audioCtx.state === 'suspended') {
+            await head.audioCtx.resume();
+            console.log('[AUDIO] AudioContext resumed successfully');
+          }
+          
+          // Simulate click to ensure all permissions are granted
+          document.body.click();
+          console.log('[INIT] Auto-click executed for audio activation');
+        } catch (error) {
+          console.error('[AUDIO] Failed to activate audio:', error);
+        }
+      }, 500);
+
+      // Add click listener to resume audio if it's suspended
+      document.addEventListener('click', async () => {
+        if (head.audioCtx && head.audioCtx.state === 'suspended') {
+          try {
+            await head.audioCtx.resume();
+            console.log('[AUDIO] AudioContext resumed after user interaction');
+          } catch (error) {
+            console.error('[AUDIO] Failed to resume AudioContext:', error);
+          }
+        }
+      }, { once: false });
+
+      // Pause animation when document is not visible
+      document.addEventListener("visibilitychange", async function (ev) {
+        if (document.visibilityState === "visible") {
+          head.start();
+        } else {
+          head.stop();
+        }
+      });
+
+    });
+
+  </script>
+</head>
+
+<body>
+  <div id="avatar"></div>
+  <div id="info"></div>
+  <div id="subtitles"></div>
+</body>
+
+</html>
