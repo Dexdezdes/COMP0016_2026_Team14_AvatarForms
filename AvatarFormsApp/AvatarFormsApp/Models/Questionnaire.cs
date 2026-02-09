@@ -4,6 +4,7 @@ public class Questionnaire
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public required string Name { get; set; }
+    public string? Description { get; set; }
     public required string OwnerId { get; set; }
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;

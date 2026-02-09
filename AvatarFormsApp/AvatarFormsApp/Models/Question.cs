@@ -13,4 +13,8 @@ public class Question
     public Questionnaire? Questionnaire { get; set; }
     public List<QuestionOption> Options { get; set; } = new();
     public List<Response> Responses { get; set; } = new();
+
+    // Computed properties
+    public bool IsMCQ => Type == QuestionType.MCQ;
+    public bool IsTextInput => Type == QuestionType.OpenEnded;
 }

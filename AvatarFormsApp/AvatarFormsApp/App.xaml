@@ -14,8 +14,10 @@
                 <ResourceDictionary Source="Styles/TextBlock.xaml" />
             </ResourceDictionary.MergedDictionaries>
             
-            <!-- Add the converter here -->
+            <!-- Add the converters here -->
+            <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <helpers:BoolToVisibilityInverseConverter x:Key="BoolToVisibilityInverseConverter" />
+            <helpers:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

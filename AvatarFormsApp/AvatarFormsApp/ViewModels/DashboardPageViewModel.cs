@@ -31,8 +31,7 @@ public partial class DashboardPageViewModel : ObservableRecipient
     public DashboardPageViewModel(IQuestionnaireService questionnaireService)
     {
         _questionnaireService = questionnaireService;
-        _ = SeedSampleDataAsync(); // Seed sample data first
-        _ = LoadQuestionnairesAsync(); // Then load data
+        _ = LoadQuestionnairesAsync(); // Only load data, don't seed
     }
 
     // Load questionnaires from database

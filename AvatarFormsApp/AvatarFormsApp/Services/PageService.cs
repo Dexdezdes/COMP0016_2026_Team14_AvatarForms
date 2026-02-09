@@ -18,6 +18,7 @@ public class PageService : IPageService
         Configure<ConversationPageViewModel, ConversationPage>();
         Configure<ShellPageViewModel, ShellPage>();
         Configure<CreateQuestionnairePageViewModel, CreateQuestionnairePage>();
+        Configure<QuestionnaireDetailPageViewModel, QuestionnaireDetailPage>();
         Configure<AvatarPageViewModel, AvatarPage>();
     }
 

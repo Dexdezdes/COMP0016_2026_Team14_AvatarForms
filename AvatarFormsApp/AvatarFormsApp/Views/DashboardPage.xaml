@@ -73,17 +73,21 @@
                       Margin="0" 
                       SelectionMode="Single"
                       ItemsSource="{x:Bind ViewModel.FilteredQuestionnaires, Mode=OneWay}"
-                      Visibility="{x:Bind ViewModel.HasQuestionnaires, Mode=OneWay}">
+                      Visibility="{x:Bind ViewModel.HasQuestionnaires, Mode=OneWay}"
+                      ItemClick="OnQuestionnaireClick"
+                      IsItemClickEnabled="True">
                 <ListView.Header>
                     <Grid Padding="6,6,6,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="140" />
                             <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="80" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Questionnaire" FontWeight="Bold" Margin="16,0,0,0" />
                         <TextBlock Grid.Column="1" Margin="15,0,0,0" Text="Responses" FontWeight="Bold" HorizontalAlignment="Left" />
                         <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="Status" FontWeight="Bold" HorizontalAlignment="Left" />
+                        <TextBlock Grid.Column="3" Text="Actions" FontWeight="Bold" HorizontalAlignment="Center" />
                     </Grid>
                 </ListView.Header>
 
@@ -94,6 +98,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="140" />
                                 <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="80" />
                             </Grid.ColumnDefinitions>
                             
                             <Grid>
@@ -117,6 +122,27 @@
                                        Text="{x:Bind Status}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center" />
+                            
+                            <Button Grid.Column="3"
+                                    Content="&#xE74D;"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="16"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Background="Transparent"
+                                    Foreground="#C42B1C"
+                                    BorderThickness="0"
+                                    Padding="8"
+                                    ToolTipService.ToolTip="Delete questionnaire"
+                                    Click="OnDeleteClick"
+                                    Tag="{x:Bind Id}">
+                                <Button.Resources>
+                                    <ResourceDictionary>
+                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#10C42B1C" />
+                                        <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#20C42B1C" />
+                                    </ResourceDictionary>
+                                </Button.Resources>
+                            </Button>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

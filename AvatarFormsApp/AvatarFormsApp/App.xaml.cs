@@ -4,6 +4,7 @@ using AvatarFormsApp.Services;
 using AvatarFormsApp.Models;
 using AvatarFormsApp.ViewModels;
 using AvatarFormsApp.Views;
+using AvatarFormsApp.Data;
 using Microsoft.Extensions.Hosting;
 using AvatarFormsApp.Data; // ADD THIS
 
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.EntityFrameworkCore; // ADD THIS
+using Microsoft.EntityFrameworkCore;
 
 namespace AvatarFormsApp;
 
@@ -103,6 +104,8 @@ public partial class App : Application
             // Views and ViewModels
             services.AddTransient<DashboardPageViewModel>();
             services.AddTransient<DashboardPage>();
+            services.AddTransient<QuestionnaireDetailPageViewModel>();
+            services.AddTransient<QuestionnaireDetailPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ConversationPage>();
             services.AddTransient<CreateQuestionnairePage>();
@@ -152,6 +155,9 @@ public partial class App : Application
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await dbContext.Database.EnsureCreatedAsync();
+            
+            // Seed sample data if database is empty
+            await SeedSampleDataAsync(dbContext);
         }
         // *** END DATABASE INITIALIZATION ***
         
@@ -161,5 +167,273 @@ public partial class App : Application
         window.Content = shell;
 
         window.Activate(); 
+    }
+
+    private async Task SeedSampleDataAsync(AppDbContext dbContext)
+    {
+        try
+        {
+            System.Diagnostics.Debug.WriteLine("=== STARTING SEED DATA ===");
+            
+            // Check if we already have data
+            var existingCount = await dbContext.Questionnaires.CountAsync();
+            System.Diagnostics.Debug.WriteLine($"Existing questionnaires count: {existingCount}");
+            
+            if (existingCount > 0)
+            {
+                System.Diagnostics.Debug.WriteLine("Data already exists - skipping seed");
+                return;
+            }
+
+            System.Diagnostics.Debug.WriteLine("No data found - starting seeding...");
+
+            // Sample 1: DASS Questionnaire
+            var dassId = Guid.NewGuid().ToString();
+            var dass = new Questionnaire 
+            { 
+                Id = dassId,
+                Name = "DASS Questionnaire", 
+                OwnerId = "user1", 
+                Status = "Pending", 
+                Color = "#4CB3B3",
+                Description = "Depression Anxiety Stress Scales",
+                CreatedDate = DateTime.UtcNow
+            };
+            
+            var dassQ1Id = Guid.NewGuid().ToString();
+            dass.Questions = new List<Question>
+            {
+                new Question
+                {
+                    Id = dassQ1Id,
+                    QuestionnaireId = dassId,
+                    Text = "Over the past week, how often did you feel down or hopeless?",
+                    Type = QuestionType.MCQ,
+                    Order = 1,
+                    IsRequired = true,
+                    Options = new List<QuestionOption>
+                    {
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ1Id, Text = "Never", Order = 1 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ1Id, Text = "Sometimes", Order = 2 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ1Id, Text = "Often", Order = 3 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ1Id, Text = "Always", Order = 4 }
+                    }
+                }
+            };
+
+            var dassQ2Id = Guid.NewGuid().ToString();
+            dass.Questions.Add(new Question
+            {
+                Id = dassQ2Id,
+                QuestionnaireId = dassId,
+                Text = "I found it hard to wind down",
+                Type = QuestionType.MCQ,
+                Order = 2,
+                IsRequired = true,
+                Options = new List<QuestionOption>
+                {
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ2Id, Text = "Did not apply to me at all", Order = 1 },
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ2Id, Text = "Applied to me to some degree", Order = 2 },
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ2Id, Text = "Applied to me a considerable degree", Order = 3 },
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ2Id, Text = "Applied to me very much", Order = 4 }
+                }
+            });
+
+            dass.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = dassId,
+                Text = "Please share any additional thoughts or concerns",
+                Type = QuestionType.OpenEnded,
+                Order = 3,
+                IsRequired = false
+            });
+
+            // Sample 2: Customer Satisfaction
+            var satisfactionId = Guid.NewGuid().ToString();
+            var satisfaction = new Questionnaire 
+            { 
+                Id = satisfactionId,
+                Name = "Customer Satisfaction Survey", 
+                OwnerId = "user1", 
+                Status = "Pending", 
+                Color = "#FF6B6B",
+                Description = "Help us improve our services",
+                CreatedDate = DateTime.UtcNow
+            };
+
+            var satQ1Id = Guid.NewGuid().ToString();
+            satisfaction.Questions = new List<Question>
+            {
+                new Question
+                {
+                    Id = satQ1Id,
+                    QuestionnaireId = satisfactionId,
+                    Text = "How satisfied are you with our service?",
+                    Type = QuestionType.MCQ,
+                    Order = 1,
+                    IsRequired = true,
+                    Options = new List<QuestionOption>
+                    {
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ1Id, Text = "Very Dissatisfied", Order = 1 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ1Id, Text = "Dissatisfied", Order = 2 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ1Id, Text = "Neutral", Order = 3 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ1Id, Text = "Satisfied", Order = 4 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ1Id, Text = "Very Satisfied", Order = 5 }
+                    }
+                }
+            };
+
+            satisfaction.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = satisfactionId,
+                Text = "What can we improve?",
+                Type = QuestionType.OpenEnded,
+                Order = 2,
+                IsRequired = false
+            });
+
+            var satQ3Id = Guid.NewGuid().ToString();
+            satisfaction.Questions.Add(new Question
+            {
+                Id = satQ3Id,
+                QuestionnaireId = satisfactionId,
+                Text = "Would you recommend us to others?",
+                Type = QuestionType.MCQ,
+                Order = 3,
+                IsRequired = true,
+                Options = new List<QuestionOption>
+                {
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ3Id, Text = "Yes", Order = 1 },
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ3Id, Text = "No", Order = 2 },
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ3Id, Text = "Maybe", Order = 3 }
+                }
+            });
+
+            // Sample 3: Employee Feedback
+            var feedbackId = Guid.NewGuid().ToString();
+            var feedback = new Questionnaire 
+            { 
+                Id = feedbackId,
+                Name = "Employee Feedback Form", 
+                OwnerId = "user1", 
+                Status = "Closed", 
+                Color = "#95E1D3",
+                Description = "Annual employee satisfaction survey",
+                CreatedDate = DateTime.UtcNow.AddMonths(-1)
+            };
+
+            var feedQ1Id = Guid.NewGuid().ToString();
+            feedback.Questions = new List<Question>
+            {
+                new Question
+                {
+                    Id = feedQ1Id,
+                    QuestionnaireId = feedbackId,
+                    Text = "Do you feel valued at work?",
+                    Type = QuestionType.MCQ,
+                    Order = 1,
+                    IsRequired = true,
+                    Options = new List<QuestionOption>
+                    {
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = feedQ1Id, Text = "Yes", Order = 1 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = feedQ1Id, Text = "No", Order = 2 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = feedQ1Id, Text = "Sometimes", Order = 3 }
+                    }
+                }
+            };
+
+            feedback.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = feedbackId,
+                Text = "What suggestions do you have for improvement?",
+                Type = QuestionType.OpenEnded,
+                Order = 2,
+                IsRequired = false
+            });
+
+            // Sample 4: Product Review
+            var reviewId = Guid.NewGuid().ToString();
+            var review = new Questionnaire 
+            { 
+                Id = reviewId,
+                Name = "Product Review", 
+                OwnerId = "user1", 
+                Status = "Pending", 
+                Color = "#F38181",
+                Description = "Tell us what you think about our product",
+                CreatedDate = DateTime.UtcNow
+            };
+
+            var revQ1Id = Guid.NewGuid().ToString();
+            review.Questions = new List<Question>
+            {
+                new Question
+                {
+                    Id = revQ1Id,
+                    QuestionnaireId = reviewId,
+                    Text = "How would you rate the product quality?",
+                    Type = QuestionType.MCQ,
+                    Order = 1,
+                    IsRequired = true,
+                    Options = new List<QuestionOption>
+                    {
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Poor", Order = 1 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Fair", Order = 2 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Good", Order = 3 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Very Good", Order = 4 },
+                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Excellent", Order = 5 }
+                    }
+                }
+            };
+
+            var revQ2Id = Guid.NewGuid().ToString();
+            review.Questions.Add(new Question
+            {
+                Id = revQ2Id,
+                QuestionnaireId = reviewId,
+                Text = "Would you recommend this product?",
+                Type = QuestionType.MCQ,
+                Order = 2,
+                IsRequired = true,
+                Options = new List<QuestionOption>
+                {
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Definitely", Order = 1 },
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Probably", Order = 2 },
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Not sure", Order = 3 },
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Probably not", Order = 4 },
+                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Definitely not", Order = 5 }
+                }
+            });
+
+            review.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = reviewId,
+                Text = "Any additional comments?",
+                Type = QuestionType.OpenEnded,
+                Order = 3,
+                IsRequired = false
+            });
+
+            System.Diagnostics.Debug.WriteLine("Adding questionnaires to context...");
+            dbContext.Questionnaires.AddRange(dass, satisfaction, feedback, review);
+            
+            System.Diagnostics.Debug.WriteLine("Saving changes to database...");
+            await dbContext.SaveChangesAsync();
+
+            System.Diagnostics.Debug.WriteLine("✅ Sample data seeded successfully!");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"❌ ERROR seeding sample data: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
+            }
+        }
     }
 }

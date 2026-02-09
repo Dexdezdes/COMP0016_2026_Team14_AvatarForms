@@ -20,6 +20,8 @@ public class QuestionnaireService : IQuestionnaireService
         try
         {
             return await _context.Questionnaires
+                .Include(q => q.Questions)
+                    .ThenInclude(q => q.Options)
                 .OrderByDescending(q => q.CreatedDate)
                 .ToListAsync();
         }
@@ -35,6 +37,8 @@ public class QuestionnaireService : IQuestionnaireService
         try
         {
             return await _context.Questionnaires
+                .Include(q => q.Questions)
+                    .ThenInclude(q => q.Options)
                 .FirstOrDefaultAsync(q => q.Id == id);
         }
         catch (Exception ex)
