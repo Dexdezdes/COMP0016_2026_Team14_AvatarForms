@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Models;
 using System.Collections.ObjectModel;
@@ -8,6 +9,7 @@ namespace AvatarFormsApp.ViewModels;
 public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
 {
     private readonly IQuestionnaireService _questionnaireService;
+    private readonly INavigationService _navigationService;
 
     [ObservableProperty]
     private Questionnaire? questionnaire;
@@ -21,9 +23,10 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
     [ObservableProperty]
     private string pageTitle = "Questionnaire";
 
-    public QuestionnaireDetailPageViewModel(IQuestionnaireService questionnaireService)
+    public QuestionnaireDetailPageViewModel(IQuestionnaireService questionnaireService, INavigationService navigationService)
     {
         _questionnaireService = questionnaireService;
+        _navigationService = navigationService;
     }
 
     public async Task LoadQuestionnaireAsync(string questionnaireId)
@@ -50,5 +53,11 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
         {
             IsLoading = false;
         }
+    }
+
+    [RelayCommand]
+    private void NavigateToAvatar()
+    {
+        _navigationService.NavigateTo(typeof(AvatarPageViewModel).Name);
     }
 }

@@ -1,11 +1,11 @@
 from agents import Model, TalkerAgent, EvaluatorAgent, RAG_Agent
-from sockets import stream_message, start_server, websocket_handler, wait_for_browser_connection
-from formatting import bcolors
+from sockets import stream_message, start_server, websocket_handler, wait_connection
+from formatting import bcolors, thinkStrip
+from api import run_http_api, wait_for_questionnaire
 
 import os
 import asyncio
-import socket
-import time
+from threading import Thread
 from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv()
@@ -29,7 +29,7 @@ class AvatarFormsInterviewer:
 
         self.is_local = is_local
         self.cloud_model = cloud_model
-
+        
 
     def build_interview(self, questions, interview_context):
         self.questions = questions
@@ -63,7 +63,6 @@ class AvatarFormsInterviewer:
 
     def build_from_json(self, json):
         self.build_interview(json["questions"], json["description"])
-
     
     def get_model(self):
         params = {
@@ -153,7 +152,7 @@ class AvatarFormsInterviewer:
         for i, question in enumerate(self.questions):
             conversation_section = self.get_conversation_section(i)
             answer = self.rag_agent.answer(question, conversation_section)
-            final_answers[question] = answer
+            final_answers[question] = thinkStrip(answer)
         
         return final_answers
         
@@ -216,22 +215,27 @@ class AvatarFormsInterviewer:
 
         return final_answers
 
+
 async def main():
+    # Start HTTP API server in background
+    http_thread = Thread(target=run_http_api, daemon=True)
+    http_thread.start()
+    print(f"{bcolors.OKGREEN}HTTP API server started on http://localhost:8083{bcolors.ENDC}")
+
+    # Wait for questionnaire data from C# application
+    questionnaire_json = await wait_for_questionnaire()
+
     # Start WebSocket server
     server = await start_server()
 
     # Wait for browser (HeadTTS) to connect
-    await wait_for_browser_connection()
-
-    # Setup interview after browser is connected
-    questions = [
-        "What is your full name?",
-        "How did you sleep last night?",
-    ]
-
-    interview_context = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know them."
+    await wait_connection()
+    
+    # Setup interview with received questionnaire data
     interviewer = AvatarFormsInterviewer(is_local=True, cutoff=4)
-    interviewer.build_interview(questions, interview_context)
+    interviewer.build_from_json(questionnaire_json)
+    
+    print(f"{bcolors.OKGREEN}Questionnaire loaded with {len(questionnaire_json['questions'])} questions{bcolors.ENDC}")
 
     # Start interview
     first_question = interviewer.start_interview()
@@ -279,8 +283,8 @@ if __name__ == "__main__":
     # questions = [
     #     "What is your full name?",
     #     "How did you sleep last night?",
-    #     # "Do you generally sleep well?",
-    #     # "How are you feeling today?",
+    #     "Do you generally sleep well?",
+    #     "How are you feeling today?",
     # ]
 
     # interview_context = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know them."

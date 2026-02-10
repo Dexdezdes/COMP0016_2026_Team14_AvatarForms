@@ -38,8 +38,7 @@ async def websocket_handler(websocket):
             connected_clients.discard(websocket)
             print(f"{bcolors.WARNING}Browser disconnected. Total clients: {len(connected_clients)}{bcolors.ENDC}")
 
-async def wait_for_browser_connection():
-    """Wait for the first browser to connect"""
+async def wait_connection():
     print(f"{bcolors.OKCYAN}Waiting for browser connection...{bcolors.ENDC}")
     await browser_connected_event.wait()
 
