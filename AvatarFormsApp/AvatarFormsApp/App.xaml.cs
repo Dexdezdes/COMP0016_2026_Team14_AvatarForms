@@ -106,6 +106,10 @@ public partial class App : Application
             
             // Register Python Backend Service
             services.AddSingleton<IPythonBackendService, PythonBackendService>();
+
+            // Register Process Services
+            services.AddSingleton<ILlamafileProcessService, LlamafileProcessService>();
+            services.AddSingleton<IPythonProcessService, PythonProcessService>();
             // *** END DATABASE SERVICES ***
 
             // Views and ViewModels
