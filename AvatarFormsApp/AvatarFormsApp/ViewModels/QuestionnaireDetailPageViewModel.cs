@@ -101,7 +101,7 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
             }
 
             // 2. Start Python backend process
-            StatusMessage = "Starting Python backend...";
+            StatusMessage = "Starting avatar process...";
             if (!_pythonProcessService.IsRunning)
             {
                 // Start with local mode enabled, ports: 8081 (llama), 8883 (websocket), 8882 (http)
@@ -113,17 +113,17 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
 
                 if (!pythonReady)
                 {
-                    StatusMessage = "Failed to start Python backend.";
+                    StatusMessage = "Failed to start avatar.";
                     return;
                 }
 
                 // Delay to allow HTTP server to initialize
-                StatusMessage = "Waiting for backend to initialize...";
+                StatusMessage = "Waiting for avatar to initialize...";
                 await Task.Delay(2000);
             }
 
             // 3. Send questionnaire data to Python backend
-            StatusMessage = "Updating questionnaire...";
+            StatusMessage = "Uploading questionnaire...";
             if (Questionnaire != null)
             {
                 bool sent = await _questionnaireAPIService.SendQuestionnaireAsync(
@@ -132,15 +132,15 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
 
                 if (!sent)
                 {
-                    StatusMessage = "Failed to send questionnaire data to backend.";
+                    StatusMessage = "Failed to upload questionnaire data to avatar.";
                     return;
                 }
 
-                System.Diagnostics.Debug.WriteLine($"Questionnaire '{Questionnaire.Name}' sent successfully");
+                System.Diagnostics.Debug.WriteLine($"Questionnaire '{Questionnaire.Name}' uploaded successfully");
             }
             else
             {
-                StatusMessage = "No questionnaire loaded.";
+                StatusMessage = "No questionnaire uploaded.";
                 return;
             }
 
