@@ -12,6 +12,7 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
     private readonly INavigationService _navigationService;
     private readonly ILlamafileProcessService _llamafileProcessService;
     private readonly IPythonProcessService _pythonProcessService;
+    private readonly IQuestionnaireAPIService _questionnaireAPIService;
 
     [ObservableProperty]
     private Questionnaire? questionnaire;
@@ -35,12 +36,23 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
         IQuestionnaireService questionnaireService,
         INavigationService navigationService,
         ILlamafileProcessService llamafileProcessService,
-        IPythonProcessService pythonProcessService)
+        IPythonProcessService pythonProcessService,
+        IQuestionnaireAPIService questionnaireAPIService)
     {
         _questionnaireService = questionnaireService;
         _navigationService = navigationService;
         _llamafileProcessService = llamafileProcessService;
         _pythonProcessService = pythonProcessService;
+        _questionnaireAPIService = questionnaireAPIService;
+
+        _pythonProcessService.OutputReceived += (output) =>
+        {
+            System.Diagnostics.Debug.WriteLine($"[PYTHON] {output}");
+        };
+        _pythonProcessService.ErrorReceived += (error) =>
+        {
+            System.Diagnostics.Debug.WriteLine($"[PYTHON ERROR] {error}");
+        };
     }
 
     public async Task LoadQuestionnaireAsync(string questionnaireId)
@@ -88,24 +100,51 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
                 }
             }
 
-            // 2. Start Python backend process (uses hardcoded questions in main.py)
+            // 2. Start Python backend process
             StatusMessage = "Starting Python backend...";
             if (!_pythonProcessService.IsRunning)
             {
-                // Start with local mode enabled, default ports (8081 for llama, 8883 for websocket)
+                // Start with local mode enabled, ports: 8081 (llama), 8883 (websocket), 8882 (http)
                 bool pythonReady = await _pythonProcessService.StartAsync(
                     useLocal: true, 
                     llamaPort: 8081, 
-                    websocketPort: 8883);
-                    
+                    websocketPort: 8883,
+                    httpPort: 8882);
+
                 if (!pythonReady)
                 {
                     StatusMessage = "Failed to start Python backend.";
                     return;
                 }
+
+                // Delay to allow HTTP server to initialize
+                StatusMessage = "Waiting for backend to initialize...";
+                await Task.Delay(2000);
             }
 
-            // 3. Navigate to avatar page (Python backend will use hardcoded questions)
+            // 3. Send questionnaire data to Python backend
+            StatusMessage = "Updating questionnaire...";
+            if (Questionnaire != null)
+            {
+                bool sent = await _questionnaireAPIService.SendQuestionnaireAsync(
+                    Questionnaire.Id, 
+                    port: 8882);
+
+                if (!sent)
+                {
+                    StatusMessage = "Failed to send questionnaire data to backend.";
+                    return;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Questionnaire '{Questionnaire.Name}' sent successfully");
+            }
+            else
+            {
+                StatusMessage = "No questionnaire loaded.";
+                return;
+            }
+
+            // 4. Navigate to avatar page
             StatusMessage = string.Empty;
             _navigationService.NavigateTo(typeof(AvatarPageViewModel).Name);
         }

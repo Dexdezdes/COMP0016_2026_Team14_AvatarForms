@@ -103,9 +103,9 @@ public partial class App : Application
 
             // Register Questionnaire Service
             services.AddScoped<IQuestionnaireService, QuestionnaireService>();
-            
-            // Register Python Backend Service
-            services.AddSingleton<IPythonBackendService, PythonBackendService>();
+
+            // Register Questionnaire API Service
+            services.AddSingleton<IQuestionnaireAPIService, QuestionnaireAPIService>();
 
             // Register Process Services
             services.AddSingleton<ILlamafileProcessService, LlamafileProcessService>();

@@ -1,4 +1,5 @@
 from sockets import stream_message, start_server, websocket_handler, wait_for_browser_connection
+from api import start_http_server, wait_for_questionnaire
 from formatting import bcolors, thinkStrip
 import os
 import asyncio
@@ -223,13 +224,16 @@ class AvatarFormsInterviewer:
         return final_answers
 
 async def main():
-
     parser = argparse.ArgumentParser(description="Run the AvatarForms interview backend server.")
     parser.add_argument("--local", action="store_true", help="Use local model (LLaMA_CPP) instead of Fireworks API")
     parser.add_argument("--llama_port", type=int, default=8081, help="Port for local model server if --local is set (default: 8081)")
     parser.add_argument("-p", "--port", type=int, default=8883, help="Port for the WebSocket server (default: 8883)")
+    parser.add_argument("--http_port", type=int, default=8882, help="Port for the HTTP API server (default: 8882)")
     args = parser.parse_args()
 
+    #Start HTTP Server
+    start_http_server(args.http_port)
+    questionnaire_data = await wait_for_questionnaire()
 
     # Start WebSocket server
     server = await start_server(args.port)
@@ -239,16 +243,8 @@ async def main():
     await wait_for_browser_connection()
 
     # Setup interview after browser is connected
-    questions = [
-        "What is your full name?",
-        "How did you sleep last night?",
-        "Do you generally sleep well?",    
-        "How are you feeling today?",
-    ]
-
-    interview_context = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know them."
     interviewer = AvatarFormsInterviewer(is_local=args.local, local_port=args.llama_port, cutoff=4)
-    interviewer.build_interview(questions, interview_context)
+    interviewer.build_from_json(questionnaire_data)
 
     # Start interview
     first_question = interviewer.start_interview()
