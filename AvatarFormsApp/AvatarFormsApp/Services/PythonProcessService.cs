@@ -14,7 +14,7 @@ public class PythonProcessService : IPythonProcessService
     public event Action<string>? OutputReceived;
     public event Action<string>? ErrorReceived;
 
-    public async Task<bool> StartAsync()
+    public async Task<bool> StartAsync(bool useLocal = true, int llamaPort = 8081, int websocketPort = 8883)
     {
         if (IsRunning)
         {
@@ -24,34 +24,70 @@ public class PythonProcessService : IPythonProcessService
 
         try
         {
-            string scriptPath = Path.Combine(AppContext.BaseDirectory, "Backend", "main.py");
-            if (!File.Exists(scriptPath))
-            {
-                ErrorReceived?.Invoke("[ERROR] main.py not found in Backend folder");
-                return false;
-            }
+            // Build command-line arguments
+            string arguments = BuildArguments(useLocal, llamaPort, websocketPort);
 
-            string pythonExe = GetPythonPath();
+            // First, try to find the compiled executable
+            string backendDir = Path.Combine(AppContext.BaseDirectory, "Backend");
+            string compiledExePath = Path.Combine(backendDir, "dist", "main", "main.exe");
+            string? workingDirectory = null;
+            
+            ProcessStartInfo start;
 
-            var start = new ProcessStartInfo
+            if (File.Exists(compiledExePath))
             {
-                FileName = pythonExe,
-                Arguments = $"-u \"{scriptPath}\"",
-                WorkingDirectory = Path.GetDirectoryName(scriptPath),
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardInput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            };
-
-            if (pythonExe.Contains("env"))
-            {
-                string? venvRoot = Path.GetDirectoryName(Path.GetDirectoryName(pythonExe));
-                if (venvRoot != null)
+                // Use compiled executable
+                OutputReceived?.Invoke($"[SUCCESS] Using compiled executable: {compiledExePath}");
+                OutputReceived?.Invoke($"[INFO] Arguments: {arguments}");
+                workingDirectory = Path.GetDirectoryName(compiledExePath);
+                
+                start = new ProcessStartInfo
                 {
-                    string sitePackages = Path.Combine(venvRoot, "Lib", "site-packages");
-                    start.EnvironmentVariables["PYTHONPATH"] = sitePackages;
+                    FileName = compiledExePath,
+                    Arguments = arguments,
+                    WorkingDirectory = workingDirectory,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+            }
+            else
+            {
+                // Fall back to running Python script directly
+                string scriptPath = Path.Combine(backendDir, "main.py");
+                if (!File.Exists(scriptPath))
+                {
+                    ErrorReceived?.Invoke("[ERROR] Neither compiled executable nor main.py found in Backend folder");
+                    return false;
+                }
+
+                OutputReceived?.Invoke($"[WARNING] Compiled executable not found, using Python script: {scriptPath}");
+                OutputReceived?.Invoke($"[INFO] Arguments: {arguments}");
+                string pythonExe = GetPythonPath();
+                workingDirectory = Path.GetDirectoryName(scriptPath);
+
+                start = new ProcessStartInfo
+                {
+                    FileName = pythonExe,
+                    Arguments = $"-u \"{scriptPath}\" {arguments}",
+                    WorkingDirectory = workingDirectory,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                if (pythonExe.Contains("env"))
+                {
+                    string? venvRoot = Path.GetDirectoryName(Path.GetDirectoryName(pythonExe));
+                    if (venvRoot != null)
+                    {
+                        string sitePackages = Path.Combine(venvRoot, "Lib", "site-packages");
+                        start.EnvironmentVariables["PYTHONPATH"] = sitePackages;
+                    }
                 }
             }
 
@@ -76,14 +112,7 @@ public class PythonProcessService : IPythonProcessService
             _pythonProcess.BeginOutputReadLine();
             _pythonProcess.BeginErrorReadLine();
 
-            OutputReceived?.Invoke("[AI] Python process started");
-
-            // Give the HTTP API server a moment to start (it runs on port 8083)
-            bool ready = await WaitForPortAsync(8083);
-            if (!ready)
-            {
-                ErrorReceived?.Invoke("[WARNING] Python HTTP API may not be ready yet");
-            }
+            OutputReceived?.Invoke("[AI] Python backend process started");
 
             return true;
         }
@@ -111,6 +140,28 @@ public class PythonProcessService : IPythonProcessService
         _pythonProcess = null;
     }
 
+    private static string BuildArguments(bool useLocal, int llamaPort, int websocketPort)
+    {
+        var args = new List<string>();
+        
+        if (useLocal)
+        {
+            args.Add("--local");
+        }
+        
+        if (llamaPort != 8081)
+        {
+            args.Add($"--llama_port {llamaPort}");
+        }
+        
+        if (websocketPort != 8883)
+        {
+            args.Add($"-p {websocketPort}");
+        }
+        
+        return string.Join(" ", args);
+    }
+
     private string GetPythonPath()
     {
         if (!string.IsNullOrEmpty(_cachedPythonPath)) return _cachedPythonPath;
@@ -134,24 +185,6 @@ public class PythonProcessService : IPythonProcessService
 
         OutputReceived?.Invoke("[WARNING] Virtual env not found. Falling back to system 'python'");
         return _cachedPythonPath = "python";
-    }
-
-    private static async Task<bool> WaitForPortAsync(int port, int maxRetries = 15, int delayMs = 1000)
-    {
-        for (int i = 0; i < maxRetries; i++)
-        {
-            try
-            {
-                using var client = new System.Net.Sockets.TcpClient();
-                await client.ConnectAsync("127.0.0.1", port);
-                return true;
-            }
-            catch
-            {
-                await Task.Delay(delayMs);
-            }
-        }
-        return false;
     }
 
     public void Dispose()

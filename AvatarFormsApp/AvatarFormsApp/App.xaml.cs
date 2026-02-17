@@ -260,73 +260,8 @@ public partial class App : Application
                 IsRequired = false
             });
 
-            
-            // Sample 2: Product Review
-            var reviewId = Guid.NewGuid().ToString();
-            var review = new Questionnaire 
-            { 
-                Id = reviewId,
-                Name = "Product Review", 
-                OwnerId = "user1", 
-                Status = "Pending", 
-                Color = "#F38181",
-                Description = "Tell us what you think about our product",
-                CreatedDate = DateTime.UtcNow
-            };
-
-            var revQ1Id = Guid.NewGuid().ToString();
-            review.Questions = new List<Question>
-            {
-                new Question
-                {
-                    Id = revQ1Id,
-                    QuestionnaireId = reviewId,
-                    Text = "How would you rate the product quality?",
-                    Type = QuestionType.MCQ,
-                    Order = 1,
-                    IsRequired = true,
-                    Options = new List<QuestionOption>
-                    {
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Poor", Order = 1 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Fair", Order = 2 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Good", Order = 3 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Very Good", Order = 4 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Excellent", Order = 5 }
-                    }
-                }
-            };
-
-            var revQ2Id = Guid.NewGuid().ToString();
-            review.Questions.Add(new Question
-            {
-                Id = revQ2Id,
-                QuestionnaireId = reviewId,
-                Text = "Would you recommend this product?",
-                Type = QuestionType.MCQ,
-                Order = 2,
-                IsRequired = true,
-                Options = new List<QuestionOption>
-                {
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Definitely", Order = 1 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Probably", Order = 2 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Not sure", Order = 3 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Probably not", Order = 4 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Definitely not", Order = 5 }
-                }
-            });
-
-            review.Questions.Add(new Question
-            {
-                Id = Guid.NewGuid().ToString(),
-                QuestionnaireId = reviewId,
-                Text = "Any additional comments?",
-                Type = QuestionType.OpenEnded,
-                Order = 3,
-                IsRequired = false
-            });
-
             System.Diagnostics.Debug.WriteLine("Adding questionnaires to context...");
-            dbContext.Questionnaires.AddRange(sleep, review);
+            dbContext.Questionnaires.AddRange(sleep);
             
             System.Diagnostics.Debug.WriteLine("Saving changes to database...");
             await dbContext.SaveChangesAsync();

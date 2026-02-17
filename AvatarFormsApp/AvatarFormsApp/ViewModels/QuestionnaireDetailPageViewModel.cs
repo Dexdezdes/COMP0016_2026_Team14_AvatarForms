@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using AvatarFormsApp.Contracts.Services;
-using AvatarFormsApp.DTOs;
 using AvatarFormsApp.Models;
 using System.Collections.ObjectModel;
 
@@ -13,7 +12,6 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
     private readonly INavigationService _navigationService;
     private readonly ILlamafileProcessService _llamafileProcessService;
     private readonly IPythonProcessService _pythonProcessService;
-    private readonly IPythonBackendService _pythonBackendService;
 
     [ObservableProperty]
     private Questionnaire? questionnaire;
@@ -37,14 +35,12 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
         IQuestionnaireService questionnaireService,
         INavigationService navigationService,
         ILlamafileProcessService llamafileProcessService,
-        IPythonProcessService pythonProcessService,
-        IPythonBackendService pythonBackendService)
+        IPythonProcessService pythonProcessService)
     {
         _questionnaireService = questionnaireService;
         _navigationService = navigationService;
         _llamafileProcessService = llamafileProcessService;
         _pythonProcessService = pythonProcessService;
-        _pythonBackendService = pythonBackendService;
     }
 
     public async Task LoadQuestionnaireAsync(string questionnaireId)
@@ -76,12 +72,6 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
     [RelayCommand]
     private async Task NavigateToAvatarAsync()
     {
-        if (Questionnaire == null)
-        {
-            StatusMessage = "No questionnaire loaded.";
-            return;
-        }
-
         try
         {
             IsStartingBackend = true;
@@ -98,11 +88,16 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
                 }
             }
 
-            // 2. Start Python backend process
+            // 2. Start Python backend process (uses hardcoded questions in main.py)
             StatusMessage = "Starting Python backend...";
             if (!_pythonProcessService.IsRunning)
             {
-                bool pythonReady = await _pythonProcessService.StartAsync();
+                // Start with local mode enabled, default ports (8081 for llama, 8883 for websocket)
+                bool pythonReady = await _pythonProcessService.StartAsync(
+                    useLocal: true, 
+                    llamaPort: 8081, 
+                    websocketPort: 8883);
+                    
                 if (!pythonReady)
                 {
                     StatusMessage = "Failed to start Python backend.";
@@ -110,19 +105,7 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
                 }
             }
 
-            // 3. Send questionnaire data to the Python HTTP API
-            StatusMessage = "Sending questionnaire data...";
-            var dto = QuestionnaireTransferDto.FromQuestionnaire(Questionnaire);
-            var response = await _pythonBackendService.SendQuestionnaireAsync(dto);
-
-            if (!response.IsSuccess)
-            {
-                StatusMessage = response.Message ?? "Failed to send questionnaire to backend.";
-                System.Diagnostics.Debug.WriteLine($"Backend error: {response.ErrorDetails}");
-                return;
-            }
-
-            // 4. Navigate to avatar page
+            // 3. Navigate to avatar page (Python backend will use hardcoded questions)
             StatusMessage = string.Empty;
             _navigationService.NavigateTo(typeof(AvatarPageViewModel).Name);
         }

@@ -37,7 +37,7 @@ Original question: {question}
 
 def Talker_closing_statement_prompt():
     return """
-All questions have been asked. Briefly conclude the interview in a short sentence.
+All questions have been asked. Briefly conclude the interview.
 """
 
 def Evaluator_system_prompt(context, question, transcript):
@@ -85,7 +85,7 @@ def RAG_system_prompt(context, conversation_history, question):
     return f"""
 You are an information retrieval assistant that summaries information from a conversation.
 You will be given a portion of an interview transcript where the user answered a question.
-Write a concise answer to the question, in behalf of the user.
+Write a concise answer to the question, as if it were a question on a questionnaire.
 
 ---------------------------------------------------------------
 

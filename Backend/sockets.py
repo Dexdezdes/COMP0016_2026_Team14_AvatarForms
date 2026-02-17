@@ -38,14 +38,15 @@ async def websocket_handler(websocket):
             connected_clients.discard(websocket)
             print(f"{bcolors.WARNING}Browser disconnected. Total clients: {len(connected_clients)}{bcolors.ENDC}")
 
-async def wait_connection():
+async def wait_for_browser_connection():
+    """Wait for the first browser to connect"""
     print(f"{bcolors.OKCYAN}Waiting for browser connection...{bcolors.ENDC}")
     await browser_connected_event.wait()
 
-async def start_server():
+async def start_server(port=8883):
     try:
-        server = await websockets.serve(websocket_handler, "0.0.0.0", 8883)
-        print(f"{bcolors.OKGREEN}WebSocket server started on ws://localhost:8883{bcolors.ENDC}")
+        server = await websockets.serve(websocket_handler, "0.0.0.0", port)
+        print(f"{bcolors.OKGREEN}WebSocket server started on ws://localhost:{port}{bcolors.ENDC}")
         return server
     except Exception as e:
         print(f"{bcolors.FAIL}Failed to start WebSocket server: {e}{bcolors.ENDC}")

@@ -55,13 +55,13 @@ public class LlamafileProcessService : ILlamafileProcessService
 
             _llamafileProcess.OutputDataReceived += (s, e) =>
             {
-                if (!string.IsNullOrEmpty(e.Data))
+                if (!string.IsNullOrEmpty(e.Data) && !ShouldFilterLog(e.Data))
                     OutputReceived?.Invoke(e.Data);
             };
 
             _llamafileProcess.ErrorDataReceived += (s, e) =>
             {
-                if (!string.IsNullOrEmpty(e.Data))
+                if (!string.IsNullOrEmpty(e.Data) && !ShouldFilterLog(e.Data))
                     OutputReceived?.Invoke($"[LLAMAFILE STDERR] {e.Data}");
             };
 
@@ -113,6 +113,16 @@ public class LlamafileProcessService : ILlamafileProcessService
             {
                 await Task.Delay(PortRetryDelayMs);
             }
+        }
+        return false;
+    }
+
+    private static bool ShouldFilterLog(string logLine)
+    {
+        // Filter out JSON-formatted INFO logs from llamafile
+        if (logLine.TrimStart().StartsWith("{") && logLine.Contains("\"level\":\"INFO\""))
+        {
+            return true;
         }
         return false;
     }
