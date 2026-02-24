@@ -99,7 +99,7 @@
                                                RadiusX="8"
                                                RadiusY="8" />
                                     
-                                    <StackPanel Grid.Row="1" Padding="32,24,32,28">
+                                    <StackPanel Grid.Row="1" Padding="20, 20, 20, 20">
                                         <!-- Question Header -->
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                                             <TextBlock FontSize="16" 
@@ -148,11 +148,7 @@
 
                                         <!-- Text Input Questions -->
                                         <StackPanel Visibility="{x:Bind IsTextInput}">
-                                            <TextBox PlaceholderText="Your answer"
-                                                     IsReadOnly="True"
-                                                     BorderThickness="0,0,0,1"
-                                                     Background="Transparent"
-                                                     Padding="0,8" />
+                                            
                                         </StackPanel>
                                     </StackPanel>
                                 </Grid>

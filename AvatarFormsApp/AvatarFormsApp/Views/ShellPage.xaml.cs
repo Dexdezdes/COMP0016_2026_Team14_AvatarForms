@@ -1,6 +1,7 @@
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Helpers;
 using AvatarFormsApp.ViewModels;
+using AvatarFormsApp.Models;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -8,6 +9,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 
 using Windows.System;
+using System.Collections.Specialized;
 
 namespace AvatarFormsApp.Views;
 
@@ -26,6 +28,12 @@ public sealed partial class ShellPage : Page
 
         ViewModel.NavigationService.Frame = NavigationFrame;
         ViewModel.NavigationViewService.Initialize(NavigationViewControl);
+
+        // Subscribe to questionnaire collection changes
+        ViewModel.AvailableQuestionnaires.CollectionChanged += OnQuestionnairesCollectionChanged;
+
+        // Initialize the questionnaire menu items
+        UpdateQuestionnaireMenuItems();
     }
 
     private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -68,6 +76,33 @@ public sealed partial class ShellPage : Page
         if (args.InvokedItemContainer?.Tag is string pageKey)
         {
             ViewModel.NavigationService.NavigateTo(pageKey);
+        }
+    }
+
+    private void OnQuestionnairesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        UpdateQuestionnaireMenuItems();
+    }
+
+    private void UpdateQuestionnaireMenuItems()
+    {
+        Nav_Responses.MenuItems.Clear();
+
+        foreach (var questionnaire in ViewModel.AvailableQuestionnaires)
+        {
+            var menuItem = new NavigationViewItem
+            {
+                Content = questionnaire.Name,
+                Tag = questionnaire.Id,
+                Icon = new FontIcon
+                {
+                    FontFamily = (Microsoft.UI.Xaml.Media.FontFamily)Resources["SymbolThemeFontFamily"],
+                    Glyph = "\ue8a5",
+                    FontSize = 12
+                }
+            };
+
+            Nav_Responses.MenuItems.Add(menuItem);
         }
     }
 }

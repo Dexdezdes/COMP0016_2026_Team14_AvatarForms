@@ -49,59 +49,13 @@ Loaded="OnLoaded">
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <!-- Questionnaires section with dropdown -->
-                <NavigationViewItem x:Name="Nav_Questionnaires" Content="Questionnaires">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8a5;" />
-                    </NavigationViewItem.Icon>
-                    <NavigationViewItem.MenuItems>
-                        <!-- Dynamically bind questionnaires from database -->
-                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.AvailableQuestionnaires, Mode=OneWay}">
-                            <ItemsRepeater.ItemTemplate>
-                                <DataTemplate x:DataType="models:Questionnaire">
-                                    <NavigationViewItem Content="{x:Bind Name}" Tag="{x:Bind Id}">
-                                        <NavigationViewItem.Icon>
-                                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8a5;" FontSize="12" />
-                                        </NavigationViewItem.Icon>
-                                    </NavigationViewItem>
-                                </DataTemplate>
-                            </ItemsRepeater.ItemTemplate>
-                        </ItemsRepeater>
-                    </NavigationViewItem.MenuItems>
-                </NavigationViewItem>
-
                 <!-- Responses section -->
                 <NavigationViewItem x:Name="Nav_Responses" Content="Responses">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8d7;" />
                     </NavigationViewItem.Icon>
-                    <NavigationViewItem.MenuItems>
-                        <!-- Dynamically bind questionnaires from database -->
-                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.AvailableQuestionnaires, Mode=OneWay}">
-                            <ItemsRepeater.ItemTemplate>
-                                <DataTemplate x:DataType="models:Questionnaire">
-                                    <NavigationViewItem Content="{x:Bind Name}" Tag="{x:Bind Id}">
-                                        <NavigationViewItem.Icon>
-                                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8a5;" FontSize="12" />
-                                        </NavigationViewItem.Icon>
-                                    </NavigationViewItem>
-                                </DataTemplate>
-                            </ItemsRepeater.ItemTemplate>
-                        </ItemsRepeater>
-                    </NavigationViewItem.MenuItems>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
-
-            <!-- Pane footer for profile -->
-            <NavigationView.PaneFooter>
-                <StackPanel Orientation="Horizontal" Margin="12" VerticalAlignment="Bottom">
-                    <Ellipse Width="36" Height="36" Fill="#DDDDDD" />
-                    <StackPanel Margin="8,0">
-                        <TextBlock Text="John Smith" FontWeight="SemiBold" />
-                        <TextBlock Text="Admin" FontSize="12" Foreground="#888888" />
-                    </StackPanel>
-                </StackPanel>
-            </NavigationView.PaneFooter>
 
             <Grid Margin="0">
                 <Frame x:Name="NavigationFrame"
