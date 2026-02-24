@@ -1,8 +1,7 @@
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
+using AvatarFormsApp.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -14,9 +13,8 @@ namespace AvatarFormsApp.Views;
 
 public sealed partial class AvatarPage : Page
 {
-    private Process? _pythonProcess;
-    private Process? _llamafileProcess;
-    private string? _cachedPythonPath;
+    private readonly IPythonProcessService _pythonProcessService;
+    private readonly ILlamafileProcessService _llamafileProcessService;
     private SimpleWebServer? _webServer;
     private SpeechRecognizer? _speechRecognizer;
     private bool _isAvatarInitialized;
@@ -28,6 +26,15 @@ public sealed partial class AvatarPage : Page
     public AvatarPage()
     {
         InitializeComponent();
+
+        _pythonProcessService = App.GetService<IPythonProcessService>();
+        _llamafileProcessService = App.GetService<ILlamafileProcessService>();
+
+        // Wire up process output to the console log
+        _pythonProcessService.OutputReceived += msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
+        _pythonProcessService.ErrorReceived += msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
+        _llamafileProcessService.OutputReceived += msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
+
         AutoSendToggle.IsOn = true;
         InitializeAvatar();
     }
@@ -121,9 +128,6 @@ public sealed partial class AvatarPage : Page
                     LogToConsole("[AVATAR] Audio connection overlay shown");
                 }
             });
-
-            // Start AI process after avatar is fully initialized
-            StartAIProcess();
         }
         catch (Exception ex)
         {
@@ -241,193 +245,14 @@ public sealed partial class AvatarPage : Page
         LogToConsole($"[SETTINGS] Auto-send: {(_autoSendEnabled ? "ON" : "OFF")}");
     }
 
-    private string GetPythonPath()
-    {
-        if (!string.IsNullOrEmpty(_cachedPythonPath)) return _cachedPythonPath;
-
-        string baseDir = AppContext.BaseDirectory;
-        for (int i = 0; i <= 9; i++)
-        {
-            string probePath = Path.GetFullPath(Path.Combine(baseDir, new string('.', i * 3).Replace("...", "../"), "env/Scripts/python.exe"));
-            if (File.Exists(probePath))
-            {
-                LogToConsole($"[SUCCESS] Python found at: {probePath}");
-                return _cachedPythonPath = probePath;
-            }
-        }
-
-        string buildVenvPath = Path.Combine(baseDir, "env", "Scripts", "python.exe");
-        if (File.Exists(buildVenvPath)) return _cachedPythonPath = buildVenvPath;
-
-        string sourceVenvPath = Path.GetFullPath(Path.Combine(baseDir, "..\\..\\..\\..\\env\\Scripts\\python.exe"));
-        if (File.Exists(sourceVenvPath)) return _cachedPythonPath = sourceVenvPath;
-
-        LogToConsole("[WARNING] Virtual env not found. Falling back to system 'python'");
-        return _cachedPythonPath = "python";
-    }
-
-    private async Task<bool> IsPortAvailable(int port, int maxRetries = 30, int delayMs = 1000)
-    {
-        for (int i = 0; i < maxRetries; i++)
-        {
-            try
-            {
-                using var client = new System.Net.Sockets.TcpClient();
-                await client.ConnectAsync("127.0.0.1", port);
-                LogToConsole($"[PORT CHECK] Port {port} is ready");
-                return true;
-            }
-            catch
-            {
-                if (i == 0)
-                {
-                    LogToConsole($"[PORT CHECK] Waiting for port {port}...");
-                }
-                await Task.Delay(delayMs);
-            }
-        }
-        LogToConsole($"[PORT CHECK] Timeout waiting for port {port}");
-        return false;
-    }
-
-    private void StartLlamafileServer()
-    {
-        try
-        {
-            string backendPath = Path.Combine(AppContext.BaseDirectory, "Backend");
-            if (!Directory.Exists(backendPath))
-            {
-                LogToConsole("[ERROR] Backend folder not found");
-                return;
-            }
-
-            var llamafilePath = Directory.GetFiles(backendPath, "*.llamafile").FirstOrDefault();
-            if (string.IsNullOrEmpty(llamafilePath))
-            {
-                LogToConsole("[ERROR] No .llamafile found in Backend folder");
-                return;
-            }
-
-            LogToConsole($"[LLAMAFILE] Found: {llamafilePath}");
-
-            var start = new ProcessStartInfo
-            {
-                FileName = llamafilePath,
-                Arguments = "--server --host 127.0.0.1 --port 8081 --ctx-size 4096 -ngl 9999 --nobrowser",
-                WorkingDirectory = Path.GetDirectoryName(llamafilePath),
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            };
-
-            _llamafileProcess = new Process { StartInfo = start, EnableRaisingEvents = true };
-            _llamafileProcess.Start();
-            _llamafileProcess.BeginOutputReadLine();
-            _llamafileProcess.BeginErrorReadLine();
-
-            LogToConsole("[LLAMAFILE] Server process started on port 8081");
-        }
-        catch (Exception ex)
-        {
-            LogToConsole($"[LLAMAFILE ERROR] Failed to start: {ex.Message}");
-        }
-    }
-
-    private async void StartAIProcess()
-    {
-        try
-        {
-            // Start llamafile server first
-            StartLlamafileServer();
-
-            // Wait for llamafile to be ready
-            bool llamafileReady = await IsPortAvailable(8081);
-            if (!llamafileReady)
-            {
-                LogToConsole("[ERROR] Llamafile server did not start in time");
-                return;
-            }
-
-            string baseDir = AppContext.BaseDirectory;
-            string scriptPath = Path.Combine(AppContext.BaseDirectory, "Backend", "main.py");
-
-            var start = new ProcessStartInfo
-            {
-                FileName = GetPythonPath(),
-                Arguments = $"-u \"{scriptPath}\"",
-                WorkingDirectory = Path.GetDirectoryName(scriptPath),
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardInput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            };
-
-            string pythonExe = GetPythonPath();
-            if (pythonExe.Contains("env"))
-            {
-                string? venvRoot = Path.GetDirectoryName(Path.GetDirectoryName(pythonExe));
-                if (venvRoot != null)
-                {
-                    string sitePackages = Path.Combine(venvRoot, "Lib", "site-packages");
-                    start.EnvironmentVariables["PYTHONPATH"] = sitePackages;
-                }
-            }
-
-            _pythonProcess = new Process { StartInfo = start, EnableRaisingEvents = true };
-
-            _pythonProcess.OutputDataReceived += (s, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    DispatcherQueue.TryEnqueue(() =>
-                    {
-                        LogToConsole(e.Data);
-                        if (e.Data.Trim().StartsWith("Talker:", StringComparison.OrdinalIgnoreCase))
-                        {
-                            _isTalkerActive = true;
-                        }
-                        else if (e.Data.Trim().StartsWith("Critic:", StringComparison.OrdinalIgnoreCase))
-                        {
-                            _isTalkerActive = false;
-                        }
-
-                        ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null);
-                    });
-                }
-            };
-
-            _pythonProcess.ErrorDataReceived += (s, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    string cleanedError = Regex.Replace(e.Data, @"\x1B\[[^@-~]*[@-~]", string.Empty);
-                    LogToConsole($"[PYTHON ERROR]: {cleanedError}");
-                }
-            };
-
-            _pythonProcess.Start();
-            _pythonProcess.BeginOutputReadLine();
-            _pythonProcess.BeginErrorReadLine();
-
-            LogToConsole("[AI] Python process started");
-        }
-        catch (Exception ex)
-        {
-            LogToConsole($"[RUNTIME ERROR]: {ex.Message}");
-        }
-    }
-
     private void SendMessage()
     {
-        if (_pythonProcess == null || _pythonProcess.HasExited) return;
+        if (!_pythonProcessService.IsRunning) return;
 
         var message = UserInput.Text;
         if (!string.IsNullOrWhiteSpace(message))
         {
-            _pythonProcess.StandardInput.WriteLine(message);
-            _pythonProcess.StandardInput.Flush();
+            _pythonProcessService.SendInput(message);
             LogToConsole($"You: {message}");
             UserInput.Text = "";
         }
@@ -584,15 +409,8 @@ public sealed partial class AvatarPage : Page
 
     private async void OnBackClicked(object sender, RoutedEventArgs e)
     {
-        if (_pythonProcess != null && !_pythonProcess.HasExited)
-        {
-            try { _pythonProcess.Kill(); } catch { }
-        }
-
-        if (_llamafileProcess != null && !_llamafileProcess.HasExited)
-        {
-            try { _llamafileProcess.Kill(); } catch { }
-        }
+        _pythonProcessService.Stop();
+        _llamafileProcessService.Stop();
 
         _isMicEnabled = false;
         MicIcon.Glyph = "\uE720";

@@ -1,4 +1,4 @@
-﻿using AvatarFormsApp.Activation;
+using AvatarFormsApp.Activation;
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Views;
 

@@ -103,6 +103,13 @@ public partial class App : Application
 
             // Register Questionnaire Service
             services.AddScoped<IQuestionnaireService, QuestionnaireService>();
+
+            // Register Questionnaire API Service
+            services.AddSingleton<IQuestionnaireAPIService, QuestionnaireAPIService>();
+
+            // Register Process Services
+            services.AddSingleton<ILlamafileProcessService, LlamafileProcessService>();
+            services.AddSingleton<IPythonProcessService, PythonProcessService>();
             // *** END DATABASE SERVICES ***
 
             // Views and ViewModels
@@ -154,13 +161,18 @@ public partial class App : Application
         base.OnLaunched(args);
         
         // *** INITIALIZE DATABASE - ADD THIS ***
-        // Ensure database is created on first launch
+        // Delete and recreate database on every startup (DEVELOPMENT ONLY!)
         using (var scope = Host.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            
+            // Delete existing database
+            await dbContext.Database.EnsureDeletedAsync();
+            
+            // Recreate database with schema
             await dbContext.Database.EnsureCreatedAsync();
             
-            // Seed sample data if database is empty
+            // Seed with fresh sample data
             await SeedSampleDataAsync(dbContext);
         }
         // *** END DATABASE INITIALIZATION ***
@@ -191,239 +203,65 @@ public partial class App : Application
 
             System.Diagnostics.Debug.WriteLine("No data found - starting seeding...");
 
-            // Sample 1: DASS Questionnaire
-            var dassId = Guid.NewGuid().ToString();
-            var dass = new Questionnaire 
+            // Sample 1: Sleep Survey
+            var sleepId = Guid.NewGuid().ToString();
+            var sleep = new Questionnaire 
             { 
-                Id = dassId,
-                Name = "DASS Questionnaire", 
+                Id = sleepId,
+                Name = "Sleep Survey", 
                 OwnerId = "user1", 
                 Status = "Pending", 
                 Color = "#4CB3B3",
-                Description = "Depression Anxiety Stress Scales",
+                Description = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know if they've been sleeping well.",
                 CreatedDate = DateTime.UtcNow
             };
-            
-            var dassQ1Id = Guid.NewGuid().ToString();
-            dass.Questions = new List<Question>
-            {
-                new Question
-                {
-                    Id = dassQ1Id,
-                    QuestionnaireId = dassId,
-                    Text = "Over the past week, how often did you feel down or hopeless?",
-                    Type = QuestionType.MCQ,
-                    Order = 1,
-                    IsRequired = true,
-                    Options = new List<QuestionOption>
-                    {
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ1Id, Text = "Never", Order = 1 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ1Id, Text = "Sometimes", Order = 2 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ1Id, Text = "Often", Order = 3 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ1Id, Text = "Always", Order = 4 }
-                    }
-                }
-            };
 
-            var dassQ2Id = Guid.NewGuid().ToString();
-            dass.Questions.Add(new Question
-            {
-                Id = dassQ2Id,
-                QuestionnaireId = dassId,
-                Text = "I found it hard to wind down",
-                Type = QuestionType.MCQ,
-                Order = 2,
-                IsRequired = true,
-                Options = new List<QuestionOption>
-                {
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ2Id, Text = "Did not apply to me at all", Order = 1 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ2Id, Text = "Applied to me to some degree", Order = 2 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ2Id, Text = "Applied to me a considerable degree", Order = 3 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = dassQ2Id, Text = "Applied to me very much", Order = 4 }
-                }
-            });
-
-            dass.Questions.Add(new Question
+            var sleepQ1Id = Guid.NewGuid().ToString();
+            sleep.Questions.Add(new Question
             {
                 Id = Guid.NewGuid().ToString(),
-                QuestionnaireId = dassId,
-                Text = "Please share any additional thoughts or concerns",
+                QuestionnaireId = sleepId,
+                Text = "What is your full name?",
                 Type = QuestionType.OpenEnded,
-                Order = 3,
+                Order = 1,
                 IsRequired = false
             });
 
-            // Sample 2: Customer Satisfaction
-            var satisfactionId = Guid.NewGuid().ToString();
-            var satisfaction = new Questionnaire 
-            { 
-                Id = satisfactionId,
-                Name = "Customer Satisfaction Survey", 
-                OwnerId = "user1", 
-                Status = "Pending", 
-                Color = "#FF6B6B",
-                Description = "Help us improve our services",
-                CreatedDate = DateTime.UtcNow
-            };
-
-            var satQ1Id = Guid.NewGuid().ToString();
-            satisfaction.Questions = new List<Question>
-            {
-                new Question
-                {
-                    Id = satQ1Id,
-                    QuestionnaireId = satisfactionId,
-                    Text = "How satisfied are you with our service?",
-                    Type = QuestionType.MCQ,
-                    Order = 1,
-                    IsRequired = true,
-                    Options = new List<QuestionOption>
-                    {
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ1Id, Text = "Very Dissatisfied", Order = 1 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ1Id, Text = "Dissatisfied", Order = 2 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ1Id, Text = "Neutral", Order = 3 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ1Id, Text = "Satisfied", Order = 4 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ1Id, Text = "Very Satisfied", Order = 5 }
-                    }
-                }
-            };
-
-            satisfaction.Questions.Add(new Question
+            var sleepQ2Id = Guid.NewGuid().ToString();
+            sleep.Questions.Add(new Question
             {
                 Id = Guid.NewGuid().ToString(),
-                QuestionnaireId = satisfactionId,
-                Text = "What can we improve?",
+                QuestionnaireId = sleepId,
+                Text = "How did you sleep last night?",
                 Type = QuestionType.OpenEnded,
                 Order = 2,
                 IsRequired = false
             });
 
-            var satQ3Id = Guid.NewGuid().ToString();
-            satisfaction.Questions.Add(new Question
-            {
-                Id = satQ3Id,
-                QuestionnaireId = satisfactionId,
-                Text = "Would you recommend us to others?",
-                Type = QuestionType.MCQ,
-                Order = 3,
-                IsRequired = true,
-                Options = new List<QuestionOption>
-                {
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ3Id, Text = "Yes", Order = 1 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ3Id, Text = "No", Order = 2 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = satQ3Id, Text = "Maybe", Order = 3 }
-                }
-            });
-
-            // Sample 3: Employee Feedback
-            var feedbackId = Guid.NewGuid().ToString();
-            var feedback = new Questionnaire 
-            { 
-                Id = feedbackId,
-                Name = "Employee Feedback Form", 
-                OwnerId = "user1", 
-                Status = "Closed", 
-                Color = "#95E1D3",
-                Description = "Annual employee satisfaction survey",
-                CreatedDate = DateTime.UtcNow.AddMonths(-1)
-            };
-
-            var feedQ1Id = Guid.NewGuid().ToString();
-            feedback.Questions = new List<Question>
-            {
-                new Question
-                {
-                    Id = feedQ1Id,
-                    QuestionnaireId = feedbackId,
-                    Text = "Do you feel valued at work?",
-                    Type = QuestionType.MCQ,
-                    Order = 1,
-                    IsRequired = true,
-                    Options = new List<QuestionOption>
-                    {
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = feedQ1Id, Text = "Yes", Order = 1 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = feedQ1Id, Text = "No", Order = 2 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = feedQ1Id, Text = "Sometimes", Order = 3 }
-                    }
-                }
-            };
-
-            feedback.Questions.Add(new Question
+            var sleepQ3Id = Guid.NewGuid().ToString();
+            sleep.Questions.Add(new Question
             {
                 Id = Guid.NewGuid().ToString(),
-                QuestionnaireId = feedbackId,
-                Text = "What suggestions do you have for improvement?",
+                QuestionnaireId = sleepId,
+                Text = "Do you generally sleep well?",
                 Type = QuestionType.OpenEnded,
-                Order = 2,
+                Order = 3,
                 IsRequired = false
             });
 
-            // Sample 4: Product Review
-            var reviewId = Guid.NewGuid().ToString();
-            var review = new Questionnaire 
-            { 
-                Id = reviewId,
-                Name = "Product Review", 
-                OwnerId = "user1", 
-                Status = "Pending", 
-                Color = "#F38181",
-                Description = "Tell us what you think about our product",
-                CreatedDate = DateTime.UtcNow
-            };
-
-            var revQ1Id = Guid.NewGuid().ToString();
-            review.Questions = new List<Question>
-            {
-                new Question
-                {
-                    Id = revQ1Id,
-                    QuestionnaireId = reviewId,
-                    Text = "How would you rate the product quality?",
-                    Type = QuestionType.MCQ,
-                    Order = 1,
-                    IsRequired = true,
-                    Options = new List<QuestionOption>
-                    {
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Poor", Order = 1 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Fair", Order = 2 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Good", Order = 3 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Very Good", Order = 4 },
-                        new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ1Id, Text = "Excellent", Order = 5 }
-                    }
-                }
-            };
-
-            var revQ2Id = Guid.NewGuid().ToString();
-            review.Questions.Add(new Question
-            {
-                Id = revQ2Id,
-                QuestionnaireId = reviewId,
-                Text = "Would you recommend this product?",
-                Type = QuestionType.MCQ,
-                Order = 2,
-                IsRequired = true,
-                Options = new List<QuestionOption>
-                {
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Definitely", Order = 1 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Probably", Order = 2 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Not sure", Order = 3 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Probably not", Order = 4 },
-                    new QuestionOption { Id = Guid.NewGuid().ToString(), QuestionId = revQ2Id, Text = "Definitely not", Order = 5 }
-                }
-            });
-
-            review.Questions.Add(new Question
+            var sleepQ4Id = Guid.NewGuid().ToString();
+            sleep.Questions.Add(new Question
             {
                 Id = Guid.NewGuid().ToString(),
-                QuestionnaireId = reviewId,
-                Text = "Any additional comments?",
+                QuestionnaireId = sleepId,
+                Text = "How are you feeling today?",
                 Type = QuestionType.OpenEnded,
-                Order = 3,
+                Order = 4,
                 IsRequired = false
             });
 
             System.Diagnostics.Debug.WriteLine("Adding questionnaires to context...");
-            dbContext.Questionnaires.AddRange(dass, satisfaction, feedback, review);
+            dbContext.Questionnaires.AddRange(sleep);
             
             System.Diagnostics.Debug.WriteLine("Saving changes to database...");
             await dbContext.SaveChangesAsync();

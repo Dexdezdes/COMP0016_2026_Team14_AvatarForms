@@ -1,34 +1,32 @@
-from agents import Model, TalkerAgent, EvaluatorAgent, RAG_Agent
 from sockets import stream_message, start_server, websocket_handler, wait_for_browser_connection
-from formatting import bcolors
-
+from api import start_http_server, wait_for_questionnaire
+from formatting import bcolors, thinkStrip
 import os
 import asyncio
-import socket
-import time
-from openai import OpenAI
+import csv
+import argparse
+
+from agents import Model, TalkerAgent, EvaluatorAgent, RAG_Agent
+
 from dotenv import load_dotenv
 load_dotenv()
-
-# Llamafile should be in the same directory as this file
-
-client = OpenAI(
-    base_url="http://127.0.0.1:8081/v1",
-    api_key="sk-no-key-required"
-)
-
 # LOCAL_API_URL
 # FIREWORKS_API_KEY
 
+# Llamafile should be in the same directory as this file
+
+
 class AvatarFormsInterviewer:
-    def __init__(self, is_local=False, cloud_model=None, cutoff=4):
+    def __init__(self, is_local=False, model_name=None, local_port=8081, cutoff=4):
         self.cutoff = cutoff
 
         self.user_role = "user"
         self.AI_role = "assistant"
 
         self.is_local = is_local
-        self.cloud_model = cloud_model
+        if self.is_local:
+            self.local_port = local_port
+        self.model_name = model_name
 
 
     def build_interview(self, questions, interview_context):
@@ -77,19 +75,21 @@ class AvatarFormsInterviewer:
         }
         if self.is_local:
             # Use the llamafile URL and endpoint
-            llamafile_url = f"http://127.0.0.1:8081/v1/chat/completions"
-            model_name = "LLaMA_CPP"
-            
-            return Model(url=llamafile_url, model=model_name, api_key=None, params=params)
+            url = f"http://127.0.0.1:{self.local_port}/v1/chat/completions"
+            if not self.model_name:
+                self.model_name = "LLaMA_CPP"
+            api_key = None
         
         else:
-            if not self.cloud_model:
-                self.cloud_model = "accounts/fireworks/models/qwen3-vl-235b-a22b-instruct"
+            url = "https://api.fireworks.ai/inference/v1/chat/completions"
+            if not self.model_name:
+                self.model_name = "accounts/fireworks/models/qwen3-vl-235b-a22b-instruct"
             
             api_key = os.getenv("FIREWORKS_API_KEY")
             if not api_key:
                 raise ValueError("FIREWORKS_API_KEY environment variable not set")
-            return Model(url="https://api.fireworks.ai/inference/v1/chat/completions", model=self.cloud_model, api_key=api_key, params=params)
+            
+        return Model(url=url, model=self.model_name, api_key=api_key, params=params)
         
     def get_conversation_section(self, question_index):
         section = []
@@ -153,9 +153,16 @@ class AvatarFormsInterviewer:
         for i, question in enumerate(self.questions):
             conversation_section = self.get_conversation_section(i)
             answer = self.rag_agent.answer(question, conversation_section)
-            final_answers[question] = answer
+            final_answers[question] = thinkStrip(answer)
         
         return final_answers
+
+    def output_to_csv(self, filename, final_answers):
+        with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(["Question", "Answer"])
+            for question, answer in final_answers.items():
+                writer.writerow([question, answer])
         
     # Kind of obsolete, good for testing
     def run_interview_whole(self, verbose=True):
@@ -217,21 +224,27 @@ class AvatarFormsInterviewer:
         return final_answers
 
 async def main():
+    parser = argparse.ArgumentParser(description="Run the AvatarForms interview backend server.")
+    parser.add_argument("--local", action="store_true", help="Use local model (LLaMA_CPP) instead of Fireworks API")
+    parser.add_argument("--llama_port", type=int, default=8081, help="Port for local model server if --local is set (default: 8081)")
+    parser.add_argument("-p", "--port", type=int, default=8883, help="Port for the WebSocket server (default: 8883)")
+    parser.add_argument("--http_port", type=int, default=8882, help="Port for the HTTP API server (default: 8882)")
+    args = parser.parse_args()
+
+    #Start HTTP Server
+    start_http_server(args.http_port)
+    questionnaire_data = await wait_for_questionnaire()
+
     # Start WebSocket server
-    server = await start_server()
+    server = await start_server(args.port)
+    print(f"{bcolors.OKGREEN}WebSocket server started on port {args.port}.{bcolors.ENDC}")
 
     # Wait for browser (HeadTTS) to connect
     await wait_for_browser_connection()
 
     # Setup interview after browser is connected
-    questions = [
-        "What is your full name?",
-        "How did you sleep last night?",
-    ]
-
-    interview_context = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know them."
-    interviewer = AvatarFormsInterviewer(is_local=True, cutoff=4)
-    interviewer.build_interview(questions, interview_context)
+    interviewer = AvatarFormsInterviewer(is_local=args.local, local_port=args.llama_port, cutoff=4)
+    interviewer.build_from_json(questionnaire_data)
 
     # Start interview
     first_question = interviewer.start_interview()
@@ -256,12 +269,11 @@ async def main():
                 
             break
 
-    # Keep server running after interview completes
-    print(f"\n{bcolors.OKGREEN}Server will continue running. Press Ctrl+C to stop.{bcolors.ENDC}")
-    try:
-        await asyncio.Future()
-    except asyncio.CancelledError:
-        pass
+    # Close the WebSocket server
+    print(f"\n{bcolors.OKGREEN}Closing WebSocket server...{bcolors.ENDC}")
+    server.close()
+    await server.wait_closed()
+    print(f"{bcolors.OKGREEN}Server closed.{bcolors.ENDC}")
 
 
 ### Example usage ###

@@ -1,4 +1,4 @@
-﻿using AvatarFormsApp.Contracts.Services;
+using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Helpers;
 using AvatarFormsApp.ViewModels;
 
