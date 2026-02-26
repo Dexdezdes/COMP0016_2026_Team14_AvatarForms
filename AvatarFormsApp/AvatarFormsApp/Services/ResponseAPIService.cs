@@ -31,6 +31,7 @@ public class ResponseAPIService : IResponseAPIService
     {
         _expectedQuestionCount = count;
         _receivedResponseCount = 0;
+        _currentSessionId = null;
         System.Diagnostics.Debug.WriteLine($"Expected question count set to: {count}");
     }
 
@@ -75,16 +76,18 @@ public class ResponseAPIService : IResponseAPIService
         try
         {
             _cancellationTokenSource?.Cancel();
-            
+
+            // Stop the listener FIRST to unblock GetContextAsync in the listen loop,
+            // otherwise awaiting _listenerTask deadlocks indefinitely.
+            _httpListener?.Stop();
+            _httpListener?.Close();
+            _httpListener = null;
+
             if (_listenerTask != null)
             {
                 await _listenerTask;
             }
 
-            _httpListener?.Stop();
-            _httpListener?.Close();
-            _httpListener = null;
-            
             IsRunning = false;
             System.Diagnostics.Debug.WriteLine("Response API server stopped");
         }

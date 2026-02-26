@@ -1,12 +1,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using AvatarFormsApp.Contracts.Services;
+using AvatarFormsApp.Contracts.ViewModels;
 using AvatarFormsApp.Models;
 using System.Collections.ObjectModel;
 
 namespace AvatarFormsApp.ViewModels;
 
-public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
+public partial class QuestionnaireDetailPageViewModel : ObservableRecipient, INavigationAware
 {
     private readonly IQuestionnaireService _questionnaireService;
     private readonly INavigationService _navigationService;
@@ -31,6 +32,7 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
     private string statusMessage = string.Empty;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(NavigateToAvatarCommand))]
     private bool isStartingBackend = false;
 
     public QuestionnaireDetailPageViewModel(
@@ -48,16 +50,6 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
         _questionnaireAPIService = questionnaireAPIService;
         _responseAPIService = responseAPIService;
 
-        _pythonProcessService.OutputReceived += (output) =>
-        {
-            System.Diagnostics.Debug.WriteLine($"[PYTHON] {output}");
-        };
-        _pythonProcessService.ErrorReceived += (error) =>
-        {
-            System.Diagnostics.Debug.WriteLine($"[PYTHON ERROR] {error}");
-        };
-
-        // Subscribe to AllResponsesReceived event
         _responseAPIService.AllResponsesReceived += OnAllResponsesReceived;
     }
 
@@ -87,7 +79,9 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
         }
     }
 
-    [RelayCommand]
+    private bool CanNavigateToAvatar() => !IsStartingBackend;
+
+    [RelayCommand(CanExecute = nameof(CanNavigateToAvatar))]
     private async Task NavigateToAvatarAsync()
     {
         try
@@ -156,7 +150,6 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
                     return;
                 }
 
-                System.Diagnostics.Debug.WriteLine($"Questionnaire '{Questionnaire.Name}' uploaded successfully");
             }
             else
             {
@@ -181,13 +174,13 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
 
     private async void OnAllResponsesReceived()
     {
+        _responseAPIService.AllResponsesReceived -= OnAllResponsesReceived;
+
         System.Diagnostics.Debug.WriteLine("All responses received! Stopping Response API server...");
 
         try
         {
-            // Give a small delay to ensure the last HTTP response is sent
             await Task.Delay(500);
-
             await _responseAPIService.StopServerAsync();
             System.Diagnostics.Debug.WriteLine("Response API server stopped successfully.");
         }
@@ -195,5 +188,12 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
         {
             System.Diagnostics.Debug.WriteLine($"Error stopping Response API server: {ex.Message}");
         }
+    }
+
+    public void OnNavigatedTo(object parameter) { }
+
+    public void OnNavigatedFrom()
+    {
+        _responseAPIService.AllResponsesReceived -= OnAllResponsesReceived;
     }
 }

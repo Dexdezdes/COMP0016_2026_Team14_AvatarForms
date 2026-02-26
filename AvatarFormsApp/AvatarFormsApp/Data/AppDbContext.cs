@@ -25,12 +25,12 @@ public class AppDbContext : DbContext
             // Get path to store database in AppData/Local
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var dbPath = Path.Combine(appDataPath, "AvatarFormsApp", "questionnaires.db");
-            
+
             // Ensure directory exists
             Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
-            
-            // Configure SQLite connection
-            optionsBuilder.UseSqlite($"Data Source={dbPath}");
+
+            // Configure SQLite connection with foreign keys enabled
+            optionsBuilder.UseSqlite($"Data Source={dbPath};Foreign Keys=True");
         }
     }
 
