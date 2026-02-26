@@ -88,13 +88,12 @@ public partial class App : Application
             // Core Services
             services.AddSingleton<IFileService, FileService>();
 
-            // *** DATABASE SERVICES - ADD THESE ***
             // Register DbContext with SQLite
             services.AddDbContext<AppDbContext>(options =>
             {
                 var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 var dbPath = Path.Combine(appDataPath, "AvatarFormsApp", "questionnaires.db");
-                
+
                 // Ensure directory exists
                 Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
                 
@@ -106,6 +105,9 @@ public partial class App : Application
 
             // Register Questionnaire API Service
             services.AddSingleton<IQuestionnaireAPIService, QuestionnaireAPIService>();
+
+            // Register Response API Service (HTTP server for receiving responses)
+            services.AddSingleton<IResponseAPIService, ResponseAPIService>();
 
             // Register Process Services
             services.AddSingleton<ILlamafileProcessService, LlamafileProcessService>();
@@ -159,24 +161,28 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
-        
-        // *** INITIALIZE DATABASE - ADD THIS ***
-        // Delete and recreate database on every startup (DEVELOPMENT ONLY!)
+
+        // *** INITIALIZE DATABASE ***
         using (var scope = Host.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            
-            // Delete existing database
-            await dbContext.Database.EnsureDeletedAsync();
-            
-            // Recreate database with schema
+
+            // Create database with schema if it doesn't exist
             await dbContext.Database.EnsureCreatedAsync();
-            
-            // Seed with fresh sample data
-            await SeedSampleDataAsync(dbContext);
+
+            // Seed with sample data only if database is empty
+            var existingCount = await dbContext.Questionnaires.CountAsync();
+            if (existingCount == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("Database is empty - seeding sample data...");
+                await SeedSampleDataAsync(dbContext);
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"Database already contains {existingCount} questionnaire(s) at {dbContext.Database.GetConnectionString}");
+            }
         }
-        // *** END DATABASE INITIALIZATION ***
-        
+
         var window = App.MainWindow;
 
         var shell = App.GetService<ShellPage>();
@@ -190,18 +196,6 @@ public partial class App : Application
         try
         {
             System.Diagnostics.Debug.WriteLine("=== STARTING SEED DATA ===");
-            
-            // Check if we already have data
-            var existingCount = await dbContext.Questionnaires.CountAsync();
-            System.Diagnostics.Debug.WriteLine($"Existing questionnaires count: {existingCount}");
-            
-            if (existingCount > 0)
-            {
-                System.Diagnostics.Debug.WriteLine("Data already exists - skipping seed");
-                return;
-            }
-
-            System.Diagnostics.Debug.WriteLine("No data found - starting seeding...");
 
             // Sample 1: Sleep Survey
             var sleepId = Guid.NewGuid().ToString();
@@ -262,7 +256,7 @@ public partial class App : Application
 
             System.Diagnostics.Debug.WriteLine("Adding questionnaires to context...");
             dbContext.Questionnaires.AddRange(sleep);
-            
+
             System.Diagnostics.Debug.WriteLine("Saving changes to database...");
             await dbContext.SaveChangesAsync();
 

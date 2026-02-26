@@ -98,4 +98,18 @@
     <ItemGroup>
       <Content Remove="..\..\Backend\requirements.txt" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Page Remove="Views\ResponseDetailPage.xaml" />
+      <Page Remove="Views\ResponsesPage.xaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Views\ResponseDetailPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+      <None Update="Views\ResponsesPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+    </ItemGroup>
 </Project>
