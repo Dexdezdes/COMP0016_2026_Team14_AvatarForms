@@ -85,7 +85,7 @@ def RAG_system_prompt(context, conversation_history, question):
     return f"""
 You are an information retrieval assistant that summaries information from a conversation.
 You will be given a portion of an interview transcript where the user answered a question.
-Write a concise answer to the question, as if it were a question on a questionnaire.
+Write a concise answer to the question on behalf of the user.
 
 ---------------------------------------------------------------
 
