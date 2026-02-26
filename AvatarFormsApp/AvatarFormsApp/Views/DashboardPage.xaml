@@ -109,7 +109,7 @@
                             </Grid>
 
                             <TextBlock Grid.Column="1" 
-                                       Text="0"
+                                       Text="{x:Bind ResponseSessions.Count}"
                                        HorizontalAlignment="Center" 
                                        VerticalAlignment="Center" />
 
