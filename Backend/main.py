@@ -238,7 +238,6 @@ async def main():
 
     # Start WebSocket server
     server = await start_server(args.port)
-    print(f"{bcolors.OKGREEN}WebSocket server started on port {args.port}.{bcolors.ENDC}")
 
     # Wait for browser (HeadTTS) to connect
     await wait_for_browser_connection()
@@ -272,7 +271,7 @@ async def main():
                 questionnaire_id = questionnaire_data["questionnaire_id"]
                 send_response(
                     questionnaire_id=questionnaire_id,
-                    question_order=i,
+                    question_order=i + 1,
                     question=question,
                     answer=answer,
                     port=args.response_port
