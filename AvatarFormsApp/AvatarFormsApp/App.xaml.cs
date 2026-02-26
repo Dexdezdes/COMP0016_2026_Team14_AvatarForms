@@ -119,6 +119,10 @@ public partial class App : Application
             services.AddTransient<DashboardPage>();
             services.AddTransient<QuestionnaireDetailPageViewModel>();
             services.AddTransient<QuestionnaireDetailPage>();
+            services.AddTransient<ResponsesPageViewModel>();
+            services.AddTransient<ResponsesPage>();
+            services.AddTransient<ResponseDetailPageViewModel>();
+            services.AddTransient<ResponseDetailPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ConversationPage>();
             services.AddTransient<CreateQuestionnairePage>();
@@ -166,6 +170,9 @@ public partial class App : Application
         using (var scope = Host.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            // Delete database before each run
+            // await dbContext.Database.EnsureDeletedAsync();
 
             // Create database with schema if it doesn't exist
             await dbContext.Database.EnsureCreatedAsync();
@@ -232,30 +239,43 @@ public partial class App : Application
                 IsRequired = false
             });
 
-            var sleepQ3Id = Guid.NewGuid().ToString();
-            sleep.Questions.Add(new Question
+            // Sample 2: Education Feedback
+            var educationId = Guid.NewGuid().ToString();
+            var education = new Questionnaire 
+            { 
+                Id = educationId,
+                Name = "Education Feedback", 
+                OwnerId = "user2", 
+                Status = "Active", 
+                Color = "#B34CB3",
+                Description = "This questionnaire is designed to get feedback about the educational content and delivery.",
+                CreatedDate = DateTime.UtcNow
+            };
+
+            var educationQ1Id = Guid.NewGuid().ToString();
+            education.Questions.Add(new Question
             {
                 Id = Guid.NewGuid().ToString(),
-                QuestionnaireId = sleepId,
-                Text = "Do you generally sleep well?",
+                QuestionnaireId = educationId,
+                Text = "What is your full name?",
                 Type = QuestionType.OpenEnded,
-                Order = 3,
+                Order = 1,
                 IsRequired = false
             });
 
-            var sleepQ4Id = Guid.NewGuid().ToString();
-            sleep.Questions.Add(new Question
+            var educationQ2Id = Guid.NewGuid().ToString();
+            education.Questions.Add(new Question
             {
                 Id = Guid.NewGuid().ToString(),
-                QuestionnaireId = sleepId,
-                Text = "How are you feeling today?",
+                QuestionnaireId = educationId,
+                Text = "What do you think about the quality of the educational content on the scale of 1 to 10?",
                 Type = QuestionType.OpenEnded,
-                Order = 4,
+                Order = 2,
                 IsRequired = false
             });
 
             System.Diagnostics.Debug.WriteLine("Adding questionnaires to context...");
-            dbContext.Questionnaires.AddRange(sleep);
+            dbContext.Questionnaires.AddRange(sleep, education);
 
             System.Diagnostics.Debug.WriteLine("Saving changes to database...");
             await dbContext.SaveChangesAsync();
