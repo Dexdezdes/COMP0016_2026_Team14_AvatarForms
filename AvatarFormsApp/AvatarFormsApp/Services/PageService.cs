@@ -20,6 +20,8 @@ public class PageService : IPageService
         Configure<CreateQuestionnairePageViewModel, CreateQuestionnairePage>();
         Configure<QuestionnaireDetailPageViewModel, QuestionnaireDetailPage>();
         Configure<AvatarPageViewModel, AvatarPage>();
+        Configure<ResponsesPageViewModel, ResponsesPage>();
+        Configure<ResponseDetailPageViewModel, ResponseDetailPage>();
     }
 
     public Type GetPageType(string key)

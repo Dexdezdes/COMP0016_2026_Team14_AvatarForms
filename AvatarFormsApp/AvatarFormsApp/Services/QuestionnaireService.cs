@@ -22,6 +22,7 @@ public class QuestionnaireService : IQuestionnaireService
             return await _context.Questionnaires
                 .Include(q => q.Questions)
                     .ThenInclude(q => q.Options)
+                .Include(q => q.ResponseSessions)
                 .OrderByDescending(q => q.CreatedDate)
                 .ToListAsync();
         }
@@ -210,6 +211,7 @@ public class QuestionnaireService : IQuestionnaireService
         {
             return await _context.ResponseSessions
                 .Where(rs => rs.QuestionnaireId == questionnaireId)
+                .Include(rs => rs.Questionnaire)
                 .Include(rs => rs.Responses)
                     .ThenInclude(r => r.Question)
                 .OrderByDescending(rs => rs.SubmittedDate)
@@ -218,6 +220,24 @@ public class QuestionnaireService : IQuestionnaireService
         catch (Exception ex)
         {
             throw new Exception($"Error retrieving response sessions for questionnaire {questionnaireId}", ex);
+        }
+    }
+
+    // Get a single response session by ID with all responses, questions, and questionnaire
+    public async Task<ResponseSession?> GetResponseSessionByIdAsync(string sessionId)
+    {
+        try
+        {
+            return await _context.ResponseSessions
+                .Include(rs => rs.Questionnaire)
+                .Include(rs => rs.Responses)
+                    .ThenInclude(r => r.Question)
+                        .ThenInclude(q => q!.Options)
+                .FirstOrDefaultAsync(rs => rs.Id == sessionId);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error retrieving response session {sessionId}", ex);
         }
     }
 }
