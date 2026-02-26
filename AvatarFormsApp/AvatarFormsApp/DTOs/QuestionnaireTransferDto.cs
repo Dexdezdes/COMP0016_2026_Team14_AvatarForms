@@ -7,6 +7,9 @@ namespace AvatarFormsApp.DTOs;
 /// </summary>
 public class QuestionnaireTransferDto
 {
+    [JsonPropertyName("questionnaire_id")]
+    public required string QuestionnaireId { get; set; }
+
     [JsonPropertyName("description")]
     public required string Description { get; set; }
 
@@ -20,6 +23,7 @@ public class QuestionnaireTransferDto
     {
         return new QuestionnaireTransferDto
         {
+            QuestionnaireId = questionnaire.Id,
             Description = questionnaire.Description ?? string.Empty,
             Questions = questionnaire.Questions
                 .OrderBy(q => q.Order)
