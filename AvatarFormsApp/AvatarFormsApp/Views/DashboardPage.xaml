@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="1" Margin="0,18,0,0">
-            <TextBlock Text="Welcome, John Smith" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="Welcome to AvatarForms" FontSize="20" FontWeight="SemiBold" />
             <TextBlock Text="Check out latest responses" Foreground="Gray" Margin="0,4,0,12" />
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,6,0,12">
@@ -25,8 +25,6 @@
                           SelectedIndex="0"
                           SelectedItem="{x:Bind ViewModel.SelectedFilter, Mode=TwoWay}">
                     <x:String>All Questionnaires</x:String>
-                    <x:String>Pending</x:String>
-                    <x:String>Closed</x:String>
                 </ComboBox>
 
                 <!-- Sort ComboBox with Binding -->
@@ -77,17 +75,15 @@
                       ItemClick="OnQuestionnaireClick"
                       IsItemClickEnabled="True">
                 <ListView.Header>
-                    <Grid Padding="6,6,6,12">
+                    <Grid Padding="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="140" />
-                            <ColumnDefinition Width="120" />
                             <ColumnDefinition Width="80" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Questionnaire" FontWeight="Bold" Margin="16,0,0,0" />
-                        <TextBlock Grid.Column="1" Margin="15,0,0,0" Text="Responses" FontWeight="Bold" HorizontalAlignment="Left" />
-                        <TextBlock Grid.Column="2" Margin="15,0,0,0" Text="Status" FontWeight="Bold" HorizontalAlignment="Left" />
-                        <TextBlock Grid.Column="3" Text="Actions" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="Responses" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock Grid.Column="2" Text="Actions" FontWeight="Bold" HorizontalAlignment="Center" />
                     </Grid>
                 </ListView.Header>
 
@@ -97,10 +93,9 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="140" />
-                                <ColumnDefinition Width="120" />
                                 <ColumnDefinition Width="80" />
                             </Grid.ColumnDefinitions>
-                            
+
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -112,18 +107,13 @@
                                     <ProgressBar Value="100" Minimum="0" Maximum="100" Height="2" Foreground="{x:Bind Color}" Margin="0,8,12,0" />
                                 </StackPanel>
                             </Grid>
-                            
+
                             <TextBlock Grid.Column="1" 
                                        Text="0"
                                        HorizontalAlignment="Center" 
                                        VerticalAlignment="Center" />
-                            
-                            <TextBlock Grid.Column="2"
-                                       Text="{x:Bind Status}"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" />
-                            
-                            <Button Grid.Column="3"
+
+                            <Button Grid.Column="2"
                                     Content="&#xE74D;"
                                     FontFamily="Segoe MDL2 Assets"
                                     FontSize="16"
