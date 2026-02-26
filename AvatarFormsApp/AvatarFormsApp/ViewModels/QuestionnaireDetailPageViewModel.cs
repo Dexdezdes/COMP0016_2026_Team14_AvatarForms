@@ -13,6 +13,7 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
     private readonly ILlamafileProcessService _llamafileProcessService;
     private readonly IPythonProcessService _pythonProcessService;
     private readonly IQuestionnaireAPIService _questionnaireAPIService;
+    private readonly IResponseAPIService _responseAPIService;
 
     [ObservableProperty]
     private Questionnaire? questionnaire;
@@ -37,13 +38,15 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
         INavigationService navigationService,
         ILlamafileProcessService llamafileProcessService,
         IPythonProcessService pythonProcessService,
-        IQuestionnaireAPIService questionnaireAPIService)
+        IQuestionnaireAPIService questionnaireAPIService,
+        IResponseAPIService responseAPIService)
     {
         _questionnaireService = questionnaireService;
         _navigationService = navigationService;
         _llamafileProcessService = llamafileProcessService;
         _pythonProcessService = pythonProcessService;
         _questionnaireAPIService = questionnaireAPIService;
+        _responseAPIService = responseAPIService;
 
         _pythonProcessService.OutputReceived += (output) =>
         {
@@ -53,6 +56,9 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
         {
             System.Diagnostics.Debug.WriteLine($"[PYTHON ERROR] {error}");
         };
+
+        // Subscribe to AllResponsesReceived event
+        _responseAPIService.AllResponsesReceived += OnAllResponsesReceived;
     }
 
     public async Task LoadQuestionnaireAsync(string questionnaireId)
@@ -100,16 +106,30 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
                 }
             }
 
-            // 2. Start Python backend process
+            // 2. Start response API Server
+            StatusMessage = "Starting response API server...";
+            if (!_responseAPIService.IsRunning)
+            {
+                await _responseAPIService.StartServerAsync(port: 5000);
+
+                // Set expected question count
+                if (Questionnaire != null)
+                {
+                    _responseAPIService.SetExpectedQuestionCount(Questionnaire.Questions.Count);
+                }
+            }
+
+            // 3. Start Python backend process
             StatusMessage = "Starting avatar process...";
             if (!_pythonProcessService.IsRunning)
             {
-                // Start with local mode enabled, ports: 8081 (llama), 8883 (websocket), 8882 (http)
+                // Start with local mode enabled, ports: 8081 (llama), 8883 (websocket), 8882 (http), 5000 (response)
                 bool pythonReady = await _pythonProcessService.StartAsync(
                     useLocal: true, 
                     llamaPort: 8081, 
                     websocketPort: 8883,
-                    httpPort: 8882);
+                    httpPort: 8882,
+                    responsePort: 5000);
 
                 if (!pythonReady)
                 {
@@ -122,7 +142,7 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
                 await Task.Delay(2000);
             }
 
-            // 3. Send questionnaire data to Python backend
+            // 4. Send questionnaire data to Python backend
             StatusMessage = "Uploading questionnaire...";
             if (Questionnaire != null)
             {
@@ -144,7 +164,7 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
                 return;
             }
 
-            // 4. Navigate to avatar page
+            // 5. Navigate to avatar page
             StatusMessage = string.Empty;
             _navigationService.NavigateTo(typeof(AvatarPageViewModel).Name);
         }
@@ -156,6 +176,24 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient
         finally
         {
             IsStartingBackend = false;
+        }
+    }
+
+    private async void OnAllResponsesReceived()
+    {
+        System.Diagnostics.Debug.WriteLine("All responses received! Stopping Response API server...");
+
+        try
+        {
+            // Give a small delay to ensure the last HTTP response is sent
+            await Task.Delay(500);
+
+            await _responseAPIService.StopServerAsync();
+            System.Diagnostics.Debug.WriteLine("Response API server stopped successfully.");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error stopping Response API server: {ex.Message}");
         }
     }
 }

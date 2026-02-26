@@ -91,8 +91,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<ResponseSession>(entity =>
         {
             entity.HasKey(rs => rs.Id);
-            entity.Property(rs => rs.RespondentName).HasMaxLength(200);
-            
+
             // One ResponseSession has many Responses
             entity.HasMany(rs => rs.Responses)
                   .WithOne(r => r.ResponseSession)
