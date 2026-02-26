@@ -1,4 +1,4 @@
-﻿<Project Sdk="Uno.Sdk">
+<Project Sdk="Uno.Sdk">
     <PropertyGroup>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFrameworks>
         <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-maccatalyst</TargetFrameworks>
@@ -99,17 +99,4 @@
       <Content Remove="..\..\Backend\requirements.txt" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Page Remove="Views\ResponseDetailPage.xaml" />
-      <Page Remove="Views\ResponsesPage.xaml" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update="Views\ResponseDetailPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </None>
-      <None Update="Views\ResponsesPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </None>
-    </ItemGroup>
-</Project>
+    </Project>
