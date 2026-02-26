@@ -33,6 +33,7 @@ public class QuestionnaireAPIService : IQuestionnaireAPIService
             // Build the JSON payload matching Python backend's expected format
             var payload = new
             {
+                questionnaire_id = questionnaireId,
                 questions = questionnaire.Questions
                     .OrderBy(q => q.Order)
                     .Select(q => q.Text)
