@@ -1,7 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using Microsoft.Playwright;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.Web.WebView2.Core;
 
 namespace AvatarFormsApp.Services;
 
@@ -26,129 +28,188 @@ public class FormLinkParserService
     private static void Log(string msg) =>
         System.Diagnostics.Debug.WriteLine($"[FormLinkParser] {msg}");
 
-    public async Task<List<ParsedQuestion>> ParseAsync(string url)
+    // ── Public entry point ────────────────────────────────────────────────────
+    // webView must already be in the visual tree (initialized by the page).
+    // Call this only from the UI thread.
+
+    public async Task<List<ParsedQuestion>> ParseAsync(string url, WebView2 webView)
     {
         Log($"ParseAsync START — url={url}");
         try
         {
-            Log("Calling CaptureFormPayloadAsync...");
-            var rawJson = await CaptureFormPayloadAsync(url);
-            Log($"CaptureFormPayloadAsync returned — rawJson is {(rawJson is null ? "NULL" : "NOT NULL")}");
+            // Ensure WebView2 runtime is initialized
+            await webView.EnsureCoreWebView2Async();
+            Log("CoreWebView2 ready.");
+
+            var rawJson = await CaptureFormPayloadAsync(url, webView);
+            Log($"Capture done — rawJson is {(rawJson is null ? "NULL" : "NOT NULL")}");
 
             if (rawJson is null)
             {
-                Log("No payload captured, returning empty list.");
+                Log("No payload captured.");
                 return new();
             }
 
-            Log("Calling ParseModernMsJson...");
             var result = ParseModernMsJson(rawJson);
-            Log($"ParseModernMsJson returned {result.Count} questions.");
+            Log($"Parsed {result.Count} questions.");
             return result;
         }
         catch (Exception ex)
         {
-            Log($"ParseAsync EXCEPTION: {ex.GetType().FullName}: {ex.Message}");
-            Log($"StackTrace: {ex.StackTrace}");
-            if (ex.InnerException is not null)
-                Log($"InnerException: {ex.InnerException.GetType().FullName}: {ex.InnerException.Message}");
+            Log($"ParseAsync EXCEPTION: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
             return new();
         }
     }
 
-    // ── Playwright ────────────────────────────────────────────────────────────
+    // ── WebView2 interception ─────────────────────────────────────────────────
 
-    private async Task<JsonNode?> CaptureFormPayloadAsync(string url)
+    private async Task<JsonNode?> CaptureFormPayloadAsync(string url, WebView2 webView)
     {
-        JsonNode? captured = null;
+        var tcs = new TaskCompletionSource<JsonNode?>();
+        var core = webView.CoreWebView2;
 
-        Log("Creating Playwright...");
-        using var playwright = await Playwright.CreateAsync();
-        Log("Launching Chromium...");
-        await using var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
-        Log("Browser launched. Creating context...");
-        var context = await browser.NewContextAsync();
-        var page = await context.NewPageAsync();
-        Log("Page created. Attaching response handler...");
-
-        page.Response += async (_, response) =>
+        // Mirror the Playwright approach: only accept the specific API endpoint that
+        // returns the structured form JSON with a top-level "form" key.
+        // ResponsePageStartup.ashx has a different structure and must be skipped.
+        async void OnResponseReceived(object? sender, CoreWebView2WebResourceResponseReceivedEventArgs e)
         {
-            if (captured is not null) return;
-            if (response.Request.ResourceType is not ("fetch" or "xhr")) return;
-            if (response.Status != 200) return;
+            if (tcs.Task.IsCompleted) return;
+
+            var uri = e.Request.Uri;
+
+            // Accept the known MS Forms API endpoints.
+            // ResponsePageStartup.ashx is also included — WebView2 (unlike Playwright's
+            // fresh headless browser) reuses Edge's cache/session, so after clicking Start
+            // the questions are already in memory and no new runtimeFormsWithResponses
+            // request fires. The data comes from the initial ResponsePageStartup.ashx instead.
+            bool isFormApi = uri.Contains("runtimeFormsWithResponses") ||
+                             uri.Contains("light/forms") ||
+                             uri.Contains("formapi/api") ||
+                             uri.Contains("ResponsePageStartup.ashx");
+
+            if (!isFormApi) return;
+
+            Log($"Checking API response from: {uri}");
+
             try
             {
-                var text = await response.TextAsync();
-                if (!text.Contains("\"questions\":[")) return;
-                Log($"Found form payload in response from: {response.Url}");
-                captured = JsonNode.Parse(text);
-                Log("Payload parsed into JsonNode OK.");
+                var irasStream = await e.Response.GetContentAsync();
+                using var reader = new System.IO.StreamReader(irasStream.AsStreamForRead());
+                var text = await reader.ReadToEndAsync();
+
+                if (!text.Contains("\"questions\":["))
+                {
+                    Log("Response missing questions array, skipping.");
+                    return;
+                }
+
+                Log($"Found form payload ({text.Length} chars) from: {uri}");
+                var node = JsonNode.Parse(text);
+                Log("JsonNode parsed OK.");
+                tcs.TrySetResult(node);
             }
             catch (Exception ex)
             {
                 Log($"Response handler EXCEPTION: {ex.GetType().Name}: {ex.Message}");
+                // Don't fail the TCS — keep waiting for another response
             }
-        };
-
-        Log($"Navigating to {url}...");
-        await page.GotoAsync(url, new() { WaitUntil = WaitUntilState.NetworkIdle });
-        Log("Navigation complete.");
-
-        var startBtn = await page.QuerySelectorAsync("button:has-text('Start'), button:has-text('Start now')");
-        if (startBtn is not null)
-        {
-            Log("Found Start button, clicking...");
-            await startBtn.EvaluateAsync("el => el.click()");
-            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-            await page.WaitForTimeoutAsync(3000);
-            Log("Post-start wait complete.");
-        }
-        else
-        {
-            Log("No Start button found.");
         }
 
-        Log("Closing browser...");
-        await browser.CloseAsync();
-        Log($"Browser closed. captured is {(captured is null ? "NULL" : "NOT NULL")}");
-        return captured;
+        core.WebResourceResponseReceived += OnResponseReceived;
+
+        // After navigation completes, inject JS to click Start / Start now button.
+        // Works for both forms that show questions immediately AND forms behind a Start button.
+        async void OnNavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+        {
+            if (!e.IsSuccess || tcs.Task.IsCompleted) return;
+            try
+            {
+                Log("Navigation completed — injecting Start button click script...");
+                var result = await core.ExecuteScriptAsync(@"
+                    (function() {
+                        var buttons = document.querySelectorAll('button');
+                        for (var i = 0; i < buttons.length; i++) {
+                            var text = buttons[i].innerText.trim().toLowerCase();
+                            if (text === 'start' || text === 'start now') {
+                                buttons[i].click();
+                                return 'clicked';
+                            }
+                        }
+                        return 'not_found';
+                    })()");
+                Log($"Start button script result: {result}");
+            }
+            catch (Exception ex) { Log($"Start button script EXCEPTION: {ex.Message}"); }
+        }
+
+        core.NavigationCompleted += OnNavigationCompleted;
+
+        try
+        {
+            Log($"Navigating WebView2 to {url}...");
+            core.Navigate(url);
+
+            // 40s timeout — forms with Start button need extra time:
+            // page load + button click + second network request for questions
+            var timeout = Task.Delay(TimeSpan.FromSeconds(40));
+            var winner = await Task.WhenAny(tcs.Task, timeout);
+
+            if (winner == timeout)
+            {
+                Log("Timed out waiting for form payload.");
+                return null;
+            }
+
+            return await tcs.Task;
+        }
+        finally
+        {
+            // Always unsubscribe both handlers to avoid leaks
+            core.WebResourceResponseReceived -= OnResponseReceived;
+            core.NavigationCompleted -= OnNavigationCompleted;
+            Log("Handlers unsubscribed.");
+        }
     }
 
-    // ── Parsing ───────────────────────────────────────────────────────────────
+    // ── JSON parsing (unchanged) ──────────────────────────────────────────────
 
     private List<ParsedQuestion> ParseModernMsJson(JsonNode raw)
     {
         try
         {
-            Log("ParseModernMsJson: reading form node...");
-            var formNode = raw["form"];
-            if (formNode is null) { Log("formNode is NULL, returning empty."); return new(); }
+            // Try multiple known root structures:
+            // 1. {"form": {"questions": [...]}}  — runtimeFormsWithResponses
+            // 2. {"questions": [...]}             — ResponsePageStartup.ashx (flat)
+            // 3. {"data": {"form": {...}}}        — some variant responses
+            JsonNode? formNode = raw["form"]
+                              ?? raw["data"]?["form"]
+                              ?? (raw["questions"] is not null ? raw : null);
 
-            Log($"formNode type: {formNode.GetType().Name}");
+            if (formNode is null)
+            {
+                Log($"formNode is NULL — tried keys: form, data.form, root questions. Keys present: {string.Join(", ", (raw as System.Text.Json.Nodes.JsonObject)?.Select(k => k.Key) ?? Enumerable.Empty<string>())}");
+                return new();
+            }
+            Log($"formNode found via key: {(raw["form"] is not null ? "form" : raw["data"]?["form"] is not null ? "data.form" : "root")}");
 
             var questions = (formNode["questions"] as JsonArray) ?? new JsonArray();
             var descriptive = (formNode["descriptiveQuestions"] as JsonArray) ?? new JsonArray();
-            Log($"questions count={questions.Count}, descriptive count={descriptive.Count}");
+            Log($"questions={questions.Count} descriptive={descriptive.Count}");
 
-            Log("Sorting elements...");
             var allElements = questions.Concat(descriptive)
                 .Where(n => n is not null).Cast<JsonNode>()
                 .OrderBy(n => SafeDouble(n["order"]) ?? 0)
                 .ToList();
-            Log($"allElements count={allElements.Count}");
 
-            Log("Building matrix groups...");
             var matrixGroups = new Dictionary<string, (string Title, List<string> Columns)>();
             foreach (var q in questions.Where(n => n is not null).Cast<JsonNode>())
             {
                 if (SafeString(q["type"]) == "Question.MatrixChoiceGroup")
                 {
                     var gid = SafeString(q["id"]) ?? string.Empty;
-                    Log($"  Matrix group: id={gid}");
                     matrixGroups[gid] = (CleanHtml(SafeString(q["title"])), ExtractChoices(q));
                 }
             }
-            Log($"Matrix groups count={matrixGroups.Count}");
 
             var result = new List<ParsedQuestion>();
             var currentSection = "General";
@@ -160,19 +221,13 @@ public class FormLinkParserService
                 {
                     var qType = SafeString(q["type"]) ?? string.Empty;
                     var qId = SafeString(q["id"]) ?? "(no id)";
-                    Log($"  Processing element [{idx}] id={qId} type={qType}");
 
                     if (qType == "Question.ColumnGroup")
                     {
                         currentSection = CleanHtml(SafeString(q["title"]));
-                        Log($"  Section changed to: {currentSection}");
                         continue;
                     }
-                    if (qType == "Question.MatrixChoiceGroup") { Log("  Skipping MatrixChoiceGroup"); continue; }
-
-                    Log($"  Extracting choices for [{idx}]...");
-                    var choices = ExtractChoices(q);
-                    Log($"  Choices count={choices.Count}");
+                    if (qType == "Question.MatrixChoiceGroup") continue;
 
                     var item = new ParsedQuestion
                     {
@@ -182,7 +237,7 @@ public class FormLinkParserService
                         Type = qType,
                         Required = SafeBool(q["required"]) ?? false,
                         OrderValue = SafeDouble(q["order"]),
-                        Options = choices,
+                        Options = ExtractChoices(q),
                     };
 
                     if (qType == "Question.MatrixChoice")
@@ -201,25 +256,20 @@ public class FormLinkParserService
                     if (!string.IsNullOrEmpty(subtitle)) item.Subtitle = subtitle;
 
                     if (!string.IsNullOrEmpty(item.Title) || item.Options.Count > 0)
-                    {
                         result.Add(item);
-                        Log($"  Added question: \"{item.Title}\"");
-                    }
                 }
                 catch (Exception ex)
                 {
-                    Log($"  Element [{idx}] EXCEPTION: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+                    Log($"Element [{idx}] EXCEPTION: {ex.GetType().Name}: {ex.Message}");
                 }
             }
 
             for (int i = 0; i < result.Count; i++) result[i].Index = i + 1;
-            Log($"ParseModernMsJson DONE — {result.Count} questions.");
             return result;
         }
         catch (Exception ex)
         {
-            Log($"ParseModernMsJson EXCEPTION: {ex.GetType().FullName}: {ex.Message}");
-            Log($"StackTrace: {ex.StackTrace}");
+            Log($"ParseModernMsJson EXCEPTION: {ex.GetType().Name}: {ex.Message}");
             return new();
         }
     }
@@ -234,12 +284,8 @@ public class FormLinkParserService
             else if ((q["properties"]?["choices"] as JsonArray) is { Count: > 0 } a2) choicesArr = a2;
             else if (SafeString(q["questionInfo"]) is string qi)
             {
-                try
-                {
-                    var info = JsonNode.Parse(qi);
-                    choicesArr = (info?["Choices"] ?? info?["choices"]) as JsonArray;
-                }
-                catch (Exception ex) { Log($"  questionInfo parse EXCEPTION: {ex.Message}"); }
+                try { var info = JsonNode.Parse(qi); choicesArr = (info?["Choices"] ?? info?["choices"]) as JsonArray; }
+                catch { }
             }
 
             if (choicesArr is null) return new();
@@ -247,29 +293,19 @@ public class FormLinkParserService
             var options = new List<string>();
             foreach (var c in choicesArr.Where(n => n is not null).Cast<JsonNode>())
             {
-                try
-                {
-                    var val = SafeString(c["Description"])
-                           ?? SafeString(c["displayText"])
-                           ?? SafeString(c["displayValue"])
-                           ?? SafeString(c["FormsProDisplayRTText"])
-                           ?? SafeString(c["value"]);
-
-                    if (!string.IsNullOrEmpty(val))
-                        options.Add(CleanHtml(val));
-                }
-                catch (Exception ex) { Log($"  Choice item EXCEPTION: {ex.Message}"); }
+                var val = SafeString(c["Description"])
+                       ?? SafeString(c["displayText"])
+                       ?? SafeString(c["displayValue"])
+                       ?? SafeString(c["FormsProDisplayRTText"])
+                       ?? SafeString(c["value"]);
+                if (!string.IsNullOrEmpty(val)) options.Add(CleanHtml(val));
             }
             return options;
         }
-        catch (Exception ex)
-        {
-            Log($"ExtractChoices EXCEPTION: {ex.GetType().Name}: {ex.Message}");
-            return new();
-        }
+        catch { return new(); }
     }
 
-    // ── Safe helpers ──────────────────────────────────────────────────────────
+    // ── Safe JSON helpers ─────────────────────────────────────────────────────
 
     private static string? SafeString(JsonNode? node)
     {

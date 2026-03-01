@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Models;
 using AvatarFormsApp.Services;
@@ -12,9 +12,6 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
 {
     private readonly IQuestionnaireService _questionnaireService;
     private readonly FormLinkParserService _formLinkParser;
-
-    // Captured on construction (always on UI thread) so we can marshal back later
-    private readonly DispatcherQueue _dispatcher;
 
     [ObservableProperty] private string _questionnaireName = string.Empty;
     [ObservableProperty] private string _formLink = string.Empty;
@@ -30,16 +27,10 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
     {
         _questionnaireService = questionnaireService;
         _formLinkParser = formLinkParser;
-
-        // Capture the UI dispatcher — ViewModel is always created on the UI thread
-        _dispatcher = DispatcherQueue.GetForCurrentThread()
-                      ?? Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
     }
 
-    // ── Parse link ────────────────────────────────────────────────────────────
-
-    [RelayCommand]
-    private async Task ParseLinkAsync()
+    // Called directly from page click handler (UI thread), passing the hidden WebView2
+    public async Task ParseLinkAsync(WebView2 webView)
     {
         if (string.IsNullOrWhiteSpace(FormLink))
         {
@@ -47,83 +38,34 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
             return;
         }
 
-        SetOnUiThread(() =>
-        {
-            IsBusy = true;
-            StatusMessage = "Fetching form data…";
-            HasParsedQuestions = false;
-            ParsedQuestions.Clear();
-        });
-
-        try
-        {
-            // ✅ Run Playwright entirely on a background thread pool thread
-            //    so it never competes with WinUI's STA COM requirements
-            var questions = await Task.Run(() => _formLinkParser.ParseAsync(FormLink));
-
-            // ✅ All UI updates marshaled back to the UI thread
-            SetOnUiThread(() =>
-            {
-                if (questions.Count == 0)
-                {
-                    StatusMessage = "No questions found. Check the link and try again.";
-                    IsBusy = false;
-                    return;
-                }
-
-                foreach (var q in questions)
-                    ParsedQuestions.Add(q);
-
-                HasParsedQuestions = true;
-                StatusMessage = $"Loaded {questions.Count} question(s). Review and click Create Questionnaire.";
-
-                if (string.IsNullOrWhiteSpace(QuestionnaireName))
-                    QuestionnaireName = questions.FirstOrDefault()?.Section ?? "Imported Form";
-
-                IsBusy = false;
-            });
-        }
-        catch (Exception ex)
-        {
-            SetOnUiThread(() =>
-            {
-                StatusMessage = $"Error parsing form: {ex.Message}";
-                IsBusy = false;
-            });
-        }
-    }
-
-    // ── Create Questionnaire ──────────────────────────────────────────────────
-
-    [RelayCommand]
-    private async Task CreateQuestionnaireAsync()
-    {
-        if (ParsedQuestions.Count == 0)
-        {
-            StatusMessage = "Nothing to save. Please parse a form link first.";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(QuestionnaireName))
-        {
-            StatusMessage = "Please enter a name for the questionnaire.";
-            return;
-        }
-
         IsBusy = true;
-        StatusMessage = "Saving questionnaire…";
+        StatusMessage = "Fetching form data...";
+        HasParsedQuestions = false;
+        ParsedQuestions.Clear();
 
         try
         {
-            var questionnaire = MapToQuestionnaire();
-            await _questionnaireService.AddAsync(questionnaire);
+            // WebView2 must run on UI thread - no Task.Run needed or wanted
+            var questions = await _formLinkParser.ParseAsync(FormLink, webView);
 
-            StatusMessage = $"Questionnaire \"{questionnaire.Name}\" created successfully!";
-            HasParsedQuestions = false;
+            if (questions.Count == 0)
+            {
+                StatusMessage = "No questions found. Check the link and try again.";
+                return;
+            }
+
+            foreach (var q in questions)
+                ParsedQuestions.Add(q);
+
+            HasParsedQuestions = true;
+            StatusMessage = $"Loaded {questions.Count} question(s). Review and click Create Questionnaire.";
+
+            if (string.IsNullOrWhiteSpace(QuestionnaireName))
+                QuestionnaireName = questions.FirstOrDefault()?.Section ?? "Imported Form";
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error saving questionnaire: {ex.Message}";
+            StatusMessage = $"Error parsing form: {ex.Message}";
         }
         finally
         {
@@ -131,25 +73,37 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
         }
     }
 
-    public void Clear()
+    public async Task CreateQuestionnaireAsync()
     {
-        FormLink = string.Empty;
-        QuestionnaireName = string.Empty;
-        StatusMessage = string.Empty;
-        HasParsedQuestions = false;
-        ParsedQuestions.Clear();
+        if (ParsedQuestions.Count == 0) { StatusMessage = "Nothing to save. Please parse a form link first."; return; }
+        if (string.IsNullOrWhiteSpace(QuestionnaireName)) { StatusMessage = "Please enter a name for the questionnaire."; return; }
+
+        IsBusy = true;
+        StatusMessage = "Saving questionnaire...";
+        try
+        {
+            var questionnaire = MapToQuestionnaire();
+            await _questionnaireService.AddAsync(questionnaire);
+            StatusMessage = $"Questionnaire \"{questionnaire.Name}\" created successfully!";
+            HasParsedQuestions = false;
+        }
+        catch (Exception ex) { StatusMessage = $"Error saving questionnaire: {ex.Message}"; }
+        finally { IsBusy = false; }
     }
 
-    // ── Mapping ───────────────────────────────────────────────────────────────
+    public void Clear()
+    {
+        FormLink = string.Empty; QuestionnaireName = string.Empty;
+        StatusMessage = string.Empty; HasParsedQuestions = false;
+        ParsedQuestions.Clear();
+    }
 
     private Questionnaire MapToQuestionnaire()
     {
         var questionnaireId = Guid.NewGuid().ToString();
-
         var questions = ParsedQuestions.Select(pq =>
         {
             var questionId = Guid.NewGuid().ToString();
-
             var question = new Question
             {
                 Id = questionId,
@@ -159,7 +113,6 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
                 Order = pq.Index,
                 IsRequired = pq.Required,
             };
-
             question.Options = pq.Options.Select((opt, i) => new QuestionOption
             {
                 Id = Guid.NewGuid().ToString(),
@@ -167,7 +120,6 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
                 Text = opt,
                 Order = i + 1,
             }).ToList();
-
             return question;
         }).ToList();
 
@@ -191,14 +143,4 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
         "Question.Ranking" => QuestionType.MCQ,
         _ => QuestionType.OpenEnded,
     };
-
-    // ── Dispatcher helper ─────────────────────────────────────────────────────
-
-    private void SetOnUiThread(Action action)
-    {
-        if (_dispatcher.HasThreadAccess)
-            action();
-        else
-            _dispatcher.TryEnqueue(new DispatcherQueueHandler(action));
-    }
 }
