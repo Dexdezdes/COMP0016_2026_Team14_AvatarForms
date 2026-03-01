@@ -32,9 +32,9 @@
 
                 <!-- Form Link — auto-parses on paste -->
                 <StackPanel Spacing="6">
-                    <TextBlock Text="Microsoft Forms Link" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                    <TextBlock Text="Microsoft Forms or Google Forms Link" Style="{StaticResource BodyStrongTextBlockStyle}" />
                     <TextBox x:Name="LinkTextBox"
-                             PlaceholderText="Paste your forms.cloud.microsoft link here…"
+                             PlaceholderText="Paste your form link here, the one that you send to responders"
                              Text="{x:Bind ViewModel.FormLink, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              TextChanged="LinkTextBox_TextChanged" />
                 </StackPanel>

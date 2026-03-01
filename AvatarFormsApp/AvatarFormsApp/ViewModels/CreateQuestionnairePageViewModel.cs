@@ -135,12 +135,19 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
         };
     }
 
-    private static QuestionType MapQuestionType(string msType) => msType switch
+    private static QuestionType MapQuestionType(string type) => type switch
     {
+        // Microsoft Forms types
         "Question.Choice" => QuestionType.MCQ,
         "Question.MultiChoice" => QuestionType.MCQ,
         "Question.MatrixChoice" => QuestionType.MCQ,
         "Question.Ranking" => QuestionType.MCQ,
+        // Google Forms types
+        "MultipleChoice" => QuestionType.MCQ,
+        "Checkboxes" => QuestionType.MCQ,
+        "Dropdown" => QuestionType.MCQ,
+        "LinearScale" => QuestionType.MCQ,
+        "Grid" => QuestionType.MCQ,
         _ => QuestionType.OpenEnded,
     };
 }

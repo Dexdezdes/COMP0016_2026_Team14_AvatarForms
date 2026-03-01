@@ -6,7 +6,20 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
 
 namespace AvatarFormsApp.Services;
-
+/*
+Microsoft forms for testing:
+Mental disease form
+https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=_oivH5ipW0yTySEKEdmlwsk8NGIVcC1GluibkejnM-dURFVYSUtQTjRaUVRXMk9BQ05ZTFVMUlU4VC4u
+University form (have start and next button)
+https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=_oivH5ipW0yTySEKEdmlwsk8NGIVcC1GluibkejnM-dURU1GSFdDWkFENlVBWTA2U0dLQUZVOEwxQi4u
+Market research form (have start and next button)
+https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=_oivH5ipW0yTySEKEdmlwsk8NGIVcC1GluibkejnM-dUNlBBTU5FN01aWkpRVkdERUlBNVIxOVBFNS4u
+Google forms for testing:
+Start of the year
+https://docs.google.com/forms/d/e/1FAIpQLSfKRWBhXmhPt5jVY7JO1Iqi7UWqgHbpiuXRcF8u7kSMWWi6Hg/viewform?usp=dialog
+Business form
+https://docs.google.com/forms/d/e/1FAIpQLSc0BYHF_Xb0FtHe_r7DPNY5K-Ne_UJ1Vd-IcN4PNjAAPuX-xg/viewform?usp=publish-editor
+*/
 public class ParsedQuestion
 {
     public int Index { get; set; }
@@ -27,10 +40,7 @@ public class FormLinkParserService
 {
     private static void Log(string msg) =>
         System.Diagnostics.Debug.WriteLine($"[FormLinkParser] {msg}");
-
-    /// <summary>
-    /// Set after a successful ParseAsync call. Contains the form's display title.
-    /// </summary>
+        
     public string FormTitle { get; private set; } = string.Empty;
 
     // ── Public entry point ────────────────────────────────────────────────────
@@ -42,22 +52,25 @@ public class FormLinkParserService
         Log($"ParseAsync START — url={url}");
         try
         {
-            // Ensure WebView2 runtime is initialized
             await webView.EnsureCoreWebView2Async();
             Log("CoreWebView2 ready.");
 
-            var rawJson = await CaptureFormPayloadAsync(url, webView);
-            Log($"Capture done — rawJson is {(rawJson is null ? "NULL" : "NOT NULL")}");
-
-            if (rawJson is null)
+            // Route to the correct platform parser
+            if (url.Contains("docs.google.com/forms"))
             {
-                Log("No payload captured.");
-                return new();
+                Log("Detected Google Forms URL.");
+                return await ParseGoogleFormAsync(url, webView);
             }
-
-            var result = ParseModernMsJson(rawJson);
-            Log($"Parsed {result.Count} questions.");
-            return result;
+            else
+            {
+                Log("Detected Microsoft Forms URL.");
+                var rawJson = await CaptureMsFormPayloadAsync(url, webView);
+                Log($"Capture done — rawJson is {(rawJson is null ? "NULL" : "NOT NULL")}");
+                if (rawJson is null) { Log("No payload captured."); return new(); }
+                var result = ParseModernMsJson(rawJson);
+                Log($"Parsed {result.Count} questions.");
+                return result;
+            }
         }
         catch (Exception ex)
         {
@@ -68,7 +81,7 @@ public class FormLinkParserService
 
     // ── WebView2 interception ─────────────────────────────────────────────────
 
-    private async Task<JsonNode?> CaptureFormPayloadAsync(string url, WebView2 webView)
+    private async Task<JsonNode?> CaptureMsFormPayloadAsync(string url, WebView2 webView)
     {
         var tcs = new TaskCompletionSource<JsonNode?>();
         var core = webView.CoreWebView2;
@@ -182,6 +195,183 @@ public class FormLinkParserService
         }
     }
 
+
+    // ── Google Forms parser ───────────────────────────────────────────────────
+    // Google Forms embeds all data in the HTML as a JS variable: FB_PUBLIC_LOAD_DATA_
+    // We navigate, wait for the page to load, then extract it via ExecuteScriptAsync.
+
+    private async Task<List<ParsedQuestion>> ParseGoogleFormAsync(string url, WebView2 webView)
+    {
+        var core = webView.CoreWebView2;
+        var navTcs = new TaskCompletionSource<bool>();
+
+        void OnNavCompleted(object? s, CoreWebView2NavigationCompletedEventArgs e)
+        {
+            navTcs.TrySetResult(e.IsSuccess);
+        }
+
+        core.NavigationCompleted += OnNavCompleted;
+        try
+        {
+            core.Navigate(url);
+            var timeout = Task.Delay(TimeSpan.FromSeconds(20));
+            var winner = await Task.WhenAny(navTcs.Task, timeout);
+            if (winner == timeout) { Log("Google Forms navigation timed out."); return new(); }
+            if (!await navTcs.Task) { Log("Google Forms navigation failed."); return new(); }
+        }
+        finally { core.NavigationCompleted -= OnNavCompleted; }
+
+        Log("Google Forms page loaded. Extracting FB_PUBLIC_LOAD_DATA_...");
+
+        // Extract the raw JS array as a JSON string
+        var json = await core.ExecuteScriptAsync(
+            "JSON.stringify(window.FB_PUBLIC_LOAD_DATA_)");
+
+        if (string.IsNullOrEmpty(json) || json == "null")
+        {
+            Log("FB_PUBLIC_LOAD_DATA_ not found on page.");
+            return new();
+        }
+
+        // Strip surrounding quotes added by ExecuteScriptAsync JSON encoding
+        // The result is a JSON string containing an escaped JSON array
+        Log($"Raw data length: {json.Length}");
+        Log("=== GOOGLE RAW JSON START ===");
+        Log(json);
+        Log("=== GOOGLE RAW JSON END ===");
+
+        JsonNode? root;
+        try
+        {
+            // ExecuteScriptAsync wraps the result in a JSON string — parse twice
+            var unescaped = System.Text.Json.JsonSerializer.Deserialize<string>(json);
+
+            Log("=== GOOGLE UNESCAPED JSON START ===");
+            Log(unescaped ?? "(null)");
+            Log("=== GOOGLE UNESCAPED JSON END ===");
+
+            root = JsonNode.Parse(unescaped!);
+        }
+        catch (Exception ex)
+        {
+            Log($"FB_PUBLIC_LOAD_DATA_ parse failed: {ex.Message}");
+            return new();
+        }
+
+        return ParseGoogleFormsData(root!);
+    }
+
+    private List<ParsedQuestion> ParseGoogleFormsData(JsonNode root)
+    {
+        var result = new List<ParsedQuestion>();
+        try
+        {
+            // 1. Grab the Title (usually at root[3])
+            FormTitle = CleanHtml(SafeString(root[3])) ?? "Untitled Form";
+            Log($"Google form title: \"{FormTitle}\"");
+
+            // 2. Find ALL question blocks regardless of nesting
+            var allArrays = new List<JsonArray>();
+            FindAllArrays(root, allArrays);
+
+            Log($"Inspecting {allArrays.Count} potential data blocks...");
+
+            foreach (var q in allArrays)
+            {
+                // VALIDATION: Standard Google questions have [ID, Title, null, Type, [Inputs]]
+                // We check for Count >= 4 and that index 0 is a number (the ID)
+                if (q.Count < 4 || q[0] is not JsonValue jvId || jvId.GetValueKind() != JsonValueKind.Number)
+                    continue;
+
+                // Index 3 MUST be the Type (Number)
+                if (q[3] is not JsonValue jvType || jvType.GetValueKind() != JsonValueKind.Number)
+                    continue;
+
+                try
+                {
+                    var title = CleanHtml(SafeString(q[1])) ?? string.Empty;
+                    var typeNum = (int)(SafeDouble(q[3]) ?? -1);
+
+                    // Skip section headers (8) or unknown types (-1) for this list
+                    if (typeNum == 8 || typeNum == -1) continue;
+
+                    var qType = MapGoogleType(typeNum);
+                    var options = new List<string>();
+                    string entryId = string.Empty;
+
+                    // Index 4 contains the input mapping
+                    if (q.Count > 4 && q[4] is JsonArray inputGroup && inputGroup.Count > 0)
+                    {
+                        if (inputGroup[0] is JsonArray firstInput)
+                        {
+                            entryId = SafeString(firstInput[0]) ?? string.Empty;
+
+                            // Check for MCQ/Dropdown options
+                            if (firstInput.Count > 1 && firstInput[1] is JsonArray choices)
+                            {
+                                foreach (var c in choices)
+                                {
+                                    if (c is JsonArray cArr && cArr.Count > 0)
+                                    {
+                                        var txt = SafeString(cArr[0]);
+                                        if (!string.IsNullOrEmpty(txt)) options.Add(CleanHtml(txt));
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    result.Add(new ParsedQuestion
+                    {
+                        Id = entryId,
+                        Title = title,
+                        Type = qType,
+                        Options = options,
+                        Index = result.Count + 1
+                    });
+                }
+                catch { /* Not a question block, skip silently */ }
+            }
+
+            Log($"Google: successfully extracted {result.Count} questions.");
+        }
+        catch (Exception ex)
+        {
+            Log($"ParseGoogleFormsData CRITICAL ERROR: {ex.Message}");
+        }
+        return result;
+    }
+
+    // Helper to crawl the JSON tree and find all arrays
+    private void FindAllArrays(JsonNode? node, List<JsonArray> found)
+    {
+        if (node is JsonArray arr)
+        {
+            found.Add(arr);
+            foreach (var item in arr) FindAllArrays(item, found);
+        }
+        else if (node is JsonObject obj)
+        {
+            foreach (var prop in obj) FindAllArrays(prop.Value, found);
+        }
+    }
+
+
+
+    private static string MapGoogleType(int typeNum) => typeNum switch
+    {
+        0 => "ShortText",
+        1 => "Paragraph",
+        2 => "MultipleChoice",
+        3 => "Checkboxes",
+        4 => "Dropdown",
+        5 => "LinearScale",
+        7 => "Grid",
+        9 => "Date",
+        10 => "Time",
+        _ => "ShortText",
+    };
+
     // ── JSON parsing (unchanged) ──────────────────────────────────────────────
 
     private List<ParsedQuestion> ParseModernMsJson(JsonNode raw)
@@ -210,7 +400,7 @@ public class FormLinkParserService
                          ?? SafeString(raw["form"]?["title"])
                          ?? SafeString(raw["title"])
                          ?? string.Empty;
-            Log($"Form title: {formTitle}");
+            Log($"Form title: { formTitle}");
             FormTitle = CleanHtml(formTitle);
 
             var questions = (formNode["questions"] as JsonArray) ?? new JsonArray();
