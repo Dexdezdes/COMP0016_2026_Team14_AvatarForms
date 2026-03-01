@@ -28,6 +28,11 @@ public class FormLinkParserService
     private static void Log(string msg) =>
         System.Diagnostics.Debug.WriteLine($"[FormLinkParser] {msg}");
 
+    /// <summary>
+    /// Set after a successful ParseAsync call. Contains the form's display title.
+    /// </summary>
+    public string FormTitle { get; private set; } = string.Empty;
+
     // ── Public entry point ────────────────────────────────────────────────────
     // webView must already be in the visual tree (initialized by the page).
     // Call this only from the UI thread.
@@ -106,6 +111,12 @@ public class FormLinkParserService
                 Log($"Found form payload ({text.Length} chars) from: {uri}");
                 var node = JsonNode.Parse(text);
                 Log("JsonNode parsed OK.");
+
+                // ── Full JSON dump ──────────────────────────────────────────
+                Log("=== RAW JSON START ===");
+                Log(node!.ToJsonString(new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+                Log("=== RAW JSON END ===");
+
                 tcs.TrySetResult(node);
             }
             catch (Exception ex)
@@ -191,6 +202,16 @@ public class FormLinkParserService
                 return new();
             }
             Log($"formNode found via key: {(raw["form"] is not null ? "form" : raw["data"]?["form"] is not null ? "data.form" : "root")}");
+
+            // ── Grab form title ─────────────────────────────────────────────
+            // MS Forms stores the title in several possible locations
+            var formTitle = SafeString(formNode["title"])
+                         ?? SafeString(formNode["name"])
+                         ?? SafeString(raw["form"]?["title"])
+                         ?? SafeString(raw["title"])
+                         ?? string.Empty;
+            Log($"Form title: {formTitle}");
+            FormTitle = CleanHtml(formTitle);
 
             var questions = (formNode["questions"] as JsonArray) ?? new JsonArray();
             var descriptive = (formNode["descriptiveQuestions"] as JsonArray) ?? new JsonArray();
