@@ -11,18 +11,75 @@ public sealed partial class CreateQuestionnairePage : Page
 {
     public CreateQuestionnairePageViewModel ViewModel { get; }
 
+    private static readonly HttpClient _http = new(new HttpClientHandler
+    {
+        AllowAutoRedirect = true,   // follows bit.ly and other shorteners
+        MaxAutomaticRedirections = 10,
+    });
+
+    private CancellationTokenSource? _urlCheckCts;
+
     public CreateQuestionnairePage()
     {
         ViewModel = App.GetService<CreateQuestionnairePageViewModel>();
         InitializeComponent();
     }
 
-    // ── Upload / Parse link ───────────────────────────────────────────────────
+    // ── Auto-parse when URL is confirmed reachable ────────────────────────────
 
-    private async void UploadButton_Click(object sender, RoutedEventArgs e)
+    private async void LinkTextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        // Pass the hidden WebView2 to the ViewModel so the service can use it
-        await ViewModel.ParseLinkAsync(HiddenWebView);
+        var text = LinkTextBox.Text.Trim();
+
+        // Cancel any in-flight HEAD check from a previous keystroke
+        _urlCheckCts?.Cancel();
+        _urlCheckCts?.Dispose();
+        _urlCheckCts = new CancellationTokenSource();
+        var cts = _urlCheckCts;
+
+        // Must at least look like a URL before we bother hitting the network
+        if (!Uri.TryCreate(text, UriKind.Absolute, out var uri) ||
+            (uri.Scheme != "http" && uri.Scheme != "https"))
+        {
+            ViewModel.StatusMessage = string.Empty;
+            return;
+        }
+
+        ViewModel.StatusMessage = "Checking link…";
+
+        try
+        {
+            // HEAD request: no body downloaded, follows redirects, very fast.
+            // 5s timeout — if a real URL doesn't respond in 5s something is wrong.
+            using var req = new HttpRequestMessage(HttpMethod.Head, uri);
+            using var response = await _http.SendAsync(req,
+                HttpCompletionOption.ResponseHeadersRead,
+                new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token);
+
+            // If this keystroke was superseded by a newer one, bail out silently
+            if (cts.IsCancellationRequested) return;
+
+            // Any HTTP response (200, 301, 403, even 404) means a real server answered
+            ViewModel.StatusMessage = string.Empty;
+            ViewModel.FormLink = text;   // sync ViewModel with the resolved text
+
+            if (!ViewModel.IsBusy)
+                await ViewModel.ParseLinkAsync(HiddenWebView);
+        }
+        catch (OperationCanceledException)
+        {
+            // Superseded by a newer keystroke — do nothing
+        }
+        catch (HttpRequestException)
+        {
+            if (!cts.IsCancellationRequested)
+                ViewModel.StatusMessage = "URL does not appear to be reachable.";
+        }
+        catch (Exception ex)
+        {
+            if (!cts.IsCancellationRequested)
+                ViewModel.StatusMessage = $"Could not verify URL: {ex.Message}";
+        }
     }
 
     // ── Create Questionnaire ──────────────────────────────────────────────────
@@ -53,7 +110,11 @@ public sealed partial class CreateQuestionnairePage : Page
 
     // ── Clear / Cancel ────────────────────────────────────────────────────────
 
-    private void ClearButton_Click(object sender, RoutedEventArgs e) => ViewModel.Clear();
+    private void ClearButton_Click(object sender, RoutedEventArgs e)
+    {
+        _urlCheckCts?.Cancel();
+        ViewModel.Clear();
+    }
 
     private void Cancel_Click(object sender, RoutedEventArgs e)
     {
