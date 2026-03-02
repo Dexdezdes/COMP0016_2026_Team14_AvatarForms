@@ -2,8 +2,8 @@
 import requests
 import json
 
-from formatting import clean_script, outputToJSON, conversationToText
-from prompts import Talker_system_prompt, Talker_ask_question_prompt, Talker_follow_up_question_prompt, Talker_closing_statement_prompt,Evaluator_system_prompt, RAG_system_prompt
+from formatting import clean_script, outputToJSON, conversationToText, LLM_strip
+from prompts import RAG_collate_answer, Talker_system_prompt, Talker_ask_question_prompt, Talker_follow_up_question_prompt, Talker_closing_statement_prompt,Evaluator_system_prompt, RAG_system_prompt
 
 class Model:
     def __init__(self, url, model, api_key=None, params=None):
@@ -72,7 +72,7 @@ class TalkerAgent(Agent):
         messages = [{"role": "system", "content": system}] + self.conversation_history
         # messages.append({"role": "system", "content": task_prompt})
         # print(conversationToText(messages))
-        output = self.run(messages)
+        output = self.run(messages, temperature=0.3)
         return clean_script(output)
 
     def ask_followup(self, question, reasoning, follow_up=None):
@@ -81,7 +81,7 @@ class TalkerAgent(Agent):
         messages = [{"role": "system", "content": system}] + self.conversation_history
         # messages.append({"role": "system", "content": task_prompt})
         # print(conversationToText(messages))
-        output = self.run(messages)
+        output = self.run(messages, temperature=0.5)
         return clean_script(output)
     
     def closing_statement(self):
@@ -100,18 +100,20 @@ class EvaluatorAgent(Agent):
         transcript = conversationToText(conversation_history)
         system = self.prompt(self.interview_context, question, transcript)
         messages = [{"role": "system", "content": system}]
-        output = self.run(messages, temperature=0.2)
+        output = self.run(messages, temperature=0.0)
         return outputToJSON(output)
         
     
 class RAG_Agent(Agent):
     def __init__(self, model, interview_context):
         super().__init__(model)
+        self.system_prompt = RAG_system_prompt(interview_context)
         self.interview_context = interview_context
 
     def answer(self, question, conversation_history):
         transcript = conversationToText(conversation_history)
-        system = RAG_system_prompt(self.interview_context, transcript, question)
-        messages = [{"role": "system", "content": system}]
-        output = self.run(messages, temperature=0.1)
-        return output.strip()
+        prompt = self.system_prompt + RAG_collate_answer(transcript, question)
+        messages = [{"role": "system", "content": prompt}]
+        output = self.run(messages, temperature=0.0)
+        output = LLM_strip(output)
+        return output

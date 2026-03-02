@@ -81,17 +81,23 @@ Your output must be a JSON object with the following format:
 ANALYSIS:
 """
 
-def RAG_system_prompt(context, conversation_history, question):
+def RAG_system_prompt(context):
     return f"""
-You are an information retrieval assistant that summaries information from a conversation.
+You are an information retrieval assistant that summarises information from a conversation.
 You will be given a portion of an interview transcript where the user answered a question.
-Write a concise answer to the question on behalf of the user.
 
 ---------------------------------------------------------------
 
 Interview context:
 {context}
 
+---------------------------------------------------------------
+
+"""
+
+
+def RAG_collate_answer(conversation_history, question):
+    return f"""
 Transcript:
 
 ==================
@@ -102,6 +108,23 @@ Transcript:
 
 ---------------------------------------------------------------
 
+Write a concise answer to the question on behalf of the user.
+
 Question: {question}
 Answer:
+"""
+
+def RAG_summarise_conversation(conversation_history):
+    return f"""
+Summarise the conversation history below in a concise and clear way, focusing on key points and decisions made.
+
+Transcript:
+
+==================
+
+{conversation_history}
+
+==================
+
+Summary:
 """

@@ -1,6 +1,6 @@
 from sockets import stream_message, start_server, websocket_handler, wait_for_browser_connection
 from api import start_http_server, wait_for_questionnaire, send_response
-from formatting import bcolors, thinkStrip
+from formatting import bcolors
 import os
 import asyncio
 import csv
@@ -38,6 +38,8 @@ class AvatarFormsInterviewer:
         self.question_labels = [] # Each entry in conversation_history is linked to a question
         self.last_evaluation = None
 
+        self.answers = [""]*len(self.questions) # Final answers to each question for output at
+
         self.model = self.get_model()
 
         self.talker = TalkerAgent(
@@ -58,6 +60,7 @@ class AvatarFormsInterviewer:
         self.conversation_history.clear() # not resetting to empty list to preserve reference for agents
         self.question_labels.clear()
         self.last_evaluation = None
+        self.answers = [""]*len(self.questions)
 
     def build_from_json(self, json):
         self.build_interview(json["questions"], json["description"])
@@ -126,6 +129,9 @@ class AvatarFormsInterviewer:
         if self.should_cutoff() or evaluation["satisfactory"] or evaluation["override_skip"]:
             self.questions_index += 1
             self.last_evaluation = None
+
+
+
         if evaluation["override_skip"]:
             self.conversation_history.append({"role": "system", "content": f"Question '{question}' skipped by user preference. Moved on to question {self.questions[self.questions_index]}."})
 
@@ -147,13 +153,16 @@ class AvatarFormsInterviewer:
             self.question_labels.append(self.questions_index+1)
 
             return closing_statement, False
-        
+    
+    def collect_answer(self, question_index):
+        conversation_section = self.get_conversation_section(question_index)
+        return self.rag_agent.answer(self.questions[question_index], conversation_section)
+
     def collect_final_answers(self):
         final_answers = {}
         for i, question in enumerate(self.questions):
-            conversation_section = self.get_conversation_section(i)
-            answer = self.rag_agent.answer(question, conversation_section)
-            final_answers[question] = thinkStrip(answer)
+            answer = self.collect_answer(i)
+            final_answers[question] = answer
         
         return final_answers
 
