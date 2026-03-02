@@ -3,12 +3,12 @@ import json
 import re
 
 def clean_script(text):
-    # Remove <think>...</think> and any text within brackets (), [], {}
+    # Remove LLM tags and any text within brackets (), [], {}
     # Remove emojis
-    text = thinkStrip(text)
+    text = LLM_strip(text)
     text = bracketStrip(text)
     text = emojiStrip(text)
-    return text.strip()
+    return text
 
 # def emojiStrip(text):
 #     return ''.join(c for c in text if c.isalnum() or c.isspace() or c in ['.', ',', '!', '?', ':', ';', '-', '_', '"', "'"])
@@ -36,26 +36,26 @@ def emojiStrip(text):
     text = emoji_pattern.sub(r'', text)
     return text
 
-def thinkStrip(text):
-    tag = ["<think>", "</think>"]
-    if tag[0] in text and tag[1] in text:
-        start = text.index(tag[0])
-        end = text.index(tag[1])
-        text = text[:start] + text[end + len(tag[1]):]
-    return text.strip()
+def LLM_strip(text):
+    tag = ["<", ">"]
+    return tagStrip(text, tag[0], tag[1])
 
 def bracketStrip(text):
     tag = [["(", ")"], ["[", "]"], ["{", "}"]]
     for t in tag:
-        while t[0] in text and t[1] in text:
-            start = text.index(t[0])
-            end = text.index(t[1])
-            text = text[:start] + text[end + len(t[1]):]
+        text = tagStrip(text, t[0], t[1])
+    return text
+
+def tagStrip(text, start_tag, end_tag):
+    while start_tag in text and end_tag in text:
+        start = text.index(start_tag)
+        end = text.index(end_tag)
+        text = text[:start] + text[end + len(end_tag):]
     return text.strip()
 
 def outputToJSON(text):
     try:
-        text = thinkStrip(text)
+        text = LLM_strip(text)
         return json.loads(text)
     except json.JSONDecodeError:
         print("\033[91mError: Output is not valid JSON!\033[0m")
