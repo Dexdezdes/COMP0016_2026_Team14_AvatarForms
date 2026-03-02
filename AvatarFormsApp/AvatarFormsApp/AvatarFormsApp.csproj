@@ -76,6 +76,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.Playwright" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
         <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="Microsoft.Web.WebView2" />
@@ -96,6 +97,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Remove="..\..\Backend\google_gemma-3-4b-it-Q6_K.llamafile" />
       <Content Remove="..\..\Backend\requirements.txt" />
     </ItemGroup>
 </Project>

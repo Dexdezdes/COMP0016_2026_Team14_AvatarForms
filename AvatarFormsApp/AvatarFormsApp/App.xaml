@@ -2,7 +2,9 @@
     x:Class="AvatarFormsApp.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:helpers="using:AvatarFormsApp.Helpers">
+    xmlns:helpers="using:AvatarFormsApp.Helpers"
+    RequestedTheme="Dark"
+    >
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -12,11 +14,13 @@
                 <ResourceDictionary Source="Styles/FontSizes.xaml" />
                 <ResourceDictionary Source="Styles/Thickness.xaml" />
                 <ResourceDictionary Source="Styles/TextBlock.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
             
             <!-- Add the converters here -->
             <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <helpers:BoolToVisibilityInverseConverter x:Key="BoolToVisibilityInverseConverter" />
+            <helpers:BoolNegationConverter x:Key="BoolNegationConverter" />
             <helpers:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
