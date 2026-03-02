@@ -41,10 +41,10 @@ public partial class App : Application
         return service;
     }
 
-    #if WINDOWS
-        private static WindowEx? _mainWindow;
-        public static WindowEx MainWindow => _mainWindow ??= GetService<MainWindow>() as WindowEx;
-    #else
+#if WINDOWS
+    private static WindowEx? _mainWindow;
+    public static WindowEx MainWindow => _mainWindow ??= GetService<MainWindow>() as WindowEx;
+#else
         private static Window? _mainWindow;
         public static Window MainWindow 
         { 
@@ -57,7 +57,7 @@ public partial class App : Application
                 return _mainWindow;
             }
         }
-    #endif
+#endif
 
 
 
@@ -96,7 +96,7 @@ public partial class App : Application
 
                 // Ensure directory exists
                 Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
-                
+
                 options.UseSqlite($"Data Source={dbPath}");
             });
 
@@ -114,6 +114,9 @@ public partial class App : Application
             services.AddSingleton<IPythonProcessService, PythonProcessService>();
             // *** END DATABASE SERVICES ***
 
+            // ✅ CHANGE 1: Register FormLinkParserService
+            services.AddSingleton<FormLinkParserService>();
+
             // Views and ViewModels
             services.AddTransient<DashboardPageViewModel>();
             services.AddTransient<DashboardPage>();
@@ -125,11 +128,11 @@ public partial class App : Application
             services.AddTransient<ResponseDetailPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ConversationPage>();
-            services.AddTransient<CreateQuestionnairePage>();
+            services.AddTransient<CreateQuestionnairePage>();  // ✅ CHANGE 2: removed duplicate below
             services.AddSingleton<MainWindow>();
             services.AddTransient<ShellPageViewModel>();
             services.AddTransient<ConversationPageViewModel>();
-            services.AddTransient<CreateQuestionnairePage>();
+            // ✅ CHANGE 2: duplicate CreateQuestionnairePage removed (was here)
             services.AddTransient<CreateQuestionnairePageViewModel>();
 
             // Configuration
@@ -146,7 +149,7 @@ public partial class App : Application
         {
             builder.AddConsole();
             builder.SetMinimumLevel(LogLevel.Debug); // Capture everything
-            
+
             // Force Uno-specific categories to show up
             builder.AddFilter("Uno", LogLevel.Debug);
             builder.AddFilter("Microsoft", LogLevel.Information);
@@ -195,7 +198,7 @@ public partial class App : Application
         var shell = App.GetService<ShellPage>();
         window.Content = shell;
 
-        window.Activate(); 
+        window.Activate();
     }
 
     private async Task SeedSampleDataAsync(AppDbContext dbContext)
@@ -206,12 +209,12 @@ public partial class App : Application
 
             // Sample 1: Sleep Survey
             var sleepId = Guid.NewGuid().ToString();
-            var sleep = new Questionnaire 
-            { 
+            var sleep = new Questionnaire
+            {
                 Id = sleepId,
-                Name = "Sleep Survey", 
-                OwnerId = "user1", 
-                Status = "Pending", 
+                Name = "Sleep Survey",
+                OwnerId = "user1",
+                Status = "Pending",
                 Color = "#4CB3B3",
                 Description = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know if they've been sleeping well.",
                 CreatedDate = DateTime.UtcNow
