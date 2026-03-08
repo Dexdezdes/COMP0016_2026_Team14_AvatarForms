@@ -27,16 +27,17 @@ async def websocket_handler(websocket):
     if not browser_connected_event.is_set():
         browser_connected_event.set()
         print(f"{bcolors.OKGREEN}First browser connected - interview can begin{bcolors.ENDC}")
-        try:
-            async for message in websocket:
-                print(f"Received from client: {message}")
-        except websockets.exceptions.ConnectionClosed:
-            pass
-        except Exception as e:
-            print(f"{bcolors.FAIL}WebSocket error: {e}{bcolors.ENDC}")
-        finally:
-            connected_clients.discard(websocket)
-            print(f"{bcolors.WARNING}Browser disconnected. Total clients: {len(connected_clients)}{bcolors.ENDC}")
+
+    try:
+        async for message in websocket:
+            print(f"Received from client: {message}")
+    except websockets.exceptions.ConnectionClosed:
+        pass
+    except Exception as e:
+        print(f"{bcolors.FAIL}WebSocket error: {e}{bcolors.ENDC}")
+    finally:
+        connected_clients.discard(websocket)
+        print(f"{bcolors.WARNING}Browser disconnected. Total clients: {len(connected_clients)}{bcolors.ENDC}")
 
 async def wait_for_browser_connection():
     print(f"{bcolors.OKCYAN}Waiting for browser connection...{bcolors.ENDC}")
