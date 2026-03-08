@@ -61,10 +61,13 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
                 ParsedQuestions.Add(q);
 
             HasParsedQuestions = true;
-            StatusMessage = $"Loaded {questions.Count} question(s). Review and click Create Questionnaire.";
+            StatusMessage = $"Loaded {questions.Count} question(s). Review and click create questionnaire to create session.";
 
             if (string.IsNullOrWhiteSpace(QuestionnaireName))
                 QuestionnaireName = !string.IsNullOrEmpty(_formLinkParser.FormTitle) ? _formLinkParser.FormTitle : questions.FirstOrDefault()?.Section ?? "Imported Form";
+
+            if (string.IsNullOrWhiteSpace(QuestionnaireDescription) && !string.IsNullOrEmpty(_formLinkParser.FormDescription))
+                QuestionnaireDescription = _formLinkParser.FormDescription;
         }
         catch (Exception ex)
         {
