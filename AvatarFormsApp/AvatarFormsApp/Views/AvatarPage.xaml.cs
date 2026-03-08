@@ -296,7 +296,11 @@ public sealed partial class AvatarPage : Page
 
     private void OnInputKeyDown(object sender, KeyRoutedEventArgs e)
     {
-        // No auto-send on Enter - only send via button
+        if (e.Key == Windows.System.VirtualKey.Enter)
+        {
+            SendMessage();
+            e.Handled = true;
+        }
     }
 
     private void OnInputTextChanged(object sender, TextChangedEventArgs e)
