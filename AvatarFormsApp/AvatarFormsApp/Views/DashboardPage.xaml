@@ -119,17 +119,18 @@
                                     FontSize="16"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Background="Transparent"
-                                    Foreground="#C42B1C"
-                                    BorderThickness="0"
                                     Padding="8"
                                     ToolTipService.ToolTip="Delete questionnaire"
                                     Click="OnDeleteClick"
                                     Tag="{x:Bind Id}">
                                 <Button.Resources>
                                     <ResourceDictionary>
-                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#10C42B1C" />
-                                        <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#20C42B1C" />
+                                        <SolidColorBrush x:Key="ButtonForeground"             Color="Red" />
+                                        <SolidColorBrush x:Key="ButtonForegroundPointerOver"  Color="Red" />
+                                        <SolidColorBrush x:Key="ButtonForegroundPressed"      Color="Red" />
+                                        <SolidColorBrush x:Key="ButtonBackground"             Color="Transparent" />
+                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver"  Color="#15C42B1C" />
+                                        <SolidColorBrush x:Key="ButtonBackgroundPressed"      Color="#25C42B1C" />
                                     </ResourceDictionary>
                                 </Button.Resources>
                             </Button>

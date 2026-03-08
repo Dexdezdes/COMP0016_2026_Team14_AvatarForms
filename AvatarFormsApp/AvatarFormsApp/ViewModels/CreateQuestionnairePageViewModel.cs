@@ -106,6 +106,36 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
         ParsedQuestions.Clear();
     }
 
+    public void RemoveQuestion(ParsedQuestion question)
+    {
+        var idx = ParsedQuestions.IndexOf(question);
+        if (idx < 0) return;
+
+        ParsedQuestions.RemoveAt(idx);
+
+        // Replace subsequent items so their OneTime x:Bind Index bindings re-evaluate
+        for (int i = idx; i < ParsedQuestions.Count; i++)
+            ParsedQuestions[i] = CloneWithIndex(ParsedQuestions[i], i + 1);
+
+        HasParsedQuestions = ParsedQuestions.Count > 0;
+    }
+
+    private static ParsedQuestion CloneWithIndex(ParsedQuestion q, int index) => new()
+    {
+        Index        = index,
+        Id           = q.Id,
+        Section      = q.Section,
+        Title        = q.Title,
+        FullTitle    = q.FullTitle,
+        Type         = q.Type,
+        Required     = q.Required,
+        OrderValue   = q.OrderValue,
+        Options      = q.Options,
+        IsMatrix     = q.IsMatrix,
+        MatrixGroupTitle = q.MatrixGroupTitle,
+        Subtitle     = q.Subtitle,
+    };
+
     private static readonly string[] _colorPalette =
     [
         "#4CB3B3", "#E57373", "#81C784", "#64B5F6", "#FFB74D",

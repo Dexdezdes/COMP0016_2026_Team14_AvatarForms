@@ -73,11 +73,7 @@ public sealed partial class AvatarPage : Page
         {
             LogToConsole("[INIT] Starting HeadTTS avatar setup...");
 
-            var options = new Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions
-            {
-                AdditionalBrowserArguments = "--ignore-gpu-blocklist --enable-gpu-rasterization"
-            };
-            var env = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateWithOptionsAsync(null, null, options);
+            var env = await App.GetOrCreateWebViewEnvironmentAsync();
             await AvatarWebView.EnsureCoreWebView2Async(env);
 
             if (AvatarWebView.CoreWebView2 == null)
@@ -90,15 +86,15 @@ public sealed partial class AvatarPage : Page
             LogToConsole("[INIT] CoreWebView2 ready");
 
             // Open Developer Tools
-            // try
-            //{
-            //    AvatarWebView.CoreWebView2.OpenDevToolsWindow();
-            //    LogToConsole("[INIT] DevTools opened");
-            //}
-            //catch (Exception ex)
-            //{
-            //    LogToConsole($"[INIT] DevTools failed: {ex.Message}");
-            //}
+            try
+            {
+                AvatarWebView.CoreWebView2.OpenDevToolsWindow();
+                LogToConsole("[INIT] DevTools opened");
+            }
+            catch (Exception ex)
+            {
+                LogToConsole($"[INIT] DevTools failed: {ex.Message}");
+            }
 
             AvatarWebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = true;
             AvatarWebView.CoreWebView2.Settings.IsWebMessageEnabled = true;

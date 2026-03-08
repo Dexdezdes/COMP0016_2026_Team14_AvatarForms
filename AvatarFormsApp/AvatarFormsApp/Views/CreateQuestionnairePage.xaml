@@ -56,6 +56,10 @@
                                      TextChanged="LinkTextBox_TextChanged" />
                         </StackPanel>
 
+                        <StackPanel Spacing="6" HorizontalAlignment="Center">
+                            <TextBlock Text="Or" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        </StackPanel>
+
                         <Grid ColumnSpacing="10" VerticalAlignment="Center">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -131,34 +135,54 @@
                                                        RadiusX="8"
                                                        RadiusY="8" />
 
-                                            <StackPanel Grid.Row="1" Padding="20,16,20,20" Spacing="12">
-
-                                                <TextBlock FontSize="14"
-                                                           FontWeight="SemiBold"
-                                                           TextWrapping="Wrap"
-                                                           Visibility="{x:Bind IsMatrix,
-                                                                        Converter={StaticResource BoolToVisibilityConverter}}">
-                                                    <Run Text="{x:Bind Index}" />
-                                                    <Run Text=". " />
-                                                    <Run Text="{x:Bind FullTitle}" />
+                                            <StackPanel Grid.Row="1" Padding="20,14,12,16" Spacing="10">
+                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" >
+                                                        <Run Text="Question " />
+                                                        <Run Text="{x:Bind Index}" />
                                                 </TextBlock>
+                                                
+                                                <Grid ColumnSpacing="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
 
-                                                <TextBlock FontSize="14"
-                                                           FontWeight="SemiBold"
-                                                           TextWrapping="Wrap"
-                                                           Visibility="{x:Bind IsMatrix,
-                                                                        Converter={StaticResource BoolToVisibilityInverseConverter}}">
-                                                    <Run Text="{x:Bind Index}" />
-                                                    <Run Text=". " />
-                                                    <Run Text="{x:Bind Title}" />
-                                                </TextBlock>
+                                                    <TextBox Text="{x:Bind FullTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                             FontSize="14"
+                                                             FontWeight="SemiBold"
+                                                             TextWrapping="Wrap"
+                                                             Visibility="{x:Bind IsMatrix,
+                                                                          Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                                                <TextBlock Text="{x:Bind Subtitle}"
-                                                           TextWrapping="Wrap"
-                                                           FontSize="10"
-                                                           Foreground="{ThemeResource TextFillColorTertiaryBrush}"
-                                                           Visibility="{x:Bind Subtitle, Mode=OneWay,
-                                                                        Converter={StaticResource StringToVisibilityConverter}}" />
+                                                    <TextBox Text="{x:Bind Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                             FontSize="14"
+                                                             FontWeight="SemiBold"
+                                                             TextWrapping="Wrap"
+                                                             Visibility="{x:Bind IsMatrix,
+                                                                          Converter={StaticResource BoolToVisibilityInverseConverter}}" />
+
+                                                    <Button Grid.Column="1"
+                                                            Content="&#xE74D;"
+                                                            FontFamily="Segoe MDL2 Assets"
+                                                            FontSize="14"
+                                                            Padding="12,0"
+                                                            BorderThickness="0"
+                                                            VerticalAlignment="Stretch"
+                                                            ToolTipService.ToolTip="Remove question"
+                                                            Tag="{x:Bind}"
+                                                            Click="RemoveQuestion_Click">
+                                                        <Button.Resources>
+                                                            <ResourceDictionary>
+                                                                <SolidColorBrush x:Key="ButtonForeground"             Color="Red" />
+                                                                <SolidColorBrush x:Key="ButtonForegroundPointerOver"  Color="Red" />
+                                                                <SolidColorBrush x:Key="ButtonForegroundPressed"      Color="Red" />
+                                                                <SolidColorBrush x:Key="ButtonBackground"             Color="Transparent" />
+                                                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver"  Color="#15C42B1C" />
+                                                                <SolidColorBrush x:Key="ButtonBackgroundPressed"      Color="#25C42B1C" />
+                                                            </ResourceDictionary>
+                                                        </Button.Resources>
+                                                    </Button>
+                                                </Grid>
                                             </StackPanel>
                                         </Grid>
                                     </Border>

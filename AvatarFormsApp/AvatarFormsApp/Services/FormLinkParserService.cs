@@ -53,7 +53,8 @@ public class FormLinkParserService
         Log($"ParseAsync START — url={url}");
         try
         {
-            await webView.EnsureCoreWebView2Async();
+            var env = await AvatarFormsApp.App.GetOrCreateWebViewEnvironmentAsync();
+            await webView.EnsureCoreWebView2Async(env);
             Log("CoreWebView2 ready.");
 
             // Route to the correct platform parser
