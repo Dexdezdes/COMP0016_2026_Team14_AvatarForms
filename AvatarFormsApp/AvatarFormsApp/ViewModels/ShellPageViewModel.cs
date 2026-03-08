@@ -1,8 +1,10 @@
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Views;
+using AvatarFormsApp.Messages;
 using AvatarFormsApp.Models;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 
 using Microsoft.UI.Xaml.Navigation;
 using System.Collections.ObjectModel;
@@ -34,8 +36,14 @@ public partial class ShellPageViewModel : ObservableRecipient
         NavigationViewService = navigationViewService;
         _questionnaireService = questionnaireService;
 
-        // Load questionnaires from database
+        IsActive = true;
         _ = LoadQuestionnairesAsync();
+    }
+
+    protected override void OnActivated()
+    {
+        Messenger.Register<QuestionnaireCreatedMessage>(this, (r, msg) =>
+            _ = ((ShellPageViewModel)r).RefreshQuestionnairesAsync());
     }
 
     private async Task LoadQuestionnairesAsync()
