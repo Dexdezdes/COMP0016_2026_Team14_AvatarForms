@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Web.WebView2.Core;
 
 namespace AvatarFormsApp;
 
@@ -39,6 +40,36 @@ public partial class App : Application
         }
 
         return service;
+    }
+
+    // Single shared CoreWebView2Environment for the entire process.
+    // All WebView2 instances MUST use the same environment or initialization fails.
+    private static CoreWebView2Environment? _sharedWebViewEnvironment;
+    private static readonly SemaphoreSlim _webViewEnvLock = new(1, 1);
+
+    public static async Task<CoreWebView2Environment> GetOrCreateWebViewEnvironmentAsync()
+    {
+        if (_sharedWebViewEnvironment is not null)
+            return _sharedWebViewEnvironment;
+
+        await _webViewEnvLock.WaitAsync();
+        try
+        {
+            if (_sharedWebViewEnvironment is null)
+            {
+                var options = new CoreWebView2EnvironmentOptions
+                {
+                    AdditionalBrowserArguments = "--ignore-gpu-blocklist --enable-gpu-rasterization"
+                };
+                _sharedWebViewEnvironment = await CoreWebView2Environment.CreateWithOptionsAsync(null, null, options);
+            }
+        }
+        finally
+        {
+            _webViewEnvLock.Release();
+        }
+
+        return _sharedWebViewEnvironment!;
     }
 
 #if WINDOWS
