@@ -16,6 +16,7 @@ public sealed partial class AvatarPage : Page
     private readonly IPythonProcessService _pythonProcessService;
     private readonly ILlamafileProcessService _llamafileProcessService;
     private readonly IResponseAPIService _responseAPIService;
+    private readonly ILocalSettingsService _localSettingsService;
     private SimpleWebServer? _webServer;
     private SpeechRecognizer? _speechRecognizer;
     private bool _isAvatarInitialized;
@@ -23,6 +24,7 @@ public sealed partial class AvatarPage : Page
     private bool _isTalkerActive;
     private bool _autoSendEnabled = true;
     private bool _isAudioConnected = false;
+    private string _selectedAvatar = "julia";
 
     // Stored so they can be unsubscribed when leaving the page
     private readonly Action<string> _onPythonOutput;
@@ -36,6 +38,7 @@ public sealed partial class AvatarPage : Page
         _pythonProcessService = App.GetService<IPythonProcessService>();
         _llamafileProcessService = App.GetService<ILlamafileProcessService>();
         _responseAPIService = App.GetService<IResponseAPIService>();
+        _localSettingsService = App.GetService<ILocalSettingsService>();
 
         // Store handlers so they can be unsubscribed when leaving the page
         _onPythonOutput = msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
@@ -47,6 +50,19 @@ public sealed partial class AvatarPage : Page
         _llamafileProcessService.OutputReceived += _onLlamaOutput;
 
         AutoSendToggle.IsOn = true;
+        _ = InitializeAsync();
+    }
+
+    private async Task InitializeAsync()
+    {
+        var saved = await _localSettingsService.ReadSettingAsync<string>("SelectedAvatar");
+        if (saved is "julia" or "david")
+        {
+            _selectedAvatar = saved;
+            if (_selectedAvatar == "david" && AvatarDavidRadio != null)
+                AvatarDavidRadio.IsChecked = true;
+        }
+
         InitializeAvatar();
     }
 
@@ -127,7 +143,7 @@ public sealed partial class AvatarPage : Page
 
             // Navigate to HeadTTS index.html
             LogToConsole("[NAV] Navigating to HeadTTS index.html...");
-            AvatarWebView.CoreWebView2.Navigate("http://127.0.0.1:5501/index.html");
+            AvatarWebView.CoreWebView2.Navigate($"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}");
 
             // Show audio connection overlay after avatar loads
             await Task.Delay(2000); // Wait for page to load
@@ -254,6 +270,17 @@ public sealed partial class AvatarPage : Page
     {
         _autoSendEnabled = AutoSendToggle?.IsOn ?? false;
         LogToConsole($"[SETTINGS] Auto-send: {(_autoSendEnabled ? "ON" : "OFF")}");
+    }
+
+    private void OnAvatarSelectionChanged(object sender, RoutedEventArgs e)
+    {
+        if (AvatarJuliaRadio == null || AvatarDavidRadio == null) return;
+
+        _selectedAvatar = AvatarDavidRadio.IsChecked == true ? "david" : "julia";
+        _ = _localSettingsService.SaveSettingAsync("SelectedAvatar", _selectedAvatar);
+
+        if (_isAvatarInitialized && AvatarWebView?.CoreWebView2 != null)
+            AvatarWebView.CoreWebView2.Navigate($"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}");
     }
 
     private void SendMessage()

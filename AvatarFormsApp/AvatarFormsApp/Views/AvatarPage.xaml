@@ -169,10 +169,48 @@
                                             </StackPanel>
                                             <ToggleSwitch x:Name="AutoSendToggle"
                                                           Grid.Column="1"
+                                                          MinWidth="0"
+                                                          Margin="12,0,0,0"
                                                           VerticalAlignment="Center"
                                                           IsOn="True"
                                                           Toggled="OnAutoSendToggled"/>
                                         </Grid>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Avatar Section -->
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Avatar"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                                    <Border Background="#E61A1A1A"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="4"
+                                            Padding="16,12">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="Select avatar"
+                                                       FontSize="14"
+                                                       FontWeight="Medium"/>
+                                            <TextBlock Text="Choose the avatar character used during interviews"
+                                                       FontSize="12"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,0,0,8"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                                <RadioButton x:Name="AvatarJuliaRadio"
+                                                             Content="Julia"
+                                                             IsChecked="True"
+                                                             GroupName="AvatarSelection"
+                                                             Checked="OnAvatarSelectionChanged"/>
+                                                <RadioButton x:Name="AvatarDavidRadio"
+                                                             Content="David"
+                                                             GroupName="AvatarSelection"
+                                                             Checked="OnAvatarSelectionChanged"/>
+                                            </StackPanel>
+                                        </StackPanel>
                                     </Border>
                                 </StackPanel>
                             </StackPanel>
