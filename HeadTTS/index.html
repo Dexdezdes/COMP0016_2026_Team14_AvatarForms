@@ -86,8 +86,8 @@
 
       // Read avatar from query param, default to julia
       const params = new URLSearchParams(window.location.search);
-      const avatarName = params.get("avatar") || "julia";
-      const person = persons[avatarName] ?? persons["julia"];
+      const avatarName = params.get("avatar");
+      const person = persons[avatarName];
 
       // Progress info
       const info = { head: "-", headtts:"-" };

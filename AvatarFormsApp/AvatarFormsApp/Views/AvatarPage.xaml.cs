@@ -23,7 +23,6 @@ public sealed partial class AvatarPage : Page
     private bool _isMicEnabled;
     private bool _isTalkerActive;
     private bool _autoSendEnabled = true;
-    private bool _isAudioConnected = false;
     private string _selectedAvatar = "julia";
 
     // Stored so they can be unsubscribed when leaving the page
@@ -129,14 +128,26 @@ public sealed partial class AvatarPage : Page
                 DispatcherQueue.TryEnqueue(() => LogToConsole($"[NAV] Starting: {e.Uri}"));
             };
 
-            AvatarWebView.NavigationCompleted += (s, e) =>
+            AvatarWebView.NavigationCompleted += async (s, e) =>
             {
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     LogToConsole($"[NAV] Completed: Success={e.IsSuccess}");
                     if (!e.IsSuccess)
-                    {
                         LogToConsole($"[NAV] Error: {e.WebErrorStatus}");
+                });
+
+                if (!e.IsSuccess) return;
+
+                await Task.Delay(3000); // Wait for avatar and TTS engine to finish loading
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    if (AvatarWebView?.CoreWebView2 != null)
+                    {
+                        AvatarWebView.CoreWebView2.ExecuteScriptAsync(
+                            "document.body.click(); if(window.head?.audioCtx) window.head.audioCtx.resume();"
+                        );
+                        LogToConsole("[AVATAR] Resumed audio context");
                     }
                 });
             };
@@ -144,17 +155,6 @@ public sealed partial class AvatarPage : Page
             // Navigate to HeadTTS index.html
             LogToConsole("[NAV] Navigating to HeadTTS index.html...");
             AvatarWebView.CoreWebView2.Navigate($"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}");
-
-            // Show audio connection overlay after avatar loads
-            await Task.Delay(2000); // Wait for page to load
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                if (AudioConnectionOverlay != null)
-                {
-                    AudioConnectionOverlay.Visibility = Visibility.Visible;
-                    LogToConsole("[AVATAR] Audio connection overlay shown");
-                }
-            });
         }
         catch (Exception ex)
         {
@@ -414,37 +414,6 @@ public sealed partial class AvatarPage : Page
         }
     }
 
-    private void OnConnectAudioClicked(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            // Hide the overlay
-            if (AudioConnectionOverlay != null)
-            {
-                AudioConnectionOverlay.Visibility = Visibility.Collapsed;
-            }
-
-            _isAudioConnected = true;
-            LogToConsole("[AVATAR] Audio connected - TTS enabled");
-
-            // Execute JavaScript to enable audio in HeadTTS
-            if (AvatarWebView?.CoreWebView2 != null)
-            {
-                AvatarWebView.CoreWebView2.ExecuteScriptAsync(@"
-                    if (typeof enableAudio === 'function') {
-                        enableAudio();
-                    } else {
-                        console.log('Audio enabled by user interaction');
-                    }
-                ");
-            }
-        }
-        catch (Exception ex)
-        {
-            LogToConsole($"[ERROR] Failed to connect audio: {ex.Message}");
-        }
-    }
-
     private async Task StopAllServicesAsync()
     {
         // Unsubscribe console log handlers before stopping so trailing output
@@ -476,7 +445,6 @@ public sealed partial class AvatarPage : Page
         }
 
         _isAvatarInitialized = false;
-        _isAudioConnected = false;
     }
 
     private async void OnBackClicked(object sender, RoutedEventArgs e)
