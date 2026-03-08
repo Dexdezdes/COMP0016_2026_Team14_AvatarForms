@@ -142,9 +142,7 @@
                     x:Name="UploadButton"
                     Click="OnUploadClick"
                     HorizontalAlignment="Right"
-                    Width="200" Height="44"
-                    CornerRadius="22"
-                    Background="#0D74FF" Foreground="White"
+                    Style="{StaticResource AccentButtonStyle}"
                     Margin="0,20,45,0" />
         </StackPanel>
     </Grid>
