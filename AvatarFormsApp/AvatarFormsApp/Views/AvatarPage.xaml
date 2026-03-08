@@ -236,7 +236,6 @@
                 <TextBox x:Name="UserInput" 
                         Grid.Column="0"
                         Height="40"
-                        AcceptsReturn="True"
                         TextWrapping="Wrap"
                         VerticalAlignment="Bottom"
                         VerticalContentAlignment="Center"
