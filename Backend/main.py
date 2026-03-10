@@ -1,5 +1,5 @@
 from sockets import stream_message, start_server, websocket_handler, wait_for_browser_connection
-from api import start_http_server, wait_for_questionnaire
+from api import start_http_server, wait_for_questionnaire, send_response
 from formatting import bcolors, thinkStrip
 import os
 import asyncio
@@ -229,6 +229,7 @@ async def main():
     parser.add_argument("--llama_port", type=int, default=8081, help="Port for local model server if --local is set (default: 8081)")
     parser.add_argument("-p", "--port", type=int, default=8883, help="Port for the WebSocket server (default: 8883)")
     parser.add_argument("--http_port", type=int, default=8882, help="Port for the HTTP API server (default: 8882)")
+    parser.add_argument("--response_port", type=int, default=5000, help="Port for the Response API service (default: 5000)")
     args = parser.parse_args()
 
     #Start HTTP Server
@@ -237,7 +238,6 @@ async def main():
 
     # Start WebSocket server
     server = await start_server(args.port)
-    print(f"{bcolors.OKGREEN}WebSocket server started on port {args.port}.{bcolors.ENDC}")
 
     # Wait for browser (HeadTTS) to connect
     await wait_for_browser_connection()
@@ -263,10 +263,20 @@ async def main():
             print(f"{bcolors.OKGREEN}Interview complete.{bcolors.ENDC}")
             final_answers = interviewer.collect_final_answers()
             # Dict of questions and answers
-            for question, answer in final_answers.items():
+            for i, (question, answer) in enumerate(final_answers.items()):
                 print(f"{bcolors.OKGREEN}Q: {question}{bcolors.ENDC}")
                 print(f"A: {answer}\n")
-                
+
+                # Send each response back to ResponseAPIService
+                questionnaire_id = questionnaire_data["questionnaire_id"]
+                send_response(
+                    questionnaire_id=questionnaire_id,
+                    question_order=i + 1,
+                    question=question,
+                    answer=answer,
+                    port=args.response_port
+                )
+
             break
 
     # Close the WebSocket server

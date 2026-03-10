@@ -88,7 +88,6 @@ public partial class App : Application
             // Core Services
             services.AddSingleton<IFileService, FileService>();
 
-            // *** DATABASE SERVICES - ADD THESE ***
             // Register DbContext with SQLite
             services.AddDbContext<AppDbContext>(options =>
             {
@@ -107,6 +106,9 @@ public partial class App : Application
             // Register Questionnaire API Service
             services.AddSingleton<IQuestionnaireAPIService, QuestionnaireAPIService>();
 
+            // Register Response API Service (HTTP server for receiving responses)
+            services.AddSingleton<IResponseAPIService, ResponseAPIService>();
+
             // Register Process Services
             services.AddSingleton<ILlamafileProcessService, LlamafileProcessService>();
             services.AddSingleton<IPythonProcessService, PythonProcessService>();
@@ -120,6 +122,10 @@ public partial class App : Application
             services.AddTransient<DashboardPage>();
             services.AddTransient<QuestionnaireDetailPageViewModel>();
             services.AddTransient<QuestionnaireDetailPage>();
+            services.AddTransient<ResponsesPageViewModel>();
+            services.AddTransient<ResponsesPage>();
+            services.AddTransient<ResponseDetailPageViewModel>();
+            services.AddTransient<ResponseDetailPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ConversationPage>();
             services.AddTransient<CreateQuestionnairePage>();  // ✅ CHANGE 2: removed duplicate below
@@ -163,22 +169,29 @@ public partial class App : Application
     {
         base.OnLaunched(args);
 
-        // *** INITIALIZE DATABASE - ADD THIS ***
-        // Delete and recreate database on every startup (DEVELOPMENT ONLY!)
+        // *** INITIALIZE DATABASE ***
         using (var scope = Host.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            // Delete existing database
-            await dbContext.Database.EnsureDeletedAsync();
+            // Delete database before each run
+            // await dbContext.Database.EnsureDeletedAsync();
 
-            // Recreate database with schema
+            // Create database with schema if it doesn't exist
             await dbContext.Database.EnsureCreatedAsync();
 
-            // Seed with fresh sample data
-            await SeedSampleDataAsync(dbContext);
+            // Seed with sample data only if database is empty
+            var existingCount = await dbContext.Questionnaires.CountAsync();
+            if (existingCount == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("Database is empty - seeding sample data...");
+                await SeedSampleDataAsync(dbContext);
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"Database already contains {existingCount} questionnaire(s) at {dbContext.Database.GetConnectionString}");
+            }
         }
-        // *** END DATABASE INITIALIZATION ***
 
         var window = App.MainWindow;
 
@@ -193,18 +206,6 @@ public partial class App : Application
         try
         {
             System.Diagnostics.Debug.WriteLine("=== STARTING SEED DATA ===");
-
-            // Check if we already have data
-            var existingCount = await dbContext.Questionnaires.CountAsync();
-            System.Diagnostics.Debug.WriteLine($"Existing questionnaires count: {existingCount}");
-
-            if (existingCount > 0)
-            {
-                System.Diagnostics.Debug.WriteLine("Data already exists - skipping seed");
-                return;
-            }
-
-            System.Diagnostics.Debug.WriteLine("No data found - starting seeding...");
 
             // Sample 1: Sleep Survey
             var sleepId = Guid.NewGuid().ToString();
@@ -241,30 +242,43 @@ public partial class App : Application
                 IsRequired = false
             });
 
-            var sleepQ3Id = Guid.NewGuid().ToString();
-            sleep.Questions.Add(new Question
+            // Sample 2: Education Feedback
+            var educationId = Guid.NewGuid().ToString();
+            var education = new Questionnaire 
+            { 
+                Id = educationId,
+                Name = "Education Feedback", 
+                OwnerId = "user2", 
+                Status = "Active", 
+                Color = "#B34CB3",
+                Description = "This questionnaire is designed to get feedback about the educational content and delivery.",
+                CreatedDate = DateTime.UtcNow
+            };
+
+            var educationQ1Id = Guid.NewGuid().ToString();
+            education.Questions.Add(new Question
             {
                 Id = Guid.NewGuid().ToString(),
-                QuestionnaireId = sleepId,
-                Text = "Do you generally sleep well?",
+                QuestionnaireId = educationId,
+                Text = "What is your full name?",
                 Type = QuestionType.OpenEnded,
-                Order = 3,
+                Order = 1,
                 IsRequired = false
             });
 
-            var sleepQ4Id = Guid.NewGuid().ToString();
-            sleep.Questions.Add(new Question
+            var educationQ2Id = Guid.NewGuid().ToString();
+            education.Questions.Add(new Question
             {
                 Id = Guid.NewGuid().ToString(),
-                QuestionnaireId = sleepId,
-                Text = "How are you feeling today?",
+                QuestionnaireId = educationId,
+                Text = "What do you think about the quality of the educational content on the scale of 1 to 10?",
                 Type = QuestionType.OpenEnded,
-                Order = 4,
+                Order = 2,
                 IsRequired = false
             });
 
             System.Diagnostics.Debug.WriteLine("Adding questionnaires to context...");
-            dbContext.Questionnaires.AddRange(sleep);
+            dbContext.Questionnaires.AddRange(sleep, education);
 
             System.Diagnostics.Debug.WriteLine("Saving changes to database...");
             await dbContext.SaveChangesAsync();

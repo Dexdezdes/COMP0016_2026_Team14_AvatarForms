@@ -73,9 +73,19 @@ public sealed partial class ShellPage : Page
 
     private void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
     {
-        if (args.InvokedItemContainer?.Tag is string pageKey)
+        if (args.InvokedItemContainer is NavigationViewItem item)
         {
-            ViewModel.NavigationService.NavigateTo(pageKey);
+            // Sub-items under Responses have a questionnaire ID as Tag (not a page key)
+            if (Nav_Responses.MenuItems.Contains(item) && item.Tag is string questionnaireId)
+            {
+                ViewModel.NavigationService.NavigateTo(
+                    typeof(ResponsesPageViewModel).Name,
+                    questionnaireId);
+            }
+            else if (item.Tag is string pageKey)
+            {
+                ViewModel.NavigationService.NavigateTo(pageKey);
+            }
         }
     }
 

@@ -23,4 +23,5 @@ public interface IQuestionnaireService
     // Response operations
     Task<int> GetResponseCountAsync(string questionnaireId);
     Task<List<ResponseSession>> GetResponseSessionsAsync(string questionnaireId);
+    Task<ResponseSession?> GetResponseSessionByIdAsync(string sessionId);
 }

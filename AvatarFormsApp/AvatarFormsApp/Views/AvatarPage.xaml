@@ -27,7 +27,7 @@
                 <Button Grid.Column="0" Click="OnBackClicked" Background="Transparent" BorderBrush="Transparent">
                     <StackPanel Orientation="Horizontal">
                         <FontIcon Glyph="&#xE72B;" FontSize="16" Foreground="Gray"/>
-                        <TextBlock Text=" Back" VerticalAlignment="Center" Foreground="Gray"/>
+                        <TextBlock Text=" Leave" VerticalAlignment="Center" Foreground="Gray"/>
                     </StackPanel>
                 </Button>
                 <AppBarToggleButton x:Name="SettingsToggle"

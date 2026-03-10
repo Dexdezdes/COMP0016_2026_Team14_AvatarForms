@@ -1,0 +1,152 @@
+﻿<Page
+    x:Class="AvatarFormsApp.Views.ResponseDetailPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:AvatarFormsApp.ViewModels"
+    mc:Ignorable="d">
+
+    <Grid x:Name="ContentArea" Padding="0">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="40,20,40,40" HorizontalAlignment="Stretch">
+
+                <!-- Back Button -->
+                <Button x:Name="BackButton"
+                        Click="OnBackClick"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Padding="8"
+                        Margin="0,0,0,16"
+                        HorizontalAlignment="Left"
+                        ToolTipService.ToolTip="Back to Responses">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE72B;" FontSize="16" />
+                        <TextBlock Text="Back to Responses" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Header Card -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        CornerRadius="8"
+                        Padding="0"
+                        Margin="0,0,0,16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="8" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Color Bar -->
+                        <Rectangle Grid.Row="0"
+                                   Fill="{x:Bind ViewModel.QuestionnaireColor, Mode=OneWay}"
+                                   RadiusX="8"
+                                   RadiusY="8" />
+
+                        <StackPanel Grid.Row="1" Padding="32,24,32,32">
+                            <TextBlock Text="{x:Bind ViewModel.PageTitle, Mode=OneWay}"
+                                       FontSize="32"
+                                       FontWeight="Normal"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,8" />
+
+                            <TextBlock Text="{x:Bind ViewModel.QuestionnaireName, Mode=OneWay}"
+                                       FontSize="14"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,16" />
+
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <!-- Response count -->
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon Glyph="&#xE8D7;" FontSize="14" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                    <TextBlock Text="{x:Bind ViewModel.ResponseCount, Mode=OneWay}"
+                                               FontSize="14"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                    <TextBlock Text="answers"
+                                               FontSize="14"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+
+                                <!-- Submitted date -->
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon Glyph="&#xE787;" FontSize="14" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                    <TextBlock Text="{x:Bind ViewModel.SubmittedDate, Mode=OneWay}"
+                                               FontSize="14"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+
+                                <!-- Status badge -->
+                                <Border CornerRadius="4" Padding="8,3" Background="#1A22C55E"
+                                        Visibility="{x:Bind ViewModel.IsComplete, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <TextBlock Text="Complete" FontSize="12" FontWeight="SemiBold" Foreground="#22C55E" />
+                                </Border>
+                                <Border CornerRadius="4" Padding="8,3" Background="#1AFFA500"
+                                        Visibility="{x:Bind ViewModel.IsComplete, Mode=OneWay, Converter={StaticResource BoolToVisibilityInverseConverter}}">
+                                    <TextBlock Text="Incomplete" FontSize="12" FontWeight="SemiBold" Foreground="#FFA500" />
+                                </Border>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Response Items List -->
+                <ItemsControl ItemsSource="{x:Bind ViewModel.ResponseItems, Mode=OneWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ResponseDetailItem">
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    CornerRadius="8"
+                                    Padding="0"
+                                    Margin="0,0,0,16">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="4" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Color Bar -->
+                                    <Rectangle Grid.Row="0"
+                                               Fill="{x:Bind QuestionnaireColor}"
+                                               RadiusX="8"
+                                               RadiusY="8" />
+
+                                    <StackPanel Grid.Row="1" Padding="20,20,20,20">
+                                        <!-- Question -->
+                                        <TextBlock FontSize="16"
+                                                   FontWeight="SemiBold"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,0,0,12">
+                                            <Run Text="{x:Bind Order}" />
+                                            <Run Text=". " />
+                                            <Run Text="{x:Bind QuestionText}" />
+                                        </TextBlock>
+
+                                        <!-- Answer -->
+                                        <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="4"
+                                                Padding="16,12">
+                                            <TextBlock Text="{x:Bind AnswerText}"
+                                                       TextWrapping="Wrap"
+                                                       FontSize="14" />
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Loading Indicator -->
+                <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                              Width="40"
+                              Height="40"
+                              HorizontalAlignment="Center"
+                              Margin="0,40,0,0"
+                              Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay}" />
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

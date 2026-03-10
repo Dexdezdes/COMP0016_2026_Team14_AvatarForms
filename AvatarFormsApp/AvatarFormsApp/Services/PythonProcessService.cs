@@ -14,7 +14,7 @@ public class PythonProcessService : IPythonProcessService
     public event Action<string>? OutputReceived;
     public event Action<string>? ErrorReceived;
 
-    public async Task<bool> StartAsync(bool useLocal = true, int llamaPort = 8081, int websocketPort = 8883, int httpPort = 8882)
+    public async Task<bool> StartAsync(bool useLocal = true, int llamaPort = 8081, int websocketPort = 8883, int httpPort = 8882, int responsePort = 5000)
     {
         if (IsRunning)
         {
@@ -25,7 +25,7 @@ public class PythonProcessService : IPythonProcessService
         try
         {
             // Build command-line arguments
-            string arguments = BuildArguments(useLocal, llamaPort, websocketPort, httpPort);
+            string arguments = BuildArguments(useLocal, llamaPort, websocketPort, httpPort, responsePort);
 
             // First, try to find the compiled executable
             string backendDir = Path.Combine(AppContext.BaseDirectory, "Backend");
@@ -140,7 +140,7 @@ public class PythonProcessService : IPythonProcessService
         _pythonProcess = null;
     }
 
-    private static string BuildArguments(bool useLocal, int llamaPort, int websocketPort, int httpPort)
+    private static string BuildArguments(bool useLocal, int llamaPort, int websocketPort, int httpPort, int responsePort)
     {
         var args = new List<string>();
 
@@ -162,6 +162,11 @@ public class PythonProcessService : IPythonProcessService
         if (httpPort != 8882)
         {
             args.Add($"--http_port {httpPort}");
+        }
+
+        if (responsePort != 5000)
+        {
+            args.Add($"--response_port {responsePort}");
         }
 
         return string.Join(" ", args);

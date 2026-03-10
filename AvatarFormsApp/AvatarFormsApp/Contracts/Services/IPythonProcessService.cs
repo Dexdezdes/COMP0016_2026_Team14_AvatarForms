@@ -12,8 +12,9 @@ public interface IPythonProcessService : IDisposable
     /// <param name="llamaPort">Port for local LLaMA server (default: 8081)</param>
     /// <param name="websocketPort">Port for WebSocket server (default: 8883)</param>
     /// <param name="httpPort">Port for HTTP server to receive questionnaire data (default: 8882)</param>
+    /// <param name="responsePort">Port for Response API server (default: 5000)</param>
     /// <returns>True if the process started successfully.</returns>
-    Task<bool> StartAsync(bool useLocal = true, int llamaPort = 8081, int websocketPort = 8883, int httpPort = 8882);
+    Task<bool> StartAsync(bool useLocal = true, int llamaPort = 8081, int websocketPort = 8883, int httpPort = 8882, int responsePort = 5000);
 
     /// <summary>
     /// Stops the Python backend process.

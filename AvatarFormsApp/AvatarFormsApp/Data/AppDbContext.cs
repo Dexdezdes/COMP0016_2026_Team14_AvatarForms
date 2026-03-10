@@ -25,12 +25,12 @@ public class AppDbContext : DbContext
             // Get path to store database in AppData/Local
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var dbPath = Path.Combine(appDataPath, "AvatarFormsApp", "questionnaires.db");
-            
+
             // Ensure directory exists
             Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
-            
-            // Configure SQLite connection
-            optionsBuilder.UseSqlite($"Data Source={dbPath}");
+
+            // Configure SQLite connection with foreign keys enabled
+            optionsBuilder.UseSqlite($"Data Source={dbPath};Foreign Keys=True");
         }
     }
 
@@ -91,8 +91,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<ResponseSession>(entity =>
         {
             entity.HasKey(rs => rs.Id);
-            entity.Property(rs => rs.RespondentName).HasMaxLength(200);
-            
+
             // One ResponseSession has many Responses
             entity.HasMany(rs => rs.Responses)
                   .WithOne(r => r.ResponseSession)

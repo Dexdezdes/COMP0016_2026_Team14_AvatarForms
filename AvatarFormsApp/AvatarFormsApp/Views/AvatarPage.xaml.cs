@@ -15,6 +15,7 @@ public sealed partial class AvatarPage : Page
 {
     private readonly IPythonProcessService _pythonProcessService;
     private readonly ILlamafileProcessService _llamafileProcessService;
+    private readonly IResponseAPIService _responseAPIService;
     private SimpleWebServer? _webServer;
     private SpeechRecognizer? _speechRecognizer;
     private bool _isAvatarInitialized;
@@ -23,17 +24,27 @@ public sealed partial class AvatarPage : Page
     private bool _autoSendEnabled = true;
     private bool _isAudioConnected = false;
 
+    // Stored so they can be unsubscribed when leaving the page
+    private readonly Action<string> _onPythonOutput;
+    private readonly Action<string> _onPythonError;
+    private readonly Action<string> _onLlamaOutput;
+
     public AvatarPage()
     {
         InitializeComponent();
 
         _pythonProcessService = App.GetService<IPythonProcessService>();
         _llamafileProcessService = App.GetService<ILlamafileProcessService>();
+        _responseAPIService = App.GetService<IResponseAPIService>();
 
-        // Wire up process output to the console log
-        _pythonProcessService.OutputReceived += msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
-        _pythonProcessService.ErrorReceived += msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
-        _llamafileProcessService.OutputReceived += msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
+        // Store handlers so they can be unsubscribed when leaving the page
+        _onPythonOutput = msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
+        _onPythonError  = msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
+        _onLlamaOutput  = msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
+
+        _pythonProcessService.OutputReceived += _onPythonOutput;
+        _pythonProcessService.ErrorReceived  += _onPythonError;
+        _llamafileProcessService.OutputReceived += _onLlamaOutput;
 
         AutoSendToggle.IsOn = true;
         InitializeAvatar();
@@ -407,16 +418,48 @@ public sealed partial class AvatarPage : Page
         }
     }
 
-    private async void OnBackClicked(object sender, RoutedEventArgs e)
+    private async Task StopAllServicesAsync()
     {
+        // Unsubscribe console log handlers before stopping so trailing output
+        // from this session doesn't re-register on the next visit
+        _pythonProcessService.OutputReceived   -= _onPythonOutput;
+        _pythonProcessService.ErrorReceived    -= _onPythonError;
+        _llamafileProcessService.OutputReceived -= _onLlamaOutput;
+
+        // Stop Python backend (also kills the Python-side HTTP servers on ports 8882 and 8883)
         _pythonProcessService.Stop();
+
+        // Stop llamafile LLM server
         _llamafileProcessService.Stop();
 
+        // Stop C# response API listener (port 5000)
+        if (_responseAPIService.IsRunning)
+        {
+            try { await _responseAPIService.StopServerAsync(); }
+            catch (Exception ex) { LogToConsole($"[CLEANUP] Response API stop error: {ex.Message}"); }
+        }
+
+        // Stop HeadTTS web server and unload WebView
+        _webServer?.Stop();
+        _webServer = null;
+
+        if (AvatarWebView?.CoreWebView2 != null)
+        {
+            AvatarWebView.CoreWebView2.Navigate("about:blank");
+        }
+
+        _isAvatarInitialized = false;
+        _isAudioConnected = false;
+    }
+
+    private async void OnBackClicked(object sender, RoutedEventArgs e)
+    {
         _isMicEnabled = false;
         MicIcon.Glyph = "\uE720";
         MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Black);
 
         await StopVoiceInput();
+        await StopAllServicesAsync();
 
         var rtb = ChatDisplay as RichTextBlock;
         if (rtb != null)

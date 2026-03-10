@@ -1,4 +1,4 @@
-﻿<Project Sdk="Uno.Sdk">
+<Project Sdk="Uno.Sdk">
     <PropertyGroup>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFrameworks>
         <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-maccatalyst</TargetFrameworks>
@@ -100,4 +100,5 @@
       <Content Remove="..\..\Backend\google_gemma-3-4b-it-Q6_K.llamafile" />
       <Content Remove="..\..\Backend\requirements.txt" />
     </ItemGroup>
-</Project>
+
+    </Project>

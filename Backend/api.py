@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import threading
 import asyncio
 import time
+import requests
 from formatting import bcolors
 
 questionnaire_data = None
@@ -42,7 +43,38 @@ async def wait_for_questionnaire():
     return questionnaire_data
 
 
-def start_http_server(port=8882):
+def send_response(questionnaire_id, question_order, question, answer, port):
+    url = f"http://localhost:{port}/response"
+
+    payload = {
+        "questionnaire_id": questionnaire_id,
+        "question_order": question_order,
+        "question": question,
+        "answer": answer
+    }
+
+    try:
+        response = requests.post(url, json=payload, timeout=5)
+
+        if response.status_code == 200:
+            print(f"{bcolors.OKGREEN}Successfully sent response for question {question_order} to C# backend{bcolors.ENDC}")
+            return True
+        else:
+            print(f"{bcolors.FAIL}Failed to send response. Status: {response.status_code}, Error: {response.text}{bcolors.ENDC}")
+            return False
+
+    except requests.exceptions.ConnectionError:
+        print(f"{bcolors.FAIL}Could not connect to C# ResponseAPIService at {url}. Make sure the service is running.{bcolors.ENDC}")
+        return False
+    except requests.exceptions.Timeout:
+        print(f"{bcolors.FAIL}Timeout sending response to C# backend{bcolors.ENDC}")
+        return False
+    except Exception as e:
+        print(f"{bcolors.FAIL}Error sending response to C# backend: {e}{bcolors.ENDC}")
+        return False
+
+
+def start_http_server(port):
     def run_flask():
         app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
 
