@@ -204,7 +204,7 @@ public partial class App : Application
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             // Delete database before each run
-            await dbContext.Database.EnsureDeletedAsync();
+            //await dbContext.Database.EnsureDeletedAsync();
 
             // Create database with schema if it doesn't exist
             await dbContext.Database.EnsureCreatedAsync();
