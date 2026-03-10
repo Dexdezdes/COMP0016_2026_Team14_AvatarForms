@@ -204,21 +204,22 @@ public partial class App : Application
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             // Delete database before each run
-            // await dbContext.Database.EnsureDeletedAsync();
+            await dbContext.Database.EnsureDeletedAsync();
 
             // Create database with schema if it doesn't exist
             await dbContext.Database.EnsureCreatedAsync();
 
             // Seed with sample data only if database is empty
-            var existingCount = await dbContext.Questionnaires.CountAsync();
-            if (existingCount == 0)
+            var questionnaireCount = await dbContext.Questionnaires.CountAsync();
+            var responseCount = await dbContext.Responses.CountAsync();
+            if (questionnaireCount == 0 || responseCount == 0)
             {
                 System.Diagnostics.Debug.WriteLine("Database is empty - seeding sample data...");
                 await SeedSampleDataAsync(dbContext);
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine($"Database already contains {existingCount} questionnaire(s) at {dbContext.Database.GetConnectionString}");
+                System.Diagnostics.Debug.WriteLine($"Database already contains {questionnaireCount} forms and {responseCount} responses.");
             }
         }
 
@@ -516,6 +517,79 @@ public partial class App : Application
             await dbContext.SaveChangesAsync();
 
             System.Diagnostics.Debug.WriteLine("✅ Sample data seeded successfully!");
+
+            System.Diagnostics.Debug.WriteLine("Seeding sample responses for the questionnaires...");
+
+            // 1. Ensure the Questionnaires/Questions from the previous section are actually in the DB
+            // This is required so we can query them for their "real" IDs
+            await dbContext.SaveChangesAsync();
+
+            if (!await dbContext.Responses.AnyAsync())
+            {
+                // Fetch the actual questions from the database to ensure we use the IDs that were actually saved
+                var dbQuestions = await dbContext.Questions.ToListAsync();
+
+                // Helper function to find the "real" ID in the database based on Questionnaire and Order
+                string GetRealId(string questionnaireId, int order) =>
+                    dbQuestions.FirstOrDefault(q => q.QuestionnaireId == questionnaireId && q.Order == order)?.Id
+                    ?? throw new Exception($"Seed Error: Question with Order {order} not found for Questionnaire {questionnaireId}");
+
+                // Define Session IDs
+                var sleepSessionId = Guid.NewGuid().ToString();
+                var eduSessionId = Guid.NewGuid().ToString();
+                var teachingSessionId = Guid.NewGuid().ToString();
+                var parentSessionId = Guid.NewGuid().ToString();
+
+                // 2. Add all Sessions FIRST
+                dbContext.ResponseSessions.AddRange(
+                    new ResponseSession { Id = sleepSessionId, QuestionnaireId = sleepId, SubmittedDate = DateTime.UtcNow.AddHours(-1), IsComplete = true },
+                    new ResponseSession { Id = eduSessionId, QuestionnaireId = educationId, SubmittedDate = DateTime.UtcNow.AddDays(-1), IsComplete = true },
+                    new ResponseSession { Id = teachingSessionId, QuestionnaireId = teachingID, SubmittedDate = DateTime.UtcNow.AddHours(-5), IsComplete = true },
+                    new ResponseSession { Id = parentSessionId, QuestionnaireId = parentId, SubmittedDate = DateTime.UtcNow.AddHours(-12), IsComplete = true }
+                );
+
+                // Commit sessions to DB so Responses can find them
+                await dbContext.SaveChangesAsync();
+
+                // 3. Create Responses using the "Real" IDs fetched from the database
+                var allResponses = new List<AvatarFormsApp.Models.Response>();
+
+                // --- Sleep Quality Survey (4/4 answered) ---
+                allResponses.Add(new() { ResponseSessionId = sleepSessionId, QuestionId = GetRealId(sleepId, 1), AnswerText = "John Doe", AnsweredDate = DateTime.UtcNow.AddMinutes(-55) });
+                allResponses.Add(new() { ResponseSessionId = sleepSessionId, QuestionId = GetRealId(sleepId, 2), AnswerText = "I slept quite well, feeling refreshed.", AnsweredDate = DateTime.UtcNow.AddMinutes(-54) });
+                allResponses.Add(new() { ResponseSessionId = sleepSessionId, QuestionId = GetRealId(sleepId, 3), AnswerText = "7.5 hours", AnsweredDate = DateTime.UtcNow.AddMinutes(-53) });
+                allResponses.Add(new() { ResponseSessionId = sleepSessionId, QuestionId = GetRealId(sleepId, 4), AnswerText = "No major issues, just some occasional late nights.", AnsweredDate = DateTime.UtcNow.AddMinutes(-52) });
+
+                // --- Student Satisfaction (6/6 answered) ---
+                allResponses.Add(new() { ResponseSessionId = eduSessionId, QuestionId = GetRealId(educationId, 1), AnswerText = "Jane Smith" });
+                allResponses.Add(new() { ResponseSessionId = eduSessionId, QuestionId = GetRealId(educationId, 2), AnswerText = "The content is highly relevant to current industry standards." });
+                allResponses.Add(new() { ResponseSessionId = eduSessionId, QuestionId = GetRealId(educationId, 3), AnswerText = "Yes, the laboratories and library are excellent." });
+                allResponses.Add(new() { ResponseSessionId = eduSessionId, QuestionId = GetRealId(educationId, 4), AnswerText = "My advisor provided great guidance for my internship." });
+                allResponses.Add(new() { ResponseSessionId = eduSessionId, QuestionId = GetRealId(educationId, 5), AnswerText = "Very safe, security is visible and helpful." });
+                allResponses.Add(new() { ResponseSessionId = eduSessionId, QuestionId = GetRealId(educationId, 6), AnswerText = "9" });
+
+                // --- Teaching Assistant Evaluation (5/5 answered) ---
+                allResponses.Add(new() { ResponseSessionId = teachingSessionId, QuestionId = GetRealId(teachingID, 1), AnswerText = "Anonymous Student" });
+                allResponses.Add(new() { ResponseSessionId = teachingSessionId, QuestionId = GetRealId(teachingID, 2), AnswerText = "Extremely prepared, always had extra resources." });
+                allResponses.Add(new() { ResponseSessionId = teachingSessionId, QuestionId = GetRealId(teachingID, 3), AnswerText = "Very effective at breaking down complex calculus concepts." });
+                allResponses.Add(new() { ResponseSessionId = teachingSessionId, QuestionId = GetRealId(teachingID, 4), AnswerText = "Always stayed late after lab to answer questions." });
+                allResponses.Add(new() { ResponseSessionId = teachingSessionId, QuestionId = GetRealId(teachingID, 5), AnswerText = "10" });
+
+                // --- K-12 Parent Survey (5/5 answered) ---
+                allResponses.Add(new() { ResponseSessionId = parentSessionId, QuestionId = GetRealId(parentId, 1), AnswerText = "Robert Brown" });
+                allResponses.Add(new() { ResponseSessionId = parentSessionId, QuestionId = GetRealId(parentId, 2), AnswerText = "Monthly" });
+                allResponses.Add(new() { ResponseSessionId = parentSessionId, QuestionId = GetRealId(parentId, 3), AnswerText = "Quite confident, the school's social programs help a lot." });
+                allResponses.Add(new() { ResponseSessionId = parentSessionId, QuestionId = GetRealId(parentId, 4), AnswerText = "A lot of effort, we focus on daily chores and homework." });
+                allResponses.Add(new() { ResponseSessionId = parentSessionId, QuestionId = GetRealId(parentId, 5), AnswerText = "Very often" });
+
+                // Add everything and save
+                dbContext.Responses.AddRange(allResponses);
+                await dbContext.SaveChangesAsync();
+
+                System.Diagnostics.Debug.WriteLine("✅ Sample responses added to context using verified IDs.");
+            }
+
+            System.Diagnostics.Debug.WriteLine("Sample responses added to context.");
         }
         catch (Exception ex)
         {
