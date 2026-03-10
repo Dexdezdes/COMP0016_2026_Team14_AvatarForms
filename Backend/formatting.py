@@ -37,8 +37,8 @@ def emojiStrip(text):
     return text
 
 def LLM_strip(text):
-    tag = ["<", ">"]
-    return tagStrip(text, tag[0], tag[1])
+    text = re.sub(r"<[^>]*>.*?</[^>]*>", "", text, flags=re.DOTALL)
+    return text
 
 def bracketStrip(text):
     tag = [["(", ")"], ["[", "]"], ["{", "}"]]
