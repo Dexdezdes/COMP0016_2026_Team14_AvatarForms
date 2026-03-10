@@ -14,8 +14,28 @@ Interview information:
 """
 
 
-def Talker_ask_question_prompt(question):
+def Talker_ask_question_prompt(question, previous_q_and_a=None, last_message=None):
     task = f"""
+{f'''
+Summary of questions and answers so far:
+
+==================
+
+{previous_q_and_a}
+
+==================
+''' if previous_q_and_a else ""}
+
+{f'''
+Last message from the user:
+
+==================
+{last_message}
+==================
+''' if last_message else ""}
+
+----------------------------------------------------------------
+
 Ask the following question (you can rephrase if appropriate): 
 
 {question}
@@ -23,21 +43,43 @@ Ask the following question (you can rephrase if appropriate):
     # return Talker_system_prompt(context) + task
     return task
 
-def Talker_follow_up_question_prompt(question, reasoning, follow_up=None):
+def Talker_follow_up_question_prompt(question, reasoning, transcript, previous_q_and_a=None, follow_up=None):
     task = f"""
-The user did not answer the previous question suitably.
+{f'''
+Original question: {question}
+
+The user did not answer the current question suitably.
 The reasoning for this is: {reasoning}
 Rephrase the question or ask a follow-up question to clarify and get more information.
 
-Original question: {question}
 {f"Example follow-up question: {follow_up}" if follow_up else ""}
+
+---------------------------------------------------------------
+
+Summary of previous questions and answers:
+
+==================
+
+{previous_q_and_a}
+
+==================
+''' if previous_q_and_a else ""}
+
+Transcript of the user's answer to the current question:
+==================
+
+{transcript}
+
+==================
+
+----------------------------------------------------------------
 """
     # return Talker_system_prompt(context) + task
     return task
 
 def Talker_closing_statement_prompt():
     return """
-All questions have been asked. Briefly conclude the interview.
+All questions have been asked. Briefly conclude the interview with a single sentence.
 """
 
 def Evaluator_system_prompt(context, question, transcript):
@@ -70,7 +112,7 @@ Analyze the response based on:
 3. User Preference: If the user is uncomfortable, refuses to answer or wants to move on, you should choose to skip the question regardless of the answer quality.
 
 ANALYSIS FORMAT INSTRUCTIONS:
-Your output must be a JSON object with the following format:
+Your output must be only a JSON object with the following format:
 {{
     "satisfactory": bool, // whether or not the answer is satisfactory
     "override_skip": bool, // if true, skip the question regardless of the answer quality.
@@ -78,7 +120,7 @@ Your output must be a JSON object with the following format:
     "follow_up_question": Optional[str] // if the answer is not satisfactory, provide a follow-up question to ask the user to clarify or get more information. Keep the question short and simple. If the answer is satisfactory, this should be null.
 }}
 
-ANALYSIS:
+OUTPUT:
 """
 
 def RAG_system_prompt(context):
