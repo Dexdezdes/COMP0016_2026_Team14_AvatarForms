@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Web.WebView2.Core;
 
 namespace AvatarFormsApp;
 
@@ -39,6 +40,36 @@ public partial class App : Application
         }
 
         return service;
+    }
+
+    // Single shared CoreWebView2Environment for the entire process.
+    // All WebView2 instances MUST use the same environment or initialization fails.
+    private static CoreWebView2Environment? _sharedWebViewEnvironment;
+    private static readonly SemaphoreSlim _webViewEnvLock = new(1, 1);
+
+    public static async Task<CoreWebView2Environment> GetOrCreateWebViewEnvironmentAsync()
+    {
+        if (_sharedWebViewEnvironment is not null)
+            return _sharedWebViewEnvironment;
+
+        await _webViewEnvLock.WaitAsync();
+        try
+        {
+            if (_sharedWebViewEnvironment is null)
+            {
+                var options = new CoreWebView2EnvironmentOptions
+                {
+                    AdditionalBrowserArguments = "--ignore-gpu-blocklist --enable-gpu-rasterization"
+                };
+                _sharedWebViewEnvironment = await CoreWebView2Environment.CreateWithOptionsAsync(null, null, options);
+            }
+        }
+        finally
+        {
+            _webViewEnvLock.Release();
+        }
+
+        return _sharedWebViewEnvironment!;
     }
 
 #if WINDOWS
@@ -114,7 +145,6 @@ public partial class App : Application
             services.AddSingleton<IPythonProcessService, PythonProcessService>();
             // *** END DATABASE SERVICES ***
 
-            // ✅ CHANGE 1: Register FormLinkParserService
             services.AddSingleton<FormLinkParserService>();
 
             // Views and ViewModels
@@ -128,11 +158,10 @@ public partial class App : Application
             services.AddTransient<ResponseDetailPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ConversationPage>();
-            services.AddTransient<CreateQuestionnairePage>();  // ✅ CHANGE 2: removed duplicate below
+            services.AddTransient<CreateQuestionnairePage>();  
             services.AddSingleton<MainWindow>();
             services.AddTransient<ShellPageViewModel>();
             services.AddTransient<ConversationPageViewModel>();
-            // ✅ CHANGE 2: duplicate CreateQuestionnairePage removed (was here)
             services.AddTransient<CreateQuestionnairePageViewModel>();
 
             // Configuration
@@ -212,7 +241,7 @@ public partial class App : Application
             var sleep = new Questionnaire
             {
                 Id = sleepId,
-                Name = "Sleep Survey",
+                Name = "Sleep Quality Survey",
                 OwnerId = "user1",
                 Status = "Pending",
                 Color = "#4CB3B3",
@@ -242,12 +271,34 @@ public partial class App : Application
                 IsRequired = false
             });
 
+            var sleepQ3Id = Guid.NewGuid().ToString();
+            sleep.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = sleepId,
+                Text = "How many hours of sleep did you get?",
+                Type = QuestionType.OpenEnded,
+                Order = 3,
+                IsRequired = false
+            });
+
+            var sleepQ4Id = Guid.NewGuid().ToString();
+            sleep.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = sleepId,
+                Text = "Have you had any problem sleeping the past few weeks?",
+                Type = QuestionType.OpenEnded,
+                Order = 4,
+                IsRequired = false
+            });
+
             // Sample 2: Education Feedback
             var educationId = Guid.NewGuid().ToString();
             var education = new Questionnaire 
             { 
                 Id = educationId,
-                Name = "Education Feedback", 
+                Name = "Student Satisfaction Survey", 
                 OwnerId = "user2", 
                 Status = "Active", 
                 Color = "#B34CB3",
@@ -271,14 +322,195 @@ public partial class App : Application
             {
                 Id = Guid.NewGuid().ToString(),
                 QuestionnaireId = educationId,
-                Text = "What do you think about the quality of the educational content on the scale of 1 to 10?",
+                Text = "What do you think about the quality of the educational content?",
                 Type = QuestionType.OpenEnded,
                 Order = 2,
                 IsRequired = false
             });
 
+            var educationQ3Id = Guid.NewGuid().ToString();
+            education.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = educationId,
+                Text = "Are the facilities well-maintained?",
+                Type = QuestionType.OpenEnded,
+                Order = 3,
+                IsRequired = false
+            });
+
+            var educationQ4Id = Guid.NewGuid().ToString();
+            education.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = educationId,
+                Text = "Is your academic advisor useful?",
+                Type = QuestionType.OpenEnded,
+                Order = 4,
+                IsRequired = false
+            });
+
+            var educationQ5Id = Guid.NewGuid().ToString();
+            education.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = educationId,
+                Text = "How safe do you feel on campus?",
+                Type = QuestionType.OpenEnded,
+                Order = 5,
+                IsRequired = false
+            });
+
+            var educationQ6Id = Guid.NewGuid().ToString();
+            education.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = educationId,
+                Text = "How would you rate the overall experience at our institution on a scale of 1 to 10?",
+                Type = QuestionType.OpenEnded,
+                Order = 6,
+                IsRequired = false
+            });
+
+            // Example 3 : Teaching Assistant Evaluation
+            var teachingID = Guid.NewGuid().ToString();
+            var teaching = new Questionnaire
+            {
+                Id = teachingID,
+                Name = "Teaching Assistant Evaluation Survey",
+                OwnerId = "user3",
+                Status = "Active",
+                Color = "#F06292",
+                Description = "This questionnaire is designed to get feedback about the teaching quality and effectiveness.",
+                CreatedDate = DateTime.UtcNow
+            };
+
+            var teachingQ1Id = Guid.NewGuid().ToString();
+            teaching.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = teachingID,
+                Text = "What is your full name?",
+                Type = QuestionType.OpenEnded,
+                Order = 1,
+                IsRequired = false
+            });
+
+            var teachingQ2Id = Guid.NewGuid().ToString();
+            teaching.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = teachingID,
+                Text = "How prepared was your teaching assistant in class?",
+                Type = QuestionType.OpenEnded,
+                Order = 2,
+                IsRequired = false
+            });
+
+            var teachingQ3Id = Guid.NewGuid().ToString();
+            teaching.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = teachingID,
+                Text = "How effective was your teaching assistant in explaining the course material?",
+                Type = QuestionType.OpenEnded,
+                Order = 3,
+                IsRequired = false
+            });
+
+            var teachingQ4Id = Guid.NewGuid().ToString();
+            teaching.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = teachingID,
+                Text = "How approachable was your teaching assistant for questions and help?",
+                Type = QuestionType.OpenEnded,
+                Order = 4,
+                IsRequired = false
+            });
+
+            var teachingQ5Id = Guid.NewGuid().ToString();
+            teaching.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = teachingID,
+                Text = "How would you rate your overall experience with your teaching assistant on a scale of 1 to 10?",
+                Type = QuestionType.OpenEnded,
+                Order = 5,
+                IsRequired = false
+            });
+
+            // Example 4 : K-12 Parent Survey
+            var parentId = Guid.NewGuid().ToString();
+            var parent = new Questionnaire
+            {
+                Id = parentId,
+                Name = "K-12 Parent Survey",
+                OwnerId = "user4",
+                Status = "Active",
+                Color = "#81C784",
+                Description = "This questionnaire is designed to discover parents' thoughts and attitudes about their child's school.",
+                CreatedDate = DateTime.UtcNow
+            };
+
+            var parentQ1Id = Guid.NewGuid().ToString();
+            parent.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = parentId,
+                Text = "What is your full name?",
+                Type = QuestionType.OpenEnded,
+                Order = 1,
+                IsRequired = false
+            });
+
+            var parentQ2Id = Guid.NewGuid().ToString();
+            parent.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = parentId,
+                Text = "How often do you meet in person with teachers at your child's school?",
+                Type = QuestionType.OpenEnded,
+                Order = 2,
+                IsRequired = false
+            });
+
+            var parentQ3Id = Guid.NewGuid().ToString();
+            parent.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = parentId,
+                Text = "How confident are you that you can help your child develop good friendships?",
+                Type = QuestionType.OpenEnded,
+                Order = 3,
+                IsRequired = false
+            });
+
+            var parentQ4Id = Guid.NewGuid().ToString();
+            parent.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = parentId,
+                Text = "How much effort do you put into helping your child learn to do things for themselves?",
+                Type = QuestionType.OpenEnded,
+                Order = 4,
+                IsRequired = false
+            });
+
+            var parentQ5Id = Guid.NewGuid().ToString();
+            parent.Questions.Add(new Question
+            {
+                Id = Guid.NewGuid().ToString(),
+                QuestionnaireId = parentId,
+                Text = "In the past year, how often have you discussed your child's school with other parents from the school?",
+                Type = QuestionType.OpenEnded,
+                Order = 5,
+                IsRequired = false
+            });
+
+
             System.Diagnostics.Debug.WriteLine("Adding questionnaires to context...");
-            dbContext.Questionnaires.AddRange(sleep, education);
+            dbContext.Questionnaires.AddRange(sleep, education, teaching, parent);
 
             System.Diagnostics.Debug.WriteLine("Saving changes to database...");
             await dbContext.SaveChangesAsync();

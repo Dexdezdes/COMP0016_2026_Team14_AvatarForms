@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml.Controls;
 using AvatarFormsApp.Contracts.Services;
+using AvatarFormsApp.Messages;
 using AvatarFormsApp.Models;
 using AvatarFormsApp.Services;
 
@@ -14,6 +16,7 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
     private readonly FormLinkParserService _formLinkParser;
 
     [ObservableProperty] private string _questionnaireName = string.Empty;
+    [ObservableProperty] private string _questionnaireDescription = string.Empty;
     [ObservableProperty] private string _formLink = string.Empty;
     [ObservableProperty] private string _statusMessage = string.Empty;
     [ObservableProperty] private bool _isBusy;
@@ -58,10 +61,13 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
                 ParsedQuestions.Add(q);
 
             HasParsedQuestions = true;
-            StatusMessage = $"Loaded {questions.Count} question(s). Review and click Create Questionnaire.";
+            StatusMessage = $"Loaded {questions.Count} question(s). Review and click create questionnaire to create session.";
 
             if (string.IsNullOrWhiteSpace(QuestionnaireName))
                 QuestionnaireName = !string.IsNullOrEmpty(_formLinkParser.FormTitle) ? _formLinkParser.FormTitle : questions.FirstOrDefault()?.Section ?? "Imported Form";
+
+            if (string.IsNullOrWhiteSpace(QuestionnaireDescription) && !string.IsNullOrEmpty(_formLinkParser.FormDescription))
+                QuestionnaireDescription = _formLinkParser.FormDescription;
         }
         catch (Exception ex)
         {
@@ -77,6 +83,7 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
     {
         if (ParsedQuestions.Count == 0) { StatusMessage = "Nothing to save. Please parse a form link first."; return; }
         if (string.IsNullOrWhiteSpace(QuestionnaireName)) { StatusMessage = "Please enter a name for the questionnaire."; return; }
+        if (string.IsNullOrWhiteSpace(QuestionnaireDescription)) { StatusMessage = "Please enter a description for the questionnaire."; return; }
 
         IsBusy = true;
         StatusMessage = "Saving questionnaire...";
@@ -84,6 +91,7 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
         {
             var questionnaire = MapToQuestionnaire();
             await _questionnaireService.AddAsync(questionnaire);
+            Messenger.Send(new QuestionnaireCreatedMessage());
             StatusMessage = $"Questionnaire \"{questionnaire.Name}\" created successfully!";
             HasParsedQuestions = false;
         }
@@ -93,10 +101,47 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
 
     public void Clear()
     {
-        FormLink = string.Empty; QuestionnaireName = string.Empty;
+        FormLink = string.Empty; QuestionnaireName = string.Empty; QuestionnaireDescription = string.Empty;
         StatusMessage = string.Empty; HasParsedQuestions = false;
         ParsedQuestions.Clear();
     }
+
+    public void RemoveQuestion(ParsedQuestion question)
+    {
+        var idx = ParsedQuestions.IndexOf(question);
+        if (idx < 0) return;
+
+        ParsedQuestions.RemoveAt(idx);
+
+        // Replace subsequent items so their OneTime x:Bind Index bindings re-evaluate
+        for (int i = idx; i < ParsedQuestions.Count; i++)
+            ParsedQuestions[i] = CloneWithIndex(ParsedQuestions[i], i + 1);
+
+        HasParsedQuestions = ParsedQuestions.Count > 0;
+    }
+
+    private static ParsedQuestion CloneWithIndex(ParsedQuestion q, int index) => new()
+    {
+        Index        = index,
+        Id           = q.Id,
+        Section      = q.Section,
+        Title        = q.Title,
+        FullTitle    = q.FullTitle,
+        Type         = q.Type,
+        Required     = q.Required,
+        OrderValue   = q.OrderValue,
+        Options      = q.Options,
+        IsMatrix     = q.IsMatrix,
+        MatrixGroupTitle = q.MatrixGroupTitle,
+        Subtitle     = q.Subtitle,
+    };
+
+    private static readonly string[] _colorPalette =
+    [
+        "#4CB3B3", "#E57373", "#81C784", "#64B5F6", "#FFB74D",
+        "#BA68C8", "#4DB6AC", "#F06292", "#AED581", "#4FC3F7",
+        "#FF8A65", "#A1887F", "#90A4AE", "#7986CB", "#FFF176",
+    ];
 
     private Questionnaire MapToQuestionnaire()
     {
@@ -127,8 +172,10 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
         {
             Id = questionnaireId,
             Name = QuestionnaireName,
+            Description = QuestionnaireDescription,
             OwnerId = "user1",
             Status = "Pending",
+            Color = _colorPalette[Random.Shared.Next(_colorPalette.Length)],
             CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow,
             Questions = questions,

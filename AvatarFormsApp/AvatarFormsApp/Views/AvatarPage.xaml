@@ -27,7 +27,6 @@
                 <Button Grid.Column="0" Click="OnBackClicked" Background="Transparent" BorderBrush="Transparent">
                     <StackPanel Orientation="Horizontal">
                         <FontIcon Glyph="&#xE72B;" FontSize="16" Foreground="Gray"/>
-                        <TextBlock Text=" Leave" VerticalAlignment="Center" Foreground="Gray"/>
                     </StackPanel>
                 </Button>
                 <AppBarToggleButton x:Name="SettingsToggle"
@@ -64,32 +63,6 @@
                           HorizontalAlignment="Stretch" 
                           VerticalAlignment="Stretch"
                           DefaultBackgroundColor="Transparent"/>
-
-                <!-- Audio Connection Overlay -->
-                <Border x:Name="AudioConnectionOverlay"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        Background="#CC000000"
-                        Visibility="Collapsed">
-                    <Button x:Name="ConnectAudioButton"
-                            Click="OnConnectAudioClicked"
-                            Padding="12,8"
-                            CornerRadius="6"
-                            BorderThickness="1"
-                            BorderBrush="#666666"
-                            Background="#404040"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <FontIcon Glyph="&#xE767;" FontSize="16" Foreground="#CCCCCC"/>
-                            <TextBlock Text="Click to connect audio" 
-                                       FontSize="14" 
-                                       FontWeight="Normal"
-                                       Foreground="#CCCCCC"
-                                       VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-                </Border>
 
                 <!-- Settings Overlay -->
                 <Border x:Name="SettingsOverlay"
@@ -169,10 +142,48 @@
                                             </StackPanel>
                                             <ToggleSwitch x:Name="AutoSendToggle"
                                                           Grid.Column="1"
+                                                          MinWidth="0"
+                                                          Margin="12,0,0,0"
                                                           VerticalAlignment="Center"
                                                           IsOn="True"
                                                           Toggled="OnAutoSendToggled"/>
                                         </Grid>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Avatar Section -->
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Avatar"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                                    <Border Background="#E61A1A1A"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="4"
+                                            Padding="16,12">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="Select avatar"
+                                                       FontSize="14"
+                                                       FontWeight="Medium"/>
+                                            <TextBlock Text="Choose the avatar character used during interviews"
+                                                       FontSize="12"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,0,0,8"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                                <RadioButton x:Name="AvatarJuliaRadio"
+                                                             Content="Julia"
+                                                             IsChecked="True"
+                                                             GroupName="AvatarSelection"
+                                                             Checked="OnAvatarSelectionChanged"/>
+                                                <RadioButton x:Name="AvatarDavidRadio"
+                                                             Content="David"
+                                                             GroupName="AvatarSelection"
+                                                             Checked="OnAvatarSelectionChanged"/>
+                                            </StackPanel>
+                                        </StackPanel>
                                     </Border>
                                 </StackPanel>
                             </StackPanel>
@@ -225,7 +236,6 @@
                 <TextBox x:Name="UserInput" 
                         Grid.Column="0"
                         Height="40"
-                        AcceptsReturn="True"
                         TextWrapping="Wrap"
                         VerticalAlignment="Bottom"
                         VerticalContentAlignment="Center"

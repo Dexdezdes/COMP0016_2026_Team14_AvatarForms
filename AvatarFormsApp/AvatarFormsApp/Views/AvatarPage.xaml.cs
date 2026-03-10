@@ -16,13 +16,14 @@ public sealed partial class AvatarPage : Page
     private readonly IPythonProcessService _pythonProcessService;
     private readonly ILlamafileProcessService _llamafileProcessService;
     private readonly IResponseAPIService _responseAPIService;
+    private readonly ILocalSettingsService _localSettingsService;
     private SimpleWebServer? _webServer;
     private SpeechRecognizer? _speechRecognizer;
     private bool _isAvatarInitialized;
     private bool _isMicEnabled;
     private bool _isTalkerActive;
     private bool _autoSendEnabled = true;
-    private bool _isAudioConnected = false;
+    private string _selectedAvatar = "julia";
 
     // Stored so they can be unsubscribed when leaving the page
     private readonly Action<string> _onPythonOutput;
@@ -36,6 +37,7 @@ public sealed partial class AvatarPage : Page
         _pythonProcessService = App.GetService<IPythonProcessService>();
         _llamafileProcessService = App.GetService<ILlamafileProcessService>();
         _responseAPIService = App.GetService<IResponseAPIService>();
+        _localSettingsService = App.GetService<ILocalSettingsService>();
 
         // Store handlers so they can be unsubscribed when leaving the page
         _onPythonOutput = msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
@@ -47,6 +49,19 @@ public sealed partial class AvatarPage : Page
         _llamafileProcessService.OutputReceived += _onLlamaOutput;
 
         AutoSendToggle.IsOn = true;
+        _ = InitializeAsync();
+    }
+
+    private async Task InitializeAsync()
+    {
+        var saved = await _localSettingsService.ReadSettingAsync<string>("SelectedAvatar");
+        if (saved is "julia" or "david")
+        {
+            _selectedAvatar = saved;
+            if (_selectedAvatar == "david" && AvatarDavidRadio != null)
+                AvatarDavidRadio.IsChecked = true;
+        }
+
         InitializeAvatar();
     }
 
@@ -58,11 +73,7 @@ public sealed partial class AvatarPage : Page
         {
             LogToConsole("[INIT] Starting HeadTTS avatar setup...");
 
-            var options = new Microsoft.Web.WebView2.Core.CoreWebView2EnvironmentOptions
-            {
-                AdditionalBrowserArguments = "--ignore-gpu-blocklist --enable-gpu-rasterization"
-            };
-            var env = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateWithOptionsAsync(null, null, options);
+            var env = await App.GetOrCreateWebViewEnvironmentAsync();
             await AvatarWebView.EnsureCoreWebView2Async(env);
 
             if (AvatarWebView.CoreWebView2 == null)
@@ -113,32 +124,33 @@ public sealed partial class AvatarPage : Page
                 DispatcherQueue.TryEnqueue(() => LogToConsole($"[NAV] Starting: {e.Uri}"));
             };
 
-            AvatarWebView.NavigationCompleted += (s, e) =>
+            AvatarWebView.NavigationCompleted += async (s, e) =>
             {
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     LogToConsole($"[NAV] Completed: Success={e.IsSuccess}");
                     if (!e.IsSuccess)
-                    {
                         LogToConsole($"[NAV] Error: {e.WebErrorStatus}");
+                });
+
+                if (!e.IsSuccess) return;
+
+                await Task.Delay(3000); // Wait for avatar and TTS engine to finish loading
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    if (AvatarWebView?.CoreWebView2 != null)
+                    {
+                        AvatarWebView.CoreWebView2.ExecuteScriptAsync(
+                            "document.body.click(); if(window.head?.audioCtx) window.head.audioCtx.resume();"
+                        );
+                        LogToConsole("[AVATAR] Resumed audio context");
                     }
                 });
             };
 
             // Navigate to HeadTTS index.html
             LogToConsole("[NAV] Navigating to HeadTTS index.html...");
-            AvatarWebView.CoreWebView2.Navigate("http://127.0.0.1:5501/index.html");
-
-            // Show audio connection overlay after avatar loads
-            await Task.Delay(2000); // Wait for page to load
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                if (AudioConnectionOverlay != null)
-                {
-                    AudioConnectionOverlay.Visibility = Visibility.Visible;
-                    LogToConsole("[AVATAR] Audio connection overlay shown");
-                }
-            });
+            AvatarWebView.CoreWebView2.Navigate($"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}");
         }
         catch (Exception ex)
         {
@@ -256,6 +268,17 @@ public sealed partial class AvatarPage : Page
         LogToConsole($"[SETTINGS] Auto-send: {(_autoSendEnabled ? "ON" : "OFF")}");
     }
 
+    private void OnAvatarSelectionChanged(object sender, RoutedEventArgs e)
+    {
+        if (AvatarJuliaRadio == null || AvatarDavidRadio == null) return;
+
+        _selectedAvatar = AvatarDavidRadio.IsChecked == true ? "david" : "julia";
+        _ = _localSettingsService.SaveSettingAsync("SelectedAvatar", _selectedAvatar);
+
+        if (_isAvatarInitialized && AvatarWebView?.CoreWebView2 != null)
+            AvatarWebView.CoreWebView2.Navigate($"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}");
+    }
+
     private void SendMessage()
     {
         if (!_pythonProcessService.IsRunning) return;
@@ -273,7 +296,11 @@ public sealed partial class AvatarPage : Page
 
     private void OnInputKeyDown(object sender, KeyRoutedEventArgs e)
     {
-        // No auto-send on Enter - only send via button
+        if (e.Key == Windows.System.VirtualKey.Enter)
+        {
+            SendMessage();
+            e.Handled = true;
+        }
     }
 
     private void OnInputTextChanged(object sender, TextChangedEventArgs e)
@@ -387,37 +414,6 @@ public sealed partial class AvatarPage : Page
         }
     }
 
-    private void OnConnectAudioClicked(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            // Hide the overlay
-            if (AudioConnectionOverlay != null)
-            {
-                AudioConnectionOverlay.Visibility = Visibility.Collapsed;
-            }
-
-            _isAudioConnected = true;
-            LogToConsole("[AVATAR] Audio connected - TTS enabled");
-
-            // Execute JavaScript to enable audio in HeadTTS
-            if (AvatarWebView?.CoreWebView2 != null)
-            {
-                AvatarWebView.CoreWebView2.ExecuteScriptAsync(@"
-                    if (typeof enableAudio === 'function') {
-                        enableAudio();
-                    } else {
-                        console.log('Audio enabled by user interaction');
-                    }
-                ");
-            }
-        }
-        catch (Exception ex)
-        {
-            LogToConsole($"[ERROR] Failed to connect audio: {ex.Message}");
-        }
-    }
-
     private async Task StopAllServicesAsync()
     {
         // Unsubscribe console log handlers before stopping so trailing output
@@ -449,7 +445,6 @@ public sealed partial class AvatarPage : Page
         }
 
         _isAvatarInitialized = false;
-        _isAudioConnected = false;
     }
 
     private async void OnBackClicked(object sender, RoutedEventArgs e)
