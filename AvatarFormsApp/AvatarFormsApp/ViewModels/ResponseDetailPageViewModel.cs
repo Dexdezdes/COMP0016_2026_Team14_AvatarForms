@@ -93,7 +93,7 @@ public partial class ResponseDetailPageViewModel : ObservableRecipient
         var savePicker = new Windows.Storage.Pickers.FileSavePicker();
         savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
         savePicker.FileTypeChoices.Add("CSV File", new List<string>() { ".csv" });
-        savePicker.SuggestedFileName = $"{QuestionnaireName}_Responses";
+        savePicker.SuggestedFileName = $"{QuestionnaireName.Replace(" ", "_")}_Export";
 
         var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
         WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hwnd);
@@ -101,22 +101,32 @@ public partial class ResponseDetailPageViewModel : ObservableRecipient
         var file = await savePicker.PickSaveFileAsync();
         if (file != null)
         {
-            var csv = new System.Text.StringBuilder();
+            var csv = new StringBuilder();
 
-            // Write the Header info
-            csv.AppendLine($"Form Title:,\"{QuestionnaireName}\"");
-            csv.AppendLine($"Description:,\"{QuestionnaireDescription}\"");
+            // Metadata Header
+            csv.AppendLine($"Form Title:,\"{Escapecsv(QuestionnaireName)}\"");
+            csv.AppendLine($"Description:,\"{Escapecsv(QuestionnaireDescription)}\"");
+            csv.AppendLine($"Submitted Date:,\"{SubmittedDate}\"");
             csv.AppendLine();
 
-            // Write the Table
-            csv.AppendLine("Order,Question,Answer");
-            foreach (var item in ResponseItems)
-            {
-                csv.AppendLine($"{item.Order},\"{item.QuestionText}\",\"{item.AnswerText}\"");
-            }
+            // 1. Generate the Questions Row
+            // Using LINQ to wrap each question in quotes and join with commas
+            var questionRow = "Questions," + string.Join(",", ResponseItems.Select(r => $"\"{Escapecsv(r.QuestionText)}\""));
+            csv.AppendLine(questionRow);
+
+            // 2. Generate the Answers Row
+            var answerRow = "Answers," + string.Join(",", ResponseItems.Select(r => $"\"{Escapecsv(r.AnswerText)}\""));
+            csv.AppendLine(answerRow);
 
             await Windows.Storage.FileIO.WriteTextAsync(file, csv.ToString());
         }
+    }
+
+    // Helper method to handle internal quotes in strings
+    private string Escapecsv(string? text)
+    {
+        if (string.IsNullOrEmpty(text)) return string.Empty;
+        return text.Replace("\"", "\"\"");
     }
     public string? QuestionnaireId => _questionnaireId;
 }
