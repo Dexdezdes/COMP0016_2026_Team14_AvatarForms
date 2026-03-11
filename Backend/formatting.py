@@ -38,7 +38,7 @@ def emojiStrip(text):
 
 def LLM_strip(text):
     text = re.sub(r"<[^>]*>.*?</[^>]*>", "", text, flags=re.DOTALL)
-    return text
+    return text.strip()
 
 def bracketStrip(text):
     tag = [["(", ")"], ["[", "]"], ["{", "}"]]
@@ -64,6 +64,12 @@ def outputToJSON(text):
 
 def conversationToText(conversation):
     return "\n".join([f"{message['role'].capitalize()}: {message['content']}" for message in conversation])
+
+def format_q_and_as(q_and_as):
+    text = ""
+    for question, answer in q_and_as.items():
+        text += f"Q: {question}\nA: {answer}\n\n"
+    return text.strip()
 
 class bcolors:
     HEADER = '\033[95m'

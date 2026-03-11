@@ -10,13 +10,11 @@ Interview information:
 {context}
 
 ---------------------------------------------------------------
-
 """
 
 
 def Talker_ask_question_prompt(question, previous_q_and_a=None, last_message=None):
-    task = f"""
-{f'''
+    task = f"""{f'''
 Summary of questions and answers so far:
 
 ==================
@@ -25,15 +23,16 @@ Summary of questions and answers so far:
 
 ==================
 ''' if previous_q_and_a else ""}
-
 {f'''
 Last message from the user:
 
 ==================
 {last_message}
 ==================
-''' if last_message else ""}
-
+''' if last_message else '''
+START OF INTERVIEW
+No responses from the user yet
+'''}
 ----------------------------------------------------------------
 
 Ask the following question (you can rephrase if appropriate): 
@@ -45,7 +44,6 @@ Ask the following question (you can rephrase if appropriate):
 
 def Talker_follow_up_question_prompt(question, reasoning, transcript, previous_q_and_a=None, follow_up=None):
     task = f"""
-{f'''
 Original question: {question}
 
 The user did not answer the current question suitably.
@@ -55,7 +53,7 @@ Rephrase the question or ask a follow-up question to clarify and get more inform
 {f"Example follow-up question: {follow_up}" if follow_up else ""}
 
 ---------------------------------------------------------------
-
+{f'''
 Summary of previous questions and answers:
 
 ==================

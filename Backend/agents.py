@@ -2,7 +2,7 @@
 import requests
 import json
 
-from formatting import clean_script, outputToJSON, conversationToText, LLM_strip
+from formatting import clean_script, format_q_and_as, outputToJSON, conversationToText, LLM_strip
 from prompts import RAG_collate_answer, Talker_system_prompt, Talker_ask_question_prompt, Talker_follow_up_question_prompt, Talker_closing_statement_prompt,Evaluator_system_prompt, RAG_system_prompt
 
 class Model:
@@ -66,27 +66,36 @@ class TalkerAgent(Agent):
         self.follow_up_question_prompt = Talker_follow_up_question_prompt
         self.closing_statement_prompt = Talker_closing_statement_prompt()
 
-    def ask_question(self, question):
-        task_prompt = self.ask_question_prompt(question)
-        system = self.system_prompt + task_prompt
-        messages = [{"role": "system", "content": system}] + self.conversation_history
-        # messages.append({"role": "system", "content": task_prompt})
+    def ask_question(self, question, previous_q_and_a=None):
+        if self.conversation_history:
+            last_message = self.conversation_history[-1]["content"]
+        else:
+            last_message = None
+
+        if previous_q_and_a:
+            previous_q_and_a = format_q_and_as(previous_q_and_a)
+            
+        task_prompt = self.ask_question_prompt(question, previous_q_and_a, last_message)
+        prompt = self.system_prompt + task_prompt
+        messages = [{"role": "system", "content": prompt}]
         # print(conversationToText(messages))
         output = self.run(messages, temperature=0.3)
         return clean_script(output)
 
-    def ask_followup(self, question, reasoning, follow_up=None):
-        task_prompt = self.follow_up_question_prompt(question, reasoning, follow_up)
-        system = self.system_prompt + task_prompt
-        messages = [{"role": "system", "content": system}] + self.conversation_history
-        # messages.append({"role": "system", "content": task_prompt})
+    def ask_followup(self, question, reasoning, transcript, previous_q_and_a=None, follow_up=None):
+        transcript = conversationToText(transcript)
+        if previous_q_and_a:
+            previous_q_and_a = format_q_and_as(previous_q_and_a)
+        task_prompt = self.follow_up_question_prompt(question, reasoning, transcript, previous_q_and_a, follow_up)
+        prompt = self.system_prompt + task_prompt
+        messages = [{"role": "system", "content": prompt}]
         # print(conversationToText(messages))
         output = self.run(messages, temperature=0.5)
         return clean_script(output)
     
     def closing_statement(self):
-        system = self.system_prompt + self.closing_statement_prompt
-        messages = [{"role": "system", "content": system}]# + self.conversation_history
+        prompt = self.system_prompt + self.closing_statement_prompt
+        messages = [{"role": "system", "content": prompt}]# + self.conversation_history
         output = self.run(messages)
         return clean_script(output)
 
@@ -100,7 +109,7 @@ class EvaluatorAgent(Agent):
         transcript = conversationToText(conversation_history)
         system = self.prompt(self.interview_context, question, transcript)
         messages = [{"role": "system", "content": system}]
-        output = self.run(messages, temperature=0.0)
+        output = self.run(messages, temperature=0.2)
         return outputToJSON(output)
         
     
