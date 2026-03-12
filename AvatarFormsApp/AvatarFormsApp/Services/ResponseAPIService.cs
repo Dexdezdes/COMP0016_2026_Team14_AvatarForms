@@ -205,11 +205,16 @@ public class ResponseAPIService : IResponseAPIService
             }
 
             // Create and save the response
+            // For MCQ questions, use the matched option text as the answer
+            var answerText = payload.QuestionType == "mcq" && !string.IsNullOrWhiteSpace(payload.SelectedOption)
+                ? payload.SelectedOption
+                : payload.Answer;
+
             var responseEntity = new Models.Response
             {
                 ResponseSessionId = session.Id,
                 QuestionId = question.Id,
-                AnswerText = payload.Answer,
+                AnswerText = answerText,
                 AnsweredDate = DateTime.UtcNow
             };
 

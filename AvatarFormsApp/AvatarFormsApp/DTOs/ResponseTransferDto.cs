@@ -18,4 +18,10 @@ public class ResponseTransferDto
 
     [JsonPropertyName("answer")]
     public required string Answer { get; set; }
+
+    [JsonPropertyName("question_type")]
+    public string QuestionType { get; set; } = "open_ended"; // "open_ended" or "mcq"
+
+    [JsonPropertyName("selected_option")]
+    public string? SelectedOption { get; set; } // The matched MCQ option text, if applicable
 }

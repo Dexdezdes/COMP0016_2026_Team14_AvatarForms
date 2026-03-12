@@ -29,7 +29,6 @@ public class QuestionnaireAPIService : IQuestionnaireAPIService
         }
 
         var payload = QuestionnaireTransferDto.FromQuestionnaire(questionnaire);
-
         var jsonContent = JsonContent.Create(payload);
         var url = $"http://localhost:{port}/questionnaire";
 
