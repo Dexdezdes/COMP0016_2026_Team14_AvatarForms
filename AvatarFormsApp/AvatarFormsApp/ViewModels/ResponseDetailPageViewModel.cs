@@ -60,12 +60,29 @@ public partial class ResponseDetailPageViewModel : ObservableRecipient
             var items = session.Responses
                 .Where(r => r.Question != null)
                 .OrderBy(r => r.Question!.Order)
-                .Select(r => new ResponseDetailItem
+                .Select(r =>
                 {
-                    Order = r.Question!.Order,
-                    QuestionText = r.Question.Text,
-                    AnswerText = r.AnswerText ?? "(no answer)",
-                    QuestionnaireColor = QuestionnaireColor
+                    var isMcq = r.Question!.IsMCQ;
+                    var answerText = r.AnswerText ?? "(no answer)";
+
+                    return new ResponseDetailItem
+                    {
+                        Order = r.Question!.Order,
+                        QuestionText = r.Question.Text,
+                        AnswerText = answerText,
+                        QuestionnaireColor = QuestionnaireColor,
+                        IsMCQ = isMcq,
+                        Options = isMcq
+                            ? r.Question.Options
+                                .OrderBy(o => o.Order)
+                                .Select(o => new ResponseOptionItem
+                                {
+                                    Text = o.Text,
+                                    IsSelected = string.Equals(o.Text, answerText, StringComparison.OrdinalIgnoreCase)
+                                })
+                                .ToList()
+                            : []
+                    };
                 })
                 .ToList();
 

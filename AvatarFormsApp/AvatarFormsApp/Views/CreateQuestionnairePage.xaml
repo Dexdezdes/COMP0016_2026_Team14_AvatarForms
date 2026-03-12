@@ -136,11 +136,31 @@
                                                        RadiusY="8" />
 
                                             <StackPanel Grid.Row="1" Padding="20,14,12,16" Spacing="10">
-                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" >
+                                                <Grid ColumnSpacing="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                               VerticalAlignment="Center">
                                                         <Run Text="Question " />
                                                         <Run Text="{x:Bind Index}" />
-                                                </TextBlock>
-                                                
+                                                    </TextBlock>
+
+                                                    <!-- Question type badge -->
+                                                    <Border Grid.Column="1"
+                                                            CornerRadius="4"
+                                                            Padding="8,3"
+                                                            VerticalAlignment="Center"
+                                                            Background="{ThemeResource SystemFillColorNeutralBackgroundBrush}">
+                                                        <TextBlock Text="{x:Bind TypeLabel}"
+                                                                   FontSize="11"
+                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                                    </Border>
+                                                </Grid>
+
                                                 <Grid ColumnSpacing="8">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*" />
@@ -183,6 +203,26 @@
                                                         </Button.Resources>
                                                     </Button>
                                                 </Grid>
+
+                                                <!-- MCQ Options Preview -->
+                                                <ItemsControl ItemsSource="{x:Bind Options}"
+                                                              Visibility="{x:Bind HasOptions,
+                                                                           Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="x:String">
+                                                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,3,0,3">
+                                                                <Ellipse Width="16" Height="16"
+                                                                         Stroke="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                         StrokeThickness="1.5"
+                                                                         VerticalAlignment="Center" />
+                                                                <TextBlock Text="{x:Bind}"
+                                                                           FontSize="13"
+                                                                           VerticalAlignment="Center"
+                                                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
                                             </StackPanel>
                                         </Grid>
                                     </Border>

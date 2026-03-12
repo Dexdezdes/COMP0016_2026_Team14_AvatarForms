@@ -121,16 +121,59 @@
                                             <Run Text="{x:Bind QuestionText}" />
                                         </TextBlock>
 
-                                        <!-- Answer -->
+                                        <!-- Open-ended answer (shown when not MCQ) -->
                                         <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
                                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                                 BorderThickness="1"
                                                 CornerRadius="4"
-                                                Padding="16,12">
+                                                Padding="16,12"
+                                                Visibility="{x:Bind IsMCQ,
+                                                             Converter={StaticResource BoolToVisibilityInverseConverter}}">
                                             <TextBlock Text="{x:Bind AnswerText}"
                                                        TextWrapping="Wrap"
                                                        FontSize="14" />
                                         </Border>
+
+                                        <!-- MCQ options list (shown when MCQ) -->
+                                        <ItemsControl ItemsSource="{x:Bind Options}"
+                                                      Visibility="{x:Bind IsMCQ,
+                                                                   Converter={StaticResource BoolToVisibilityConverter}}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:ResponseOptionItem">
+                                                    <Border CornerRadius="6"
+                                                            Padding="12,8"
+                                                            Margin="0,3"
+                                                            BorderThickness="1"
+                                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                            Background="{ThemeResource SubtleFillColorTransparentBrush}">
+                                                        <Grid ColumnSpacing="10">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <!-- Radio-style indicator -->
+                                                            <Grid Width="18" Height="18" VerticalAlignment="Center">
+                                                                <Ellipse Stroke="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                         StrokeThickness="1.5" />
+                                                                <Ellipse Width="10" Height="10"
+                                                                         Fill="{ThemeResource AccentFillColorDefaultBrush}"
+                                                                         Visibility="{x:Bind IsSelected,
+                                                                                      Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                            </Grid>
+
+                                                            <!-- Option text -->
+                                                            <TextBlock Grid.Column="1"
+                                                                       Text="{x:Bind Text}"
+                                                                       VerticalAlignment="Center"
+                                                                       TextWrapping="Wrap"
+                                                                       FontSize="14" />
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
                                     </StackPanel>
                                 </Grid>
                             </Border>
