@@ -5,7 +5,6 @@ using AvatarFormsApp.Helpers;
 
 #if WINDOWS
 using WinUIEx;
-using Windows.UI.ViewManagement;
 #endif
 
 namespace AvatarFormsApp.Views;
@@ -20,11 +19,6 @@ public class MainWindowBase :
 
 public sealed partial class MainWindow : MainWindowBase
 {
-#if WINDOWS
-    private Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
-    private UISettings settings;
-#endif
-
     public MainWindow()
     {
         this.InitializeComponent();
@@ -33,10 +27,33 @@ public sealed partial class MainWindow : MainWindowBase
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         Title = "AppDisplayName".GetLocalized();
 
-        dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        settings = new UISettings();
+        ApplyTitleBarColorScheme();
     #endif
 
     }
 
+#if WINDOWS
+    private void ApplyTitleBarColorScheme()
+    {
+        var foreground = Windows.UI.Color.FromArgb(255, 255, 255, 255);
+        var inactiveForeground = Windows.UI.Color.FromArgb(153, 255, 255, 255);
+        var background = Windows.UI.Color.FromArgb(255, 32, 32, 32);
+        var inactiveBackground = Windows.UI.Color.FromArgb(255, 45, 45, 45);
+
+        AppWindow.TitleBar.ForegroundColor = foreground;
+        AppWindow.TitleBar.InactiveForegroundColor = inactiveForeground;
+        AppWindow.TitleBar.BackgroundColor = background;
+        AppWindow.TitleBar.InactiveBackgroundColor = inactiveBackground;
+
+        AppWindow.TitleBar.ButtonForegroundColor = foreground;
+        AppWindow.TitleBar.ButtonInactiveForegroundColor = inactiveForeground;
+        AppWindow.TitleBar.ButtonBackgroundColor = background;
+        AppWindow.TitleBar.ButtonInactiveBackgroundColor = inactiveBackground;
+        AppWindow.TitleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(30, 255, 255, 255);
+        AppWindow.TitleBar.ButtonPressedBackgroundColor = Windows.UI.Color.FromArgb(20, 255, 255, 255);
+        AppWindow.TitleBar.ButtonHoverForegroundColor = background;
+        AppWindow.TitleBar.ButtonPressedForegroundColor = foreground;
+
+    }
+#endif
 }

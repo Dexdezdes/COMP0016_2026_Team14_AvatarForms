@@ -121,4 +121,12 @@ public sealed partial class CreateQuestionnairePage : Page
         var nav = App.GetService<INavigationService>();
         if (nav.CanGoBack) nav.GoBack();
     }
+
+    // ── Parsed question actions ───────────────────────────────────────────────
+
+    private void RemoveQuestion_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: AvatarFormsApp.Services.ParsedQuestion question })
+            ViewModel.RemoveQuestion(question);
+    }
 }

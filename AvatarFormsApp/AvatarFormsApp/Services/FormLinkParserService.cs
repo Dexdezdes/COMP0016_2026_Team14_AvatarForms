@@ -42,6 +42,7 @@ public class FormLinkParserService
         System.Diagnostics.Debug.WriteLine($"[FormLinkParser] {msg}");
         
     public string FormTitle { get; private set; } = string.Empty;
+    public string FormDescription { get; private set; } = string.Empty;
 
     // ── Public entry point ────────────────────────────────────────────────────
     // webView must already be in the visual tree (initialized by the page).
@@ -52,7 +53,8 @@ public class FormLinkParserService
         Log($"ParseAsync START — url={url}");
         try
         {
-            await webView.EnsureCoreWebView2Async();
+            var env = await AvatarFormsApp.App.GetOrCreateWebViewEnvironmentAsync();
+            await webView.EnsureCoreWebView2Async(env);
             Log("CoreWebView2 ready.");
 
             // Route to the correct platform parser
@@ -268,7 +270,9 @@ public class FormLinkParserService
         {
             // 1. Grab the Title (usually at root[3])
             FormTitle = CleanHtml(SafeString(root[3])) ?? "Untitled Form";
+            FormDescription = CleanHtml(SafeString(root[1]?[0])) ?? string.Empty;
             Log($"Google form title: \"{FormTitle}\"");
+            Log($"Google form description: \"{FormDescription}\"");
 
             // 2. Find ALL question blocks regardless of nesting
             var allArrays = new List<JsonArray>();
@@ -281,6 +285,10 @@ public class FormLinkParserService
                 // VALIDATION: Standard Google questions have [ID, Title, null, Type, [Inputs]]
                 // We check for Count >= 4 and that index 0 is a number (the ID)
                 if (q.Count < 4 || q[0] is not JsonValue jvId || jvId.GetValueKind() != JsonValueKind.Number)
+                    continue;
+
+                // Index 1 MUST be a string (the question title) — filters out numeric config arrays like [0,0,0,2,...]
+                if (q[1] is not JsonValue jvTitle || jvTitle.GetValueKind() != JsonValueKind.String)
                     continue;
 
                 // Index 3 MUST be the Type (Number)
@@ -402,6 +410,12 @@ public class FormLinkParserService
                          ?? string.Empty;
             Log($"Form title: { formTitle}");
             FormTitle = CleanHtml(formTitle);
+
+            var formDesc = SafeString(formNode["description"])
+                        ?? SafeString(formNode["subtitle"])
+                        ?? string.Empty;
+            FormDescription = CleanHtml(formDesc);
+            Log($"Form description: \"{FormDescription}\"");
 
             var questions = (formNode["questions"] as JsonArray) ?? new JsonArray();
             var descriptive = (formNode["descriptiveQuestions"] as JsonArray) ?? new JsonArray();

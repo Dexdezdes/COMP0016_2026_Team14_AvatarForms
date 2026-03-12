@@ -103,13 +103,7 @@ public sealed partial class ShellPage : Page
             var menuItem = new NavigationViewItem
             {
                 Content = questionnaire.Name,
-                Tag = questionnaire.Id,
-                Icon = new FontIcon
-                {
-                    FontFamily = (Microsoft.UI.Xaml.Media.FontFamily)Resources["SymbolThemeFontFamily"],
-                    Glyph = "\ue8a5",
-                    FontSize = 12
-                }
+                Tag = questionnaire.Id
             };
 
             Nav_Responses.MenuItems.Add(menuItem);

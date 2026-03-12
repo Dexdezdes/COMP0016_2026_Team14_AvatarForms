@@ -84,8 +84,10 @@
     */
     async function loadPerson() {
 
-      // Default to Julia
-      const person = persons["julia"];
+      // Read avatar from query param, default to julia
+      const params = new URLSearchParams(window.location.search);
+      const avatarName = params.get("avatar");
+      const person = persons[avatarName];
 
       // Progress info
       const info = { head: "-", headtts:"-" };
