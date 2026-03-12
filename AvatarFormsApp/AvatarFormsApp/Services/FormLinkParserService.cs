@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -20,6 +21,14 @@ https://docs.google.com/forms/d/e/1FAIpQLSfKRWBhXmhPt5jVY7JO1Iqi7UWqgHbpiuXRcF8u
 Business form
 https://docs.google.com/forms/d/e/1FAIpQLSc0BYHF_Xb0FtHe_r7DPNY5K-Ne_UJ1Vd-IcN4PNjAAPuX-xg/viewform?usp=publish-editor
 */
+/// <summary>
+/// A mutable wrapper around a single MCQ option text, used for editing in the UI.
+/// </summary>
+public class EditableOption
+{
+    public string Text { get; set; } = string.Empty;
+}
+
 public class ParsedQuestion
 {
     public int Index { get; set; }
@@ -30,7 +39,7 @@ public class ParsedQuestion
     public string Type { get; set; } = string.Empty;
     public bool Required { get; set; }
     public double? OrderValue { get; set; }
-    public List<string> Options { get; set; } = new();
+    public ObservableCollection<EditableOption> Options { get; set; } = new();
     public bool IsMatrix { get; set; }
     public string? MatrixGroupTitle { get; set; }
     public string? Subtitle { get; set; }
@@ -308,7 +317,7 @@ public class FormLinkParserService
                     if (typeNum == 8 || typeNum == -1) continue;
 
                     var qType = MapGoogleType(typeNum);
-                    var options = new List<string>();
+                    var options = new ObservableCollection<EditableOption>();
                     string entryId = string.Empty;
 
                     // Index 4 contains the input mapping
@@ -326,7 +335,7 @@ public class FormLinkParserService
                                     if (c is JsonArray cArr && cArr.Count > 0)
                                     {
                                         var txt = SafeString(cArr[0]);
-                                        if (!string.IsNullOrEmpty(txt)) options.Add(CleanHtml(txt));
+                                        if (!string.IsNullOrEmpty(txt)) options.Add(new EditableOption { Text = CleanHtml(txt) });
                                     }
                                 }
                             }
@@ -430,7 +439,7 @@ public class FormLinkParserService
                 .OrderBy(n => SafeDouble(n["order"]) ?? 0)
                 .ToList();
 
-            var matrixGroups = new Dictionary<string, (string Title, List<string> Columns)>();
+            var matrixGroups = new Dictionary<string, (string Title, ObservableCollection<EditableOption> Columns)>();
             foreach (var q in questions.Where(n => n is not null).Cast<JsonNode>())
             {
                 if (SafeString(q["type"]) == "Question.MatrixChoiceGroup")
@@ -503,7 +512,7 @@ public class FormLinkParserService
         }
     }
 
-    private List<string> ExtractChoices(JsonNode q)
+    private ObservableCollection<EditableOption> ExtractChoices(JsonNode q)
     {
         try
         {
@@ -519,7 +528,7 @@ public class FormLinkParserService
 
             if (choicesArr is null) return new();
 
-            var options = new List<string>();
+            var options = new ObservableCollection<EditableOption>();
             foreach (var c in choicesArr.Where(n => n is not null).Cast<JsonNode>())
             {
                 var val = SafeString(c["Description"])
@@ -527,7 +536,7 @@ public class FormLinkParserService
                        ?? SafeString(c["displayValue"])
                        ?? SafeString(c["FormsProDisplayRTText"])
                        ?? SafeString(c["value"]);
-                if (!string.IsNullOrEmpty(val)) options.Add(CleanHtml(val));
+                if (!string.IsNullOrEmpty(val)) options.Add(new EditableOption { Text = CleanHtml(val) });
             }
             return options;
         }

@@ -120,6 +120,11 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
         HasParsedQuestions = ParsedQuestions.Count > 0;
     }
 
+    public void RemoveOption(ParsedQuestion question, EditableOption option)
+    {
+        question.Options.Remove(option);
+    }
+
     private static ParsedQuestion CloneWithIndex(ParsedQuestion q, int index) => new()
     {
         Index        = index,
@@ -162,7 +167,7 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
             {
                 Id = Guid.NewGuid().ToString(),
                 QuestionId = questionId,
-                Text = opt,
+                Text = opt.Text,
                 Order = i + 1,
             }).ToList();
             return question;
