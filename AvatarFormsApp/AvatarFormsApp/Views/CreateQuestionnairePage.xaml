@@ -119,8 +119,7 @@
 
                         <ItemsControl ItemsSource="{x:Bind ViewModel.ParsedQuestions, Mode=OneWay}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="models:ParsedQuestion">
-                                    <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                <DataTemplate x:DataType="models:ParsedQuestion">                                    <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                             CornerRadius="8"
                                             Padding="0"
                                             Margin="0,0,0,18">
@@ -264,12 +263,39 @@
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
+
+                                                <Button Content="+ Add option"
+                                                        Visibility="{x:Bind HasOptions,
+                                                                     Converter={StaticResource BoolToVisibilityConverter}}"
+                                                        Tag="{x:Bind}"
+                                                        Click="AddOption_Click"
+                                                        HorizontalAlignment="Left" />
                                             </StackPanel>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+
+                        <DropDownButton Content="+ Add question"
+                                        HorizontalAlignment="Left"
+                                        IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay,
+                                                    Converter={StaticResource BoolNegationConverter}}">
+                            <DropDownButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Multiple Choice" Click="AddMcqQuestion_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE762;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Open Ended" Click="AddOpenEndedQuestion_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE8A5;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
                     </StackPanel>
                 </Border>
 

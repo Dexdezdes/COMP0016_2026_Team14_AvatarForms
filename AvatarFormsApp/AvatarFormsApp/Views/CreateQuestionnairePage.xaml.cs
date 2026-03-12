@@ -138,4 +138,16 @@ public sealed partial class CreateQuestionnairePage : Page
         if (question is not null)
             ViewModel.RemoveOption(question, option);
     }
+
+    private void AddOption_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: AvatarFormsApp.Services.ParsedQuestion question })
+            ViewModel.AddOption(question);
+    }
+
+    private void AddMcqQuestion_Click(object sender, RoutedEventArgs e) =>
+        ViewModel.AddQuestion(isMcq: true);
+
+    private void AddOpenEndedQuestion_Click(object sender, RoutedEventArgs e) =>
+        ViewModel.AddQuestion(isMcq: false);
 }
