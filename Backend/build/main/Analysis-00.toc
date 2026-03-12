@@ -1606,17 +1606,17 @@
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\_distutils_hack\\override.py',
    'PYMODULE'),
-  ('_py_abc',
+  ('tracemalloc',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\_py_abc.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\tracemalloc.py',
    'PYMODULE'),
   ('stringprep',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\stringprep.py',
    'PYMODULE'),
-  ('tracemalloc',
+  ('_py_abc',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\tracemalloc.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\_py_abc.py',
    'PYMODULE'),
   ('dotenv',
    'C:\\Users\\Fakhrurrazi '
@@ -2862,13 +2862,13 @@
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\VCRUNTIME140.dll',
    'BINARY'),
-  ('libssl-3.dll',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\DLLs\\libssl-3.dll',
-   'BINARY'),
   ('libcrypto-3.dll',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\DLLs\\libcrypto-3.dll',
+   'BINARY'),
+  ('libssl-3.dll',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\DLLs\\libssl-3.dll',
    'BINARY'),
   ('libffi-8.dll',
    'C:\\Program '
@@ -2880,7 +2880,19 @@
    'BINARY')],
  [],
  [],
- [('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\METADATA',
+ [('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\INSTALLER',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\METADATA',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\METADATA',
    'DATA'),
@@ -2891,18 +2903,6 @@
   ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\RECORD',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\RECORD',
-   'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
-   'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
-   'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\INSTALLER',
    'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\WHEEL',
    'C:\\Users\\Fakhrurrazi '
@@ -2921,169 +2921,181 @@
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\certifi\\cacert.pem',
    'DATA'),
-  ('websockets-16.0.dist-info\\top_level.txt',
+  ('itsdangerous-2.2.0.dist-info\\INSTALLER',
    'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\top_level.txt',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\LICENSE.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\LICENSE.txt',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\top_level.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\top_level.txt',
-   'DATA'),
-  ('websockets-16.0.dist-info\\licenses\\LICENSE',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\licenses\\LICENSE',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\METADATA',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\RECORD',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\RECORD',
-   'DATA'),
-  ('websockets-16.0.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\METADATA',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\REQUESTED',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\REQUESTED',
-   'DATA'),
-  ('click-8.3.1.dist-info\\licenses\\LICENSE.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\licenses\\LICENSE.txt',
-   'DATA'),
-  ('websockets-16.0.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\INSTALLER',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\RECORD',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\RECORD',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\WHEEL',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\WHEEL',
-   'DATA'),
-  ('werkzeug-3.1.5.dist-info\\RECORD',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\werkzeug-3.1.5.dist-info\\RECORD',
-   'DATA'),
-  ('click-8.3.1.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\INSTALLER',
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\INSTALLER',
    'DATA'),
   ('markupsafe-3.0.3.dist-info\\WHEEL',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\WHEEL',
    'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\INSTALLER',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\INSTALLER',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\INSTALLER',
-   'DATA'),
-  ('websockets-16.0.dist-info\\WHEEL',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\WHEEL',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\LICENSE.rst',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\LICENSE.rst',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\WHEEL',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\WHEEL',
-   'DATA'),
-  ('click-8.3.1.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\METADATA',
-   'DATA'),
-  ('werkzeug-3.1.5.dist-info\\WHEEL',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\werkzeug-3.1.5.dist-info\\WHEEL',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\METADATA',
-   'DATA'),
-  ('websockets-16.0.dist-info\\REQUESTED',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\REQUESTED',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\RECORD',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\RECORD',
-   'DATA'),
-  ('click-8.3.1.dist-info\\WHEEL',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\WHEEL',
-   'DATA'),
-  ('werkzeug-3.1.5.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\werkzeug-3.1.5.dist-info\\METADATA',
-   'DATA'),
-  ('werkzeug-3.1.5.dist-info\\licenses\\LICENSE.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\werkzeug-3.1.5.dist-info\\licenses\\LICENSE.txt',
-   'DATA'),
-  ('websockets-16.0.dist-info\\RECORD',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\RECORD',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\entry_points.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\entry_points.txt',
-   'DATA'),
   ('werkzeug-3.1.5.dist-info\\INSTALLER',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\werkzeug-3.1.5.dist-info\\INSTALLER',
-   'DATA'),
-  ('click-8.3.1.dist-info\\RECORD',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\RECORD',
-   'DATA'),
-  ('websockets-16.0.dist-info\\entry_points.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\entry_points.txt',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\METADATA',
    'DATA'),
   ('markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
    'DATA'),
+  ('markupsafe-3.0.3.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\INSTALLER',
+   'DATA'),
+  ('click-8.3.1.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\INSTALLER',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+   'DATA'),
+  ('werkzeug-3.1.5.dist-info\\WHEEL',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\werkzeug-3.1.5.dist-info\\WHEEL',
+   'DATA'),
+  ('werkzeug-3.1.5.dist-info\\licenses\\LICENSE.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\werkzeug-3.1.5.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('websockets-16.0.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\METADATA',
+   'DATA'),
+  ('werkzeug-3.1.5.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\werkzeug-3.1.5.dist-info\\METADATA',
+   'DATA'),
+  ('websockets-16.0.dist-info\\top_level.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\top_level.txt',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\entry_points.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\entry_points.txt',
+   'DATA'),
+  ('websockets-16.0.dist-info\\entry_points.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\entry_points.txt',
+   'DATA'),
+  ('websockets-16.0.dist-info\\WHEEL',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\WHEEL',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\REQUESTED',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\REQUESTED',
+   'DATA'),
+  ('websockets-16.0.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\METADATA',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\METADATA',
+   'DATA'),
+  ('websockets-16.0.dist-info\\REQUESTED',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\REQUESTED',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('click-8.3.1.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\METADATA',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\RECORD',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\RECORD',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\RECORD',
+   'DATA'),
+  ('click-8.3.1.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\RECORD',
+   'DATA'),
+  ('click-8.3.1.dist-info\\licenses\\LICENSE.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('click-8.3.1.dist-info\\WHEEL',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\WHEEL',
+   'DATA'),
+  ('werkzeug-3.1.5.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\werkzeug-3.1.5.dist-info\\RECORD',
+   'DATA'),
+  ('websockets-16.0.dist-info\\licenses\\LICENSE',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\licenses\\LICENSE',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\METADATA',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\LICENSE.rst',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\LICENSE.rst',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\top_level.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\top_level.txt',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\WHEEL',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\WHEEL',
+   'DATA'),
+  ('websockets-16.0.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\RECORD',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\WHEEL',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\WHEEL',
+   'DATA'),
   ('base_library.zip',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\build\\main\\base_library.zip',
    'DATA')],
- [('sre_constants',
+ [('weakref',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\weakref.py',
+   'PYMODULE'),
+  ('_collections_abc',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\_collections_abc.py',
+   'PYMODULE'),
+  ('warnings',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\warnings.py',
+   'PYMODULE'),
+  ('_weakrefset',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\_weakrefset.py',
+   'PYMODULE'),
+  ('sre_constants',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\sre_constants.py',
    'PYMODULE'),
-  ('locale',
+  ('codecs',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\locale.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\codecs.py',
    'PYMODULE'),
-  ('genericpath',
+  ('posixpath',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\genericpath.py',
-   'PYMODULE'),
-  ('abc',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\abc.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\posixpath.py',
    'PYMODULE'),
   ('encodings.zlib_codec',
    'C:\\Program '
@@ -3573,65 +3585,81 @@
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\encodings\\__init__.py',
    'PYMODULE'),
-  ('ntpath',
+  ('linecache',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\ntpath.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\linecache.py',
    'PYMODULE'),
-  ('stat',
+  ('reprlib',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\stat.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\reprlib.py',
    'PYMODULE'),
-  ('codecs',
+  ('locale',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\codecs.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\locale.py',
    'PYMODULE'),
-  ('heapq',
+  ('sre_parse',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\heapq.py',
-   'PYMODULE'),
-  ('weakref',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\weakref.py',
-   'PYMODULE'),
-  ('posixpath',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\posixpath.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\sre_parse.py',
    'PYMODULE'),
   ('keyword',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\keyword.py',
    'PYMODULE'),
-  ('types',
+  ('genericpath',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\types.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\genericpath.py',
    'PYMODULE'),
-  ('_collections_abc',
+  ('io',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\_collections_abc.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\io.py',
    'PYMODULE'),
   ('sre_compile',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\sre_compile.py',
    'PYMODULE'),
-  ('warnings',
+  ('copyreg',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\warnings.py',
-   'PYMODULE'),
-  ('collections',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\collections\\__init__.py',
-   'PYMODULE'),
-  ('enum',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\enum.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\copyreg.py',
    'PYMODULE'),
   ('operator',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\operator.py',
    'PYMODULE'),
-  ('_weakrefset',
+  ('ntpath',
    'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\_weakrefset.py',
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\ntpath.py',
+   'PYMODULE'),
+  ('functools',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\functools.py',
+   'PYMODULE'),
+  ('heapq',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\heapq.py',
+   'PYMODULE'),
+  ('abc',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\abc.py',
+   'PYMODULE'),
+  ('traceback',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\traceback.py',
+   'PYMODULE'),
+  ('types',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\types.py',
+   'PYMODULE'),
+  ('collections',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\collections\\__init__.py',
+   'PYMODULE'),
+  ('stat',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\stat.py',
+   'PYMODULE'),
+  ('enum',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\enum.py',
    'PYMODULE'),
   ('re._parser',
    'C:\\Program '
@@ -3652,34 +3680,6 @@
   ('re',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\re\\__init__.py',
-   'PYMODULE'),
-  ('reprlib',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\reprlib.py',
-   'PYMODULE'),
-  ('linecache',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\linecache.py',
-   'PYMODULE'),
-  ('functools',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\functools.py',
-   'PYMODULE'),
-  ('traceback',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\traceback.py',
-   'PYMODULE'),
-  ('copyreg',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\copyreg.py',
-   'PYMODULE'),
-  ('sre_parse',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\sre_parse.py',
-   'PYMODULE'),
-  ('io',
-   'C:\\Program '
-   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\io.py',
    'PYMODULE'),
   ('os',
    'C:\\Program '

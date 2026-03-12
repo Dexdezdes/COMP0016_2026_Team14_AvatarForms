@@ -24,11 +24,22 @@ def receive_questionnaire():
         if "questions" not in data or "description" not in data:
             return jsonify({"error": "Missing 'questions' or 'description' in payload"}), 400
 
+        for question in data["questions"]:
+            if not isinstance(question, dict) or "text" not in question or "type" not in question:
+                return jsonify({"error": "Each question must be a dict with 'text' and 'type' fields"}), 400
+
         questionnaire_data = data
         questionnaire_received_event.set()
 
         print(f"{bcolors.OKGREEN}Received questionnaire with {len(data['questions'])} questions{bcolors.ENDC}")
         print(f"{bcolors.OKCYAN}Description: {data['description']}{bcolors.ENDC}")
+
+        for question in data["questions"]:
+            question_type = question["type"]
+            if question_type == "mcq":
+                print(f"{bcolors.OKCYAN}[MCQ] {question["text"]} -> Options: {question["options"]}{bcolors.ENDC}")
+            else:
+                print(f"{bcolors.OKCYAN}[Open] {question["text"]}{bcolors.ENDC}")
 
         return jsonify({"status": "success", "message": "Questionnaire received"}), 200
 
@@ -43,14 +54,16 @@ async def wait_for_questionnaire():
     return questionnaire_data
 
 
-def send_response(questionnaire_id, question_order, question, answer, port):
+def send_response(questionnaire_id, question_order, question, answer, port, question_type, selected_option=None):
     url = f"http://localhost:{port}/response"
 
     payload = {
         "questionnaire_id": questionnaire_id,
         "question_order": question_order,
         "question": question,
-        "answer": answer
+        "answer": answer,
+        "question_type": question_type,
+        "selected_option": selected_option
     }
 
     try:

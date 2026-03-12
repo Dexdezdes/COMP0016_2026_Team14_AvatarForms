@@ -44,6 +44,9 @@ public partial class ShellPageViewModel : ObservableRecipient
     {
         Messenger.Register<QuestionnaireCreatedMessage>(this, (r, msg) =>
             _ = ((ShellPageViewModel)r).RefreshQuestionnairesAsync());
+
+        Messenger.Register<QuestionnaireDeletedMessage>(this, (r, msg) =>
+            _ = ((ShellPageViewModel)r).RefreshQuestionnairesAsync());
     }
 
     private async Task LoadQuestionnairesAsync()

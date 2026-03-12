@@ -136,11 +136,31 @@
                                                        RadiusY="8" />
 
                                             <StackPanel Grid.Row="1" Padding="20,14,12,16" Spacing="10">
-                                                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" >
+                                                <Grid ColumnSpacing="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                               VerticalAlignment="Center">
                                                         <Run Text="Question " />
                                                         <Run Text="{x:Bind Index}" />
-                                                </TextBlock>
-                                                
+                                                    </TextBlock>
+
+                                                    <!-- Question type badge -->
+                                                    <Border Grid.Column="1"
+                                                            CornerRadius="4"
+                                                            Padding="8,3"
+                                                            VerticalAlignment="Center"
+                                                            Background="{ThemeResource SystemFillColorNeutralBackgroundBrush}">
+                                                        <TextBlock Text="{x:Bind TypeLabel}"
+                                                                   FontSize="11"
+                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                                    </Border>
+                                                </Grid>
+
                                                 <Grid ColumnSpacing="8">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*" />
@@ -183,12 +203,100 @@
                                                         </Button.Resources>
                                                     </Button>
                                                 </Grid>
+
+                                                <!-- MCQ Options Preview -->
+                                                <ItemsControl ItemsSource="{x:Bind Options}"
+                                                              Visibility="{x:Bind HasOptions,
+                                                                           Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:EditableOption">
+                                                            <Border Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                                                    BorderThickness="1"
+                                                                    CornerRadius="4"
+                                                                    Padding="4,4,4,4"
+                                                                    Margin="0,0,0,8">
+                                                                <Grid ColumnSpacing="8">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                    </Grid.ColumnDefinitions>
+
+                                                                    <Ellipse Width="20"
+                                                                             Height="20"
+                                                                             Margin="10,0,0,0"
+                                                                             Stroke="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                             StrokeThickness="2"
+                                                                             Fill="Transparent"
+                                                                             VerticalAlignment="Center" />
+
+                                                                    <TextBox Grid.Column="1"
+                                                                             Text="{x:Bind Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                             BorderThickness="0"
+                                                                             Background="Transparent"
+                                                                             TextWrapping="Wrap"
+                                                                             VerticalAlignment="Center" />
+
+                                                                    <Button Grid.Column="2"
+                                                                            Content="&#xE74D;"
+                                                                            FontFamily="Segoe MDL2 Assets"
+                                                                            FontSize="12"
+                                                                            Padding="10,0"
+                                                                            BorderThickness="0"
+                                                                            VerticalAlignment="Stretch"
+                                                                            ToolTipService.ToolTip="Remove option"
+                                                                            Tag="{x:Bind}"
+                                                                            Click="RemoveOption_Click">
+                                                                        <Button.Resources>
+                                                                            <ResourceDictionary>
+                                                                                <SolidColorBrush x:Key="ButtonForeground"             Color="Red" />
+                                                                                <SolidColorBrush x:Key="ButtonForegroundPointerOver"  Color="Red" />
+                                                                                <SolidColorBrush x:Key="ButtonForegroundPressed"      Color="Red" />
+                                                                                <SolidColorBrush x:Key="ButtonBackground"             Color="Transparent" />
+                                                                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver"  Color="#15C42B1C" />
+                                                                                <SolidColorBrush x:Key="ButtonBackgroundPressed"      Color="#25C42B1C" />
+                                                                            </ResourceDictionary>
+                                                                        </Button.Resources>
+                                                                    </Button>
+                                                                </Grid>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+
+                                                <Button Content="+ Add option"
+                                                        Visibility="{x:Bind HasOptions,
+                                                                     Converter={StaticResource BoolToVisibilityConverter}}"
+                                                        Tag="{x:Bind}"
+                                                        Click="AddOption_Click"
+                                                        HorizontalAlignment="Left" />
                                             </StackPanel>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+
+                        <DropDownButton Content="+ Add question"
+                                        HorizontalAlignment="Left"
+                                        IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay,
+                                                    Converter={StaticResource BoolNegationConverter}}">
+                            <DropDownButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Multiple Choice" Click="AddMcqQuestion_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE762;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Open Ended" Click="AddOpenEndedQuestion_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE8A5;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
                     </StackPanel>
                 </Border>
 

@@ -129,4 +129,25 @@ public sealed partial class CreateQuestionnairePage : Page
         if (sender is Button { Tag: AvatarFormsApp.Services.ParsedQuestion question })
             ViewModel.RemoveQuestion(question);
     }
+
+    private void RemoveOption_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: AvatarFormsApp.Services.EditableOption option }) return;
+
+        var question = ViewModel.ParsedQuestions.FirstOrDefault(q => q.Options.Contains(option));
+        if (question is not null)
+            ViewModel.RemoveOption(question, option);
+    }
+
+    private void AddOption_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: AvatarFormsApp.Services.ParsedQuestion question })
+            ViewModel.AddOption(question);
+    }
+
+    private void AddMcqQuestion_Click(object sender, RoutedEventArgs e) =>
+        ViewModel.AddQuestion(isMcq: true);
+
+    private void AddOpenEndedQuestion_Click(object sender, RoutedEventArgs e) =>
+        ViewModel.AddQuestion(isMcq: false);
 }

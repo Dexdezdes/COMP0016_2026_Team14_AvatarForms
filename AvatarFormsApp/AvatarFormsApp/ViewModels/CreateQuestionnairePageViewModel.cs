@@ -120,6 +120,34 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
         HasParsedQuestions = ParsedQuestions.Count > 0;
     }
 
+    public void RemoveOption(ParsedQuestion question, EditableOption option)
+    {
+        question.Options.Remove(option);
+    }
+
+    public void AddOption(ParsedQuestion question)
+    {
+        question.Options.Add(new EditableOption());
+    }
+
+    public void AddQuestion(bool isMcq)
+    {
+        var newQuestion = new ParsedQuestion
+        {
+            Index   = ParsedQuestions.Count + 1,
+            Id      = Guid.NewGuid().ToString(),
+            Section = "General",
+            Title   = string.Empty,
+            Type    = isMcq ? "Question.Choice" : "OpenEnded",
+        };
+
+        if (isMcq)
+            newQuestion.Options.Add(new EditableOption());
+
+        ParsedQuestions.Add(newQuestion);
+        HasParsedQuestions = true;
+    }
+
     private static ParsedQuestion CloneWithIndex(ParsedQuestion q, int index) => new()
     {
         Index        = index,
@@ -162,7 +190,7 @@ public partial class CreateQuestionnairePageViewModel : ObservableRecipient
             {
                 Id = Guid.NewGuid().ToString(),
                 QuestionId = questionId,
-                Text = opt,
+                Text = opt.Text,
                 Order = i + 1,
             }).ToList();
             return question;

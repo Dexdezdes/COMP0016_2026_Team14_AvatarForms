@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using AvatarFormsApp.Contracts.Services;
+using AvatarFormsApp.DTOs;
 
 namespace AvatarFormsApp.Services;
 
@@ -27,16 +28,7 @@ public class QuestionnaireAPIService : IQuestionnaireAPIService
             return false;
         }
 
-        var payload = new
-        {
-            questionnaire_id = questionnaireId,
-            questions = questionnaire.Questions
-                .OrderBy(q => q.Order)
-                .Select(q => q.Text)
-                .ToList(),
-            description = questionnaire.Description ?? questionnaire.Name
-        };
-
+        var payload = QuestionnaireTransferDto.FromQuestionnaire(questionnaire);
         var jsonContent = JsonContent.Create(payload);
         var url = $"http://localhost:{port}/questionnaire";
 
