@@ -34,6 +34,10 @@ public class ParsedQuestion
     public bool IsMatrix { get; set; }
     public string? MatrixGroupTitle { get; set; }
     public string? Subtitle { get; set; }
+
+    // Computed properties for UI display
+    public bool HasOptions => Options.Count > 0;
+    public string TypeLabel => HasOptions ? "Multiple Choice" : "Open Ended";
 }
 
 public class FormLinkParserService
