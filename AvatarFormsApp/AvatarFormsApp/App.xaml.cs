@@ -204,21 +204,22 @@ public partial class App : Application
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             // Delete database before each run
-            // await dbContext.Database.EnsureDeletedAsync();
+            //await dbContext.Database.EnsureDeletedAsync();
 
             // Create database with schema if it doesn't exist
             await dbContext.Database.EnsureCreatedAsync();
 
             // Seed with sample data only if database is empty
-            var existingCount = await dbContext.Questionnaires.CountAsync();
-            if (existingCount == 0)
+            var questionnaireCount = await dbContext.Questionnaires.CountAsync();
+            var responseCount = await dbContext.Responses.CountAsync();
+            if (questionnaireCount == 0 || responseCount == 0)
             {
                 System.Diagnostics.Debug.WriteLine("Database is empty - seeding sample data...");
                 await SeedSampleDataAsync(dbContext);
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine($"Database already contains {existingCount} questionnaire(s) at {dbContext.Database.GetConnectionString}");
+                System.Diagnostics.Debug.WriteLine($"Database already contains {questionnaireCount} forms and {responseCount} responses.");
             }
         }
 
@@ -516,6 +517,136 @@ public partial class App : Application
             await dbContext.SaveChangesAsync();
 
             System.Diagnostics.Debug.WriteLine("✅ Sample data seeded successfully!");
+
+            System.Diagnostics.Debug.WriteLine("Seeding sample responses for the questionnaires...");
+
+            // 1. Ensure the Questionnaires/Questions from the previous section are actually in the DB
+            // This is required so we can query them for their "real" IDs
+            await dbContext.SaveChangesAsync();
+
+            if (!await dbContext.Responses.AnyAsync())
+            {
+                // Fetch actual questions to map IDs
+                var dbQuestions = await dbContext.Questions.ToListAsync();
+
+                string GetRealId(string questionnaireId, int order) =>
+                    dbQuestions.FirstOrDefault(q => q.QuestionnaireId == questionnaireId && q.Order == order)?.Id
+                    ?? throw new Exception($"Seed Error: Question {order} not found for {questionnaireId}");
+
+                // 1. Generate 12 UNIQUE Session IDs upfront (Prevents overwriting/orphaning data)
+                var s1 = Guid.NewGuid().ToString(); var s2 = Guid.NewGuid().ToString(); var s3 = Guid.NewGuid().ToString();
+                var e1 = Guid.NewGuid().ToString(); var e2 = Guid.NewGuid().ToString(); var e3 = Guid.NewGuid().ToString();
+                var t1 = Guid.NewGuid().ToString(); var t2 = Guid.NewGuid().ToString(); var t3 = Guid.NewGuid().ToString();
+                var p1 = Guid.NewGuid().ToString(); var p2 = Guid.NewGuid().ToString(); var p3 = Guid.NewGuid().ToString();
+
+                // 2. Add all 12 Sessions to the DB first to satisfy Foreign Key constraints
+                dbContext.ResponseSessions.AddRange(
+                    new ResponseSession { Id = s1, QuestionnaireId = sleepId, SubmittedDate = DateTime.UtcNow.AddHours(-1), IsComplete = true },
+                    new ResponseSession { Id = s2, QuestionnaireId = sleepId, SubmittedDate = DateTime.UtcNow.AddHours(-2), IsComplete = true },
+                    new ResponseSession { Id = s3, QuestionnaireId = sleepId, SubmittedDate = DateTime.UtcNow.AddHours(-3), IsComplete = true },
+                    new ResponseSession { Id = e1, QuestionnaireId = educationId, SubmittedDate = DateTime.UtcNow.AddDays(-1), IsComplete = true },
+                    new ResponseSession { Id = e2, QuestionnaireId = educationId, SubmittedDate = DateTime.UtcNow.AddDays(-2), IsComplete = true },
+                    new ResponseSession { Id = e3, QuestionnaireId = educationId, SubmittedDate = DateTime.UtcNow.AddDays(-3), IsComplete = true },
+                    new ResponseSession { Id = t1, QuestionnaireId = teachingID, SubmittedDate = DateTime.UtcNow.AddHours(-5), IsComplete = true },
+                    new ResponseSession { Id = t2, QuestionnaireId = teachingID, SubmittedDate = DateTime.UtcNow.AddHours(-10), IsComplete = true },
+                    new ResponseSession { Id = t3, QuestionnaireId = teachingID, SubmittedDate = DateTime.UtcNow.AddHours(-15), IsComplete = true },
+                    new ResponseSession { Id = p1, QuestionnaireId = parentId, SubmittedDate = DateTime.UtcNow.AddHours(-12), IsComplete = true },
+                    new ResponseSession { Id = p2, QuestionnaireId = parentId, SubmittedDate = DateTime.UtcNow.AddHours(-24), IsComplete = true },
+                    new ResponseSession { Id = p3, QuestionnaireId = parentId, SubmittedDate = DateTime.UtcNow.AddHours(-48), IsComplete = true }
+                );
+
+                await dbContext.SaveChangesAsync();
+
+                var allResponses = new List<AvatarFormsApp.Models.Response>();
+
+                // --- SLEEP QUALITY SURVEY (3 Sessions) ---
+                // Session 1 (Detailed Data)
+                allResponses.Add(new() { ResponseSessionId = s1, QuestionId = GetRealId(sleepId, 1), AnswerText = "John Doe", AnsweredDate = DateTime.UtcNow.AddMinutes(-55) });
+                allResponses.Add(new() { ResponseSessionId = s1, QuestionId = GetRealId(sleepId, 2), AnswerText = "I slept quite well, feeling refreshed.", AnsweredDate = DateTime.UtcNow.AddMinutes(-54) });
+                allResponses.Add(new() { ResponseSessionId = s1, QuestionId = GetRealId(sleepId, 3), AnswerText = "7.5 hours", AnsweredDate = DateTime.UtcNow.AddMinutes(-53) });
+                allResponses.Add(new() { ResponseSessionId = s1, QuestionId = GetRealId(sleepId, 4), AnswerText = "No major issues, just some occasional late nights.", AnsweredDate = DateTime.UtcNow.AddMinutes(-52) });
+                // Session 2
+                allResponses.Add(new() { ResponseSessionId = s2, QuestionId = GetRealId(sleepId, 1), AnswerText = "Alice Winston" });
+                allResponses.Add(new() { ResponseSessionId = s2, QuestionId = GetRealId(sleepId, 2), AnswerText = "Tossed and turned" });
+                allResponses.Add(new() { ResponseSessionId = s2, QuestionId = GetRealId(sleepId, 3), AnswerText = "5 hours" });
+                allResponses.Add(new() { ResponseSessionId = s2, QuestionId = GetRealId(sleepId, 4), AnswerText = "Work stress" });
+                // Session 3
+                allResponses.Add(new() { ResponseSessionId = s3, QuestionId = GetRealId(sleepId, 1), AnswerText = "Charlie Brown" });
+                allResponses.Add(new() { ResponseSessionId = s3, QuestionId = GetRealId(sleepId, 2), AnswerText = "Deep sleep" });
+                allResponses.Add(new() { ResponseSessionId = s3, QuestionId = GetRealId(sleepId, 3), AnswerText = "9 hours" });
+                allResponses.Add(new() { ResponseSessionId = s3, QuestionId = GetRealId(sleepId, 4), AnswerText = "A bit groggy this morning" });
+
+                // --- STUDENT SATISFACTION (3 Sessions) ---
+                // Session 1 (Detailed Data)
+                allResponses.Add(new() { ResponseSessionId = e1, QuestionId = GetRealId(educationId, 1), AnswerText = "Jane Smith" });
+                allResponses.Add(new() { ResponseSessionId = e1, QuestionId = GetRealId(educationId, 2), AnswerText = "The content is highly relevant to current industry standards." });
+                allResponses.Add(new() { ResponseSessionId = e1, QuestionId = GetRealId(educationId, 3), AnswerText = "Yes, the laboratories and library are excellent." });
+                allResponses.Add(new() { ResponseSessionId = e1, QuestionId = GetRealId(educationId, 4), AnswerText = "My advisor provided great guidance for my internship." });
+                allResponses.Add(new() { ResponseSessionId = e1, QuestionId = GetRealId(educationId, 5), AnswerText = "Very safe, security is visible and helpful." });
+                allResponses.Add(new() { ResponseSessionId = e1, QuestionId = GetRealId(educationId, 6), AnswerText = "9" });
+                // Session 2
+                allResponses.Add(new() { ResponseSessionId = e2, QuestionId = GetRealId(educationId, 1), AnswerText = "Michael Scott" });
+                allResponses.Add(new() { ResponseSessionId = e2, QuestionId = GetRealId(educationId, 2), AnswerText = "Needs more practice" });
+                allResponses.Add(new() { ResponseSessionId = e2, QuestionId = GetRealId(educationId, 3), AnswerText = "Classrooms need AC" });
+                allResponses.Add(new() { ResponseSessionId = e2, QuestionId = GetRealId(educationId, 4), AnswerText = "Never met them" });
+                allResponses.Add(new() { ResponseSessionId = e2, QuestionId = GetRealId(educationId, 5), AnswerText = "Safe enough" });
+                allResponses.Add(new() { ResponseSessionId = e2, QuestionId = GetRealId(educationId, 6), AnswerText = "6" });
+                // Session 3
+                allResponses.Add(new() { ResponseSessionId = e3, QuestionId = GetRealId(educationId, 1), AnswerText = "Pam Beesly" });
+                allResponses.Add(new() { ResponseSessionId = e3, QuestionId = GetRealId(educationId, 2), AnswerText = "Art program is great" });
+                allResponses.Add(new() { ResponseSessionId = e3, QuestionId = GetRealId(educationId, 3), AnswerText = "Studio is well kept" });
+                allResponses.Add(new() { ResponseSessionId = e3, QuestionId = GetRealId(educationId, 4), AnswerText = "Very supportive" });
+                allResponses.Add(new() { ResponseSessionId = e3, QuestionId = GetRealId(educationId, 5), AnswerText = "Feel secure" });
+                allResponses.Add(new() { ResponseSessionId = e3, QuestionId = GetRealId(educationId, 6), AnswerText = "8" });
+
+                // --- TEACHING ASSISTANT EVALUATION (3 Sessions) ---
+                // Session 1 (Detailed Data)
+                allResponses.Add(new() { ResponseSessionId = t1, QuestionId = GetRealId(teachingID, 1), AnswerText = "Anonymous Student" });
+                allResponses.Add(new() { ResponseSessionId = t1, QuestionId = GetRealId(teachingID, 2), AnswerText = "Extremely prepared, always had extra resources." });
+                allResponses.Add(new() { ResponseSessionId = t1, QuestionId = GetRealId(teachingID, 3), AnswerText = "Very effective at breaking down complex calculus concepts." });
+                allResponses.Add(new() { ResponseSessionId = t1, QuestionId = GetRealId(teachingID, 4), AnswerText = "Always stayed late after lab to answer questions." });
+                allResponses.Add(new() { ResponseSessionId = t1, QuestionId = GetRealId(teachingID, 5), AnswerText = "10" });
+                // Session 2
+                allResponses.Add(new() { ResponseSessionId = t2, QuestionId = GetRealId(teachingID, 1), AnswerText = "Kevin B." });
+                allResponses.Add(new() { ResponseSessionId = t2, QuestionId = GetRealId(teachingID, 2), AnswerText = "Mostly prepared" });
+                allResponses.Add(new() { ResponseSessionId = t2, QuestionId = GetRealId(teachingID, 3), AnswerText = "Good but fast" });
+                allResponses.Add(new() { ResponseSessionId = t2, QuestionId = GetRealId(teachingID, 4), AnswerText = "Easy to talk to" });
+                allResponses.Add(new() { ResponseSessionId = t2, QuestionId = GetRealId(teachingID, 5), AnswerText = "8" });
+                // Session 3
+                allResponses.Add(new() { ResponseSessionId = t3, QuestionId = GetRealId(teachingID, 1), AnswerText = "Angela Martin" });
+                allResponses.Add(new() { ResponseSessionId = t3, QuestionId = GetRealId(teachingID, 2), AnswerText = "Strict but prepared" });
+                allResponses.Add(new() { ResponseSessionId = t3, QuestionId = GetRealId(teachingID, 3), AnswerText = "Very clear" });
+                allResponses.Add(new() { ResponseSessionId = t3, QuestionId = GetRealId(teachingID, 4), AnswerText = "Professional only" });
+                allResponses.Add(new() { ResponseSessionId = t3, QuestionId = GetRealId(teachingID, 5), AnswerText = "7" });
+
+                // --- K-12 PARENT SURVEY (3 Sessions) ---
+                // Session 1 (Detailed Data)
+                allResponses.Add(new() { ResponseSessionId = p1, QuestionId = GetRealId(parentId, 1), AnswerText = "Robert Brown" });
+                allResponses.Add(new() { ResponseSessionId = p1, QuestionId = GetRealId(parentId, 2), AnswerText = "Monthly" });
+                allResponses.Add(new() { ResponseSessionId = p1, QuestionId = GetRealId(parentId, 3), AnswerText = "Quite confident, the school's social programs help a lot." });
+                allResponses.Add(new() { ResponseSessionId = p1, QuestionId = GetRealId(parentId, 4), AnswerText = "A lot of effort, we focus on daily chores and homework." });
+                allResponses.Add(new() { ResponseSessionId = p1, QuestionId = GetRealId(parentId, 5), AnswerText = "Very often" });
+                // Session 2
+                allResponses.Add(new() { ResponseSessionId = p2, QuestionId = GetRealId(parentId, 1), AnswerText = "Sarah Connor" });
+                allResponses.Add(new() { ResponseSessionId = p2, QuestionId = GetRealId(parentId, 2), AnswerText = "Rarely" });
+                allResponses.Add(new() { ResponseSessionId = p2, QuestionId = GetRealId(parentId, 3), AnswerText = "Extremely confident" });
+                allResponses.Add(new() { ResponseSessionId = p2, QuestionId = GetRealId(parentId, 4), AnswerText = "High effort" });
+                allResponses.Add(new() { ResponseSessionId = p2, QuestionId = GetRealId(parentId, 5), AnswerText = "Sometimes" });
+                // Session 3
+                allResponses.Add(new() { ResponseSessionId = p3, QuestionId = GetRealId(parentId, 1), AnswerText = "Tony Stark" });
+                allResponses.Add(new() { ResponseSessionId = p3, QuestionId = GetRealId(parentId, 2), AnswerText = "Never (Assistant goes)" });
+                allResponses.Add(new() { ResponseSessionId = p3, QuestionId = GetRealId(parentId, 3), AnswerText = "I hire experts" });
+                allResponses.Add(new() { ResponseSessionId = p3, QuestionId = GetRealId(parentId, 4), AnswerText = "Maximum effort" });
+                allResponses.Add(new() { ResponseSessionId = p3, QuestionId = GetRealId(parentId, 5), AnswerText = "Constantly" });
+
+                // 3. Final Commit
+                dbContext.Responses.AddRange(allResponses);
+                await dbContext.SaveChangesAsync();
+
+                System.Diagnostics.Debug.WriteLine("✅ All data and sessions seeded successfully without helper functions.");
+            }
+
+            System.Diagnostics.Debug.WriteLine("Sample responses added to context.");
         }
         catch (Exception ex)
         {
