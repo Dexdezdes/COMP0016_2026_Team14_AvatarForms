@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using AvatarFormsApp.Contracts.Services;
+using AvatarFormsApp.Messages;
 using AvatarFormsApp.Models;
 using System.Collections.ObjectModel;
 
@@ -161,7 +163,8 @@ public partial class DashboardPageViewModel : ObservableRecipient
         try
         {
             await _questionnaireService.DeleteAsync(questionnaireId);
-            await LoadQuestionnairesAsync(); // Reload all data
+            await LoadQuestionnairesAsync();
+            Messenger.Send(new QuestionnaireDeletedMessage());
         }
         catch (Exception ex)
         {

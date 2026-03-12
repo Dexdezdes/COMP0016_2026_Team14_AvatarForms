@@ -90,13 +90,21 @@ public class QuestionnaireService : IQuestionnaireService
     {
         try
         {
-            var questionnaire = await _context.Questionnaires.FindAsync(id);
+            var questionnaire = await _context.Questionnaires
+                .Include(q => q.ResponseSessions)
+                    .ThenInclude(rs => rs.Responses)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
             if (questionnaire == null)
                 return false;
 
+            // Remove responses first to satisfy the Restrict FK on Question → Response
+            foreach (var session in questionnaire.ResponseSessions)
+                _context.Responses.RemoveRange(session.Responses);
+
             _context.Questionnaires.Remove(questionnaire);
             await _context.SaveChangesAsync();
-            
+
             return true;
         }
         catch (Exception ex)
