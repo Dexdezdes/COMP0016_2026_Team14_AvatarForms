@@ -1,6 +1,6 @@
 from sockets import stream_message, start_server, websocket_handler, wait_for_browser_connection
 from api import start_http_server, wait_for_questionnaire, send_response
-from formatting import bcolors
+from formatting import bcolors, format_question, match_mcq_option
 import os
 import asyncio
 import csv
@@ -30,7 +30,7 @@ class AvatarFormsInterviewer:
 
 
     def build_interview(self, questions, interview_context):
-        self.questions = questions
+        self.questions = questions  # List of dicts: {"text": str, "type": str, "options": list|None}
         self.interview_context = interview_context
 
         self.questions_index = 0
@@ -100,17 +100,16 @@ class AvatarFormsInterviewer:
             if label == question_index:
                 section.append(self.conversation_history[i])
         return section
-    
+
     def should_cutoff(self):
         # If we've been on current question for too long, cutoff and move on
         return len(self.get_conversation_section(self.questions_index)) >= self.cutoff*2 # Each question has 2 messages (question and answer)
-
 
     def start_interview(self):
         self.reset_interview()
 
         # Ask the first question
-        question = self.questions[self.questions_index]
+        question = format_question(self.questions[self.questions_index])
         question_speech = self.talker.ask_question(question, previous_q_and_a=None)
 
         self.conversation_history.append({"role": self.AI_role, "content": question_speech})
@@ -119,13 +118,13 @@ class AvatarFormsInterviewer:
         return question_speech
 
     def respond(self, response):
-        question = self.questions[self.questions_index]
+        question = format_question(self.questions[self.questions_index])
         self.conversation_history.append({"role": self.user_role, "content": response})
         self.question_labels.append(self.questions_index)
 
         evaluation = self.evaluator.evaluate(question, self.get_conversation_section(self.questions_index))
         self.last_evaluation = evaluation
-        
+
         # print(self.question_labels)
         # print(self.get_conversation_section(self.questions_index))
 
@@ -136,10 +135,10 @@ class AvatarFormsInterviewer:
             self.answers[self.questions_index-1] = self.collect_answer(self.questions_index-1)
 
         if evaluation["override_skip"]:
-            self.conversation_history.append({"role": "system", "content": f"Question '{question}' skipped by user preference. Moved on to question {self.questions[self.questions_index]}."})
+            self.conversation_history.append({"role": "system", "content": f"Question '{question["text"]}' skipped by user preference. Moved on to question {self.questions[self.questions_index]}."})
 
         if self.questions_index < len(self.questions):
-            question = self.questions[self.questions_index]
+            question = format_question(self.questions[self.questions_index])
 
             q_and_as = self.collect_all_answers()
             if all(answer == "" for answer in q_and_as.values()):
@@ -150,7 +149,7 @@ class AvatarFormsInterviewer:
             else:
                 transcript = self.get_conversation_section(self.questions_index)
                 question_speech = self.talker.ask_followup(question, self.last_evaluation["reasoning"], transcript, previous_q_and_a=q_and_as, follow_up=self.last_evaluation.get("follow_up_question"))
-            
+
             self.conversation_history.append({"role": self.AI_role, "content": question_speech})
             self.question_labels.append(self.questions_index)
 
@@ -165,15 +164,21 @@ class AvatarFormsInterviewer:
     
     def collect_answer(self, question_index):
         conversation_section = self.get_conversation_section(question_index)
-        return self.rag_agent.answer(self.questions[question_index], conversation_section)
+
+        question = format_question(self.questions[question_index])
+        question_type = self.questions[question_index].get("type", "open_ended")
+        options = self.questions[question_index].get("options") if question_type == "mcq" else None
+        answer = self.rag_agent.answer(question, conversation_section, question_type=question_type, options=options)
+
+        # For MCQ questions, try to match the answer to one of the valid options
+        if question_type == "mcq" and options:
+            answer = match_mcq_option(answer, options)
+
+        return answer
 
     def collect_all_answers(self):
-        # final_answers = {}
-        # for i, question in enumerate(self.questions):
-        #     answer = self.collect_answer(i)
-        #     final_answers[question] = answer
-        final_answers = dict(zip(self.questions, self.answers))
-        
+        question_list = [question["text"] for question in self.questions]
+        final_answers = dict(zip(question_list, self.answers))
         return final_answers
 
     def output_to_csv(self, filename, final_answers):
@@ -288,12 +293,20 @@ async def main():
 
                 # Send each response back to ResponseAPIService
                 questionnaire_id = questionnaire_data["questionnaire_id"]
+                question_type = interviewer.questions[i].get("type", "open_ended")
+                options = interviewer.questions[i].get("options")
+
+                # For MCQ, selected_option is the matched option text
+                selected_option = answer if question_type == "mcq" else None
+
                 send_response(
                     questionnaire_id=questionnaire_id,
                     question_order=i + 1,
                     question=question,
                     answer=answer,
-                    port=args.response_port
+                    port=args.response_port,
+                    question_type=question_type,
+                    selected_option=selected_option
                 )
 
             break

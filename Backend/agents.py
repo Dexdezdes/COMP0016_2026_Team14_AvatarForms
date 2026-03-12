@@ -119,9 +119,9 @@ class RAG_Agent(Agent):
         self.system_prompt = RAG_system_prompt(interview_context)
         self.interview_context = interview_context
 
-    def answer(self, question, conversation_history):
+    def answer(self, question, conversation_history, question_type="open_ended", options=None):
         transcript = conversationToText(conversation_history)
-        prompt = self.system_prompt + RAG_collate_answer(transcript, question)
+        prompt = self.system_prompt + RAG_collate_answer(transcript, question, question_type=question_type, options=options)
         messages = [{"role": "system", "content": prompt}]
         output = self.run(messages, temperature=0.0)
         output = LLM_strip(output)

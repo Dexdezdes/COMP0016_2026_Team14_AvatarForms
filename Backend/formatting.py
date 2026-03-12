@@ -81,3 +81,45 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
+def format_question(question_dict):
+    """Format a structured question dict into a string for the LLM.
+
+    For open-ended questions, returns just the text.
+    For MCQ questions, appends the numbered options.
+    """
+    text = question_dict["text"]
+    q_type = question_dict.get("type", "open_ended")
+    options = question_dict.get("options")
+
+    if q_type == "mcq" and options:
+        options_str = "\n".join(f"  {i+1}. {opt}" for i, opt in enumerate(options))
+        return f"{text}\n[Multiple Choice - the user must pick one of these options]\nOptions:\n{options_str}"
+
+    return text
+
+def match_mcq_option(answer, options):
+    """Try to match a free-text answer to one of the MCQ options.
+
+    Uses case-insensitive substring matching. Returns the best-matching
+    option text, or the original answer if no match is found.
+    """
+    answer_lower = answer.strip().lower()
+
+    # Exact match (case-insensitive)
+    for opt in options:
+        if opt.lower() == answer_lower:
+            return opt
+
+    # Substring match: option text found in the answer
+    for opt in options:
+        if opt.lower() in answer_lower:
+            return opt
+
+    # Substring match: answer found in option text
+    for opt in options:
+        if answer_lower in opt.lower():
+            return opt
+
+    # No match found, return original answer
+    return answer

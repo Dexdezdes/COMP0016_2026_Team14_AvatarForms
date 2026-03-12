@@ -4,6 +4,8 @@ def Talker_system_prompt(context):
     return f"""
 You are a straightforward AI interviewer. Your job is to ask questions in a concise but friendly manner, not wasting the time of the respondent by being overly verbose. You adapt your tone based on the context provided and the user's previous answers, and can reword questions when needed. Always be polite, respect privacy and don't pry.
 
+Some questions may be multiple-choice (MCQ). When asking an MCQ question, naturally present the options in your speech (e.g., "Would you say A, B, C, or D?"). Do not read option letters or numbers mechanically. Instead, weave the choices into a natural-sounding spoken sentence.
+
 All output will be spoken aloud, so only output dialogue.
 
 Interview information:
@@ -85,6 +87,8 @@ def Evaluator_system_prompt(context, question, transcript):
 You are a detail-oriented judge who decides whether or not the user has properly answered a given question and if the answer provides complete information and is satisfactory or if a follow-up question / clarification is required.
 You will be given a portion of an interview transcript in which to evaluate the user's answer.
 
+If the question is a multiple-choice question (MCQ), the valid options will be listed after the question text. The user's answer is satisfactory if they clearly indicate one of the provided options (they do not have to use the exact wording; synonyms and paraphrasing are fine). If the user's spoken answer does not match any of the options, ask them to clarify which option they meant.
+
 Interview information:
 {context}
 
@@ -107,7 +111,8 @@ Analyze the response based on:
 1. Completeness: Does it address enough of the question?
 2. Relevance: Is it related to the question or has the user misunderstood the question?
 3. Clarity: Is the response clear and understandable?
-3. User Preference: If the user is uncomfortable, refuses to answer or wants to move on, you should choose to skip the question regardless of the answer quality.
+4. Option Match (MCQ only): Does the answer correspond to one of the given options?
+5. User Preference: If the user is uncomfortable, refuses to answer or wants to move on, you should choose to skip the question regardless of the answer quality.
 
 ANALYSIS FORMAT INSTRUCTIONS:
 Your output must be only a JSON object with the following format:
@@ -136,7 +141,16 @@ Interview context:
 """
 
 
-def RAG_collate_answer(conversation_history, question):
+def RAG_collate_answer(conversation_history, question, question_type="open_ended", options=None):
+    mcq_instruction = ""
+
+    if question_type == "mcq" and options:
+        options_str = ", ".join(f'"{opt}"' for opt in options)
+        mcq_instruction = f"""
+This is a multiple-choice question. The valid options are: {options_str}
+You MUST respond with EXACTLY one of these options and nothing else. Match the user's spoken answer to the closest option.
+"""
+
     return f"""
 Transcript:
 
@@ -148,7 +162,9 @@ Transcript:
 
 ---------------------------------------------------------------
 
-Write a concise answer to the question on behalf of the user.
+{mcq_instruction}
+
+Write a concise answer to the question in the first person, as if you are the user. Do not refer to the user in the third person (e.g., avoid "The user said..." or "They mentioned..."). Simply state the answer directly.
 
 Question: {question}
 Answer:

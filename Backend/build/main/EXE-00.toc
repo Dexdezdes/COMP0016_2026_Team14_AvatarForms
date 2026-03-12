@@ -85,7 +85,7 @@
  [],
  False,
  False,
- 1772989635,
+ 1773313061,
  [('run.exe',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\AvatarFormsApp\\env\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\run.exe',
