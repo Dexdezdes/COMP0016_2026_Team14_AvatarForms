@@ -46,7 +46,7 @@ New-Item -ItemType Directory -Path $resultsRoot | Out-Null
 # Single combined exclude string for the XPlat collector
 # Excludes:
 #   - Auto-generated XAML/WinRT classes
-#   - App.xaml.cs (XAML partial, blocks instrumentation — 30 seed tests prove it works)
+#   - App.xaml.cs 
 #   - All Views except AvatarPage (XAML code-behind, untestable)
 #   - Navigation/activation infrastructure (no business logic)
 #   - Helpers with no testable logic
