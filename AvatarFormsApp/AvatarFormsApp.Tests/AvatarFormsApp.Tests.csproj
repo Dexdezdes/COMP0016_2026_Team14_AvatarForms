@@ -4,6 +4,19 @@
         <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 
         <OutputType>Library</OutputType>
+
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>x64;AnyCPU</Platforms>
+
+        <AssemblyName>AvatarFormsApp.Tests</AssemblyName>
+        <RootNamespace>AvatarFormsApp.Tests</RootNamespace>
+
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+        <WindowsAppSDKDeploymentManagerInitialize>false</WindowsAppSDKDeploymentManagerInitialize>
+        <UnoForceSingleThreadedRuntime>true</UnoForceSingleThreadedRuntime>
+        <UnoDisableAutoMain>true</UnoDisableAutoMain>
+        <DisableWinUISDKAutoMain>true</DisableWinUISDKAutoMain>
         <WindowsPackageType>None</WindowsPackageType>
 
         <ImplicitUsings>enable</ImplicitUsings>
@@ -13,9 +26,8 @@
         <UseWinUI>true</UseWinUI>
         <EnableMsixTooling>true</EnableMsixTooling>
         <AppxPackage>false</AppxPackage>
-        <RootNamespace>AvatarFormsApp.Tests</RootNamespace>
+
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-        <PreserveCompilationContext>true</PreserveCompilationContext>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,20 +39,25 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Moq" />
+        <PackageReference Include="Moq"/>
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
         <PackageReference Include="Microsoft.Extensions.Hosting" />
-        <PackageReference Include="coverlet.collector" />
-        <PackageReference Include="coverlet.msbuild" />
+        <PackageReference Include="coverlet.collector"  />
+        <PackageReference Include="Lib.Harmony" />
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="AvatarFormsApp">
-            <HintPath>..\AvatarFormsApp\bin\Debug\net10.0-windows10.0.19041.0\AvatarFormsApp.dll</HintPath>
-        </Reference>
-        <Reference Include="WinUIEx">
-            <HintPath>..\AvatarFormsApp\bin\Debug\net10.0-windows10.0.19041.0\WinUIEx.dll</HintPath>
-        </Reference>
+        <ProjectReference Include="..\AvatarFormsApp\AvatarFormsApp.csproj" />
     </ItemGroup>
+
+    <Target Name="ForceCopyAppBinaries" AfterTargets="Build">
+        <ItemGroup>
+            <AppBinaries Include="$(SolutionDir)AvatarFormsApp\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\AvatarFormsApp.dll" />
+            <AppBinaries Include="$(SolutionDir)AvatarFormsApp\bin\$(Configuration)\net10.0-windows10.0.19041.0\**\AvatarFormsApp.deps.json" />
+        </ItemGroup>
+        <Copy SourceFiles="@(AppBinaries)"
+              DestinationFolder="$(TargetDir)"
+              SkipUnchangedFiles="true" />
+    </Target>
 </Project>
