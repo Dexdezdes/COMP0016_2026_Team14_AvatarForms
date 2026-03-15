@@ -79,15 +79,35 @@
       }
     };
 
+    const params = new URLSearchParams(window.location.search);
+    const avatarName = params.get("avatar");
+    let currentPerson = persons[avatarName] || persons.julia;
+    let isPersonReady = false;
+    const pendingSpeech = [];
+
+    function synthesizeSpeech(input) {
+      if (!input) {
+        return;
+      }
+
+      headtts.synthesize({
+        input,
+        ...currentPerson.setup
+      });
+    }
+
+    function flushPendingSpeech() {
+      while (pendingSpeech.length > 0) {
+        synthesizeSpeech(pendingSpeech.shift());
+      }
+    }
+
     /**
     * Load the currently selected avatar and voice.
     */
     async function loadPerson() {
-
-      // Read avatar from query param, default to julia
-      const params = new URLSearchParams(window.location.search);
-      const avatarName = params.get("avatar");
-      const person = persons[avatarName];
+      const person = currentPerson;
+      isPersonReady = false;
 
       // Progress info
       const info = { head: "-", headtts:"-" };
@@ -122,6 +142,8 @@
 
         // Setup voice
         headtts.setup( person.setup );
+        isPersonReady = true;
+        flushPendingSpeech();
 
         el.info.style.display = 'none';
       } catch (error) {
@@ -201,6 +223,10 @@
         voices: ["af_bella","am_fenrir"], // Voices to be pre-loaded
         voiceURL: "../voices", // Use local voice files
         audioCtx: head.audioCtx, // Share audio context with TalkingHead
+        defaultVoice: currentPerson.setup.voice,
+        defaultLanguage: currentPerson.setup.language,
+        defaultSpeed: currentPerson.setup.speed,
+        defaultAudioEncoding: currentPerson.setup.audioEncoding,
         trace: 0,
       });
 
@@ -222,9 +248,12 @@
           const message = JSON.parse(event.data);
 
           if (message.type === 'speech') {
-            headtts.synthesize({
-              input: message.content
-            });
+            if (!isPersonReady) {
+              pendingSpeech.push(message.content);
+              return;
+            }
+
+            synthesizeSpeech(message.content);
           }
         };
 
@@ -242,9 +271,6 @@
           }
         };
       }
-
-      // Initial connection
-      connectWebSocket();
 
       // For debugging
       window.head = head;
@@ -268,6 +294,9 @@
 
       // Load the currently chosen person
       await loadPerson();
+
+      // Connect after avatar voice setup is complete
+      connectWebSocket();
 
       // Pause animation when document is not visible
       document.addEventListener("visibilitychange", async function (ev) {
