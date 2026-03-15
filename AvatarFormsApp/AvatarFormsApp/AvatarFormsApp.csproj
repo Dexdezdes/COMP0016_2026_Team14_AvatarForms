@@ -81,11 +81,9 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="Microsoft.Web.WebView2" />
         <PackageReference Include="Newtonsoft.Json" />
-        <PackageReference Include="System.Speech" />
     </ItemGroup>
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-        <Reference Include="System.Speech" />
         <PackageReference Include="WinUIEx" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" />
     </ItemGroup>
