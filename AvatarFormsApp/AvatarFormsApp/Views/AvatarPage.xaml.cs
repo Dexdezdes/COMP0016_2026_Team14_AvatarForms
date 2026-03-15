@@ -7,6 +7,8 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Windows.Media.SpeechRecognition;
+using Windows.Media.Playback;
+using Windows.Media.Core;
 using WinUIEx.Messaging;
 
 namespace AvatarFormsApp.Views;
@@ -28,6 +30,9 @@ public sealed partial class AvatarPage : Page
     private DispatcherTimer? _speechSilenceTimer;
     private string _finalizedSpeech = "";
 
+    private readonly MediaPlayer _micOnPlayer;
+    private readonly MediaPlayer _micOffPlayer;
+
     // Stored so they can be unsubscribed when leaving the page
     private readonly Action<string> _onPythonOutput;
     private readonly Action<string> _onPythonError;
@@ -41,6 +46,12 @@ public sealed partial class AvatarPage : Page
         _llamafileProcessService = App.GetService<ILlamafileProcessService>();
         _responseAPIService = App.GetService<IResponseAPIService>();
         _localSettingsService = App.GetService<ILocalSettingsService>();
+
+        _micOnPlayer = new MediaPlayer();
+        _micOnPlayer.Source = MediaSource.CreateFromUri(new Uri("C:\\Windows\\Media\\Speech On.wav"));
+
+        _micOffPlayer = new MediaPlayer();
+        _micOffPlayer.Source = MediaSource.CreateFromUri(new Uri("C:\\Windows\\Media\\Speech Off.wav"));
 
         // Store handlers so they can be unsubscribed when leaving the page
         _onPythonOutput = msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
@@ -313,6 +324,7 @@ public sealed partial class AvatarPage : Page
                     MicIcon.Glyph = "\uF12E";
                     MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
                 }
+                try { _micOffPlayer.Play(); } catch { }
                 _ = StopVoiceInput();
             }
         }
@@ -342,6 +354,7 @@ public sealed partial class AvatarPage : Page
             {
                 MicIcon.Glyph = "\uE720";
                 MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["SystemFillColorCriticalBrush"];
+                try { _micOnPlayer.Play(); } catch { }
                 await StartVoiceInput();
             }
             else
@@ -349,6 +362,7 @@ public sealed partial class AvatarPage : Page
                 _speechSilenceTimer?.Stop();
                 MicIcon.Glyph = "\uF12E";
                 MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+                try { _micOffPlayer.Play(); } catch { }
                 await StopVoiceInput();
             }
         }
