@@ -22,8 +22,11 @@ public sealed partial class AvatarPage : Page
     private bool _isAvatarInitialized;
     private bool _isMicEnabled;
     private bool _isTalkerActive;
-    private bool _autoSendEnabled = true;
+    private bool _autoSendEnabled = false;
     private string _selectedAvatar = "julia";
+
+    private DispatcherTimer? _speechSilenceTimer;
+    private string _finalizedSpeech = "";
 
     // Stored so they can be unsubscribed when leaving the page
     private readonly Action<string> _onPythonOutput;
@@ -47,6 +50,16 @@ public sealed partial class AvatarPage : Page
         _pythonProcessService.OutputReceived += _onPythonOutput;
         _pythonProcessService.ErrorReceived  += _onPythonError;
         _llamafileProcessService.OutputReceived += _onLlamaOutput;
+
+        _speechSilenceTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+        _speechSilenceTimer.Tick += (s, e) =>
+        {
+            _speechSilenceTimer.Stop();
+            if (_autoSendEnabled && !string.IsNullOrWhiteSpace(UserInput.Text))
+            {
+                SendMessage();
+            }
+        };
 
         AutoSendToggle.IsOn = true;
         _ = InitializeAsync();
@@ -289,6 +302,19 @@ public sealed partial class AvatarPage : Page
             _pythonProcessService.SendInput(message);
             LogToConsole($"You: {message}");
             UserInput.Text = "";
+            _finalizedSpeech = "";
+
+            if (_isMicEnabled)
+            {
+                _isMicEnabled = false;
+                _speechSilenceTimer?.Stop();
+                if (MicIcon != null)
+                {
+                    MicIcon.Glyph = "\uF12E";
+                    MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+                }
+                _ = StopVoiceInput();
+            }
         }
     }
 
@@ -315,13 +341,14 @@ public sealed partial class AvatarPage : Page
             if (_isMicEnabled)
             {
                 MicIcon.Glyph = "\uE720";
-                MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Red);
+                MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["SystemFillColorCriticalBrush"];
                 await StartVoiceInput();
             }
             else
             {
+                _speechSilenceTimer?.Stop();
                 MicIcon.Glyph = "\uF12E";
-                MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Black);
+                MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
                 await StopVoiceInput();
             }
         }
@@ -359,7 +386,16 @@ public sealed partial class AvatarPage : Page
 
             _speechRecognizer.HypothesisGenerated += (s, args) =>
             {
-                DispatcherQueue.TryEnqueue(() => UserInput.Text = args.Hypothesis.Text);
+                DispatcherQueue.TryEnqueue(() => 
+                {
+                    _speechSilenceTimer?.Stop();
+                    var currentText = args.Hypothesis.Text;
+                    UserInput.Text = string.IsNullOrWhiteSpace(_finalizedSpeech) 
+                        ? currentText 
+                        : $"{_finalizedSpeech} {currentText}";
+
+                    if (_autoSendEnabled) _speechSilenceTimer?.Start();
+                });
             };
 
             _speechRecognizer.ContinuousRecognitionSession.ResultGenerated += (s, args) =>
@@ -368,12 +404,21 @@ public sealed partial class AvatarPage : Page
                 {
                     DispatcherQueue.TryEnqueue(() =>
                     {
-                        UserInput.Text = args.Result.Text;
-                        
-                        // Auto-send if enabled
+                        _speechSilenceTimer?.Stop();
+                        var newText = args.Result.Text;
+                        if (!string.IsNullOrWhiteSpace(newText))
+                        {
+                            _finalizedSpeech = string.IsNullOrWhiteSpace(_finalizedSpeech)
+                                ? newText
+                                : $"{_finalizedSpeech} {newText}";
+                        }
+
+                        UserInput.Text = _finalizedSpeech;
+
+                        // Start timer for natural pause before auto-send
                         if (_autoSendEnabled)
                         {
-                            SendMessage();
+                            _speechSilenceTimer?.Start();
                         }
                     });
                 }
@@ -385,7 +430,7 @@ public sealed partial class AvatarPage : Page
         {
         _isMicEnabled = false;
             MicIcon.Glyph = "\uF12E";
-            MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Black);
+            MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
 
             _speechRecognizer?.Dispose();
             _speechRecognizer = null;
@@ -450,8 +495,9 @@ public sealed partial class AvatarPage : Page
     private async void OnBackClicked(object sender, RoutedEventArgs e)
     {
         _isMicEnabled = false;
+        _speechSilenceTimer?.Stop();
         MicIcon.Glyph = "\uE720";
-        MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Black);
+        MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
 
         await StopVoiceInput();
         await StopAllServicesAsync();
