@@ -1,7 +1,9 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
+using System.Text;
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Models;
-using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace AvatarFormsApp.ViewModels;
 
@@ -33,6 +35,9 @@ public partial class ResponseDetailPageViewModel : ObservableRecipient
     [ObservableProperty]
     private bool isLoading = false;
 
+    [ObservableProperty]
+    private string questionnaireDescription = string.Empty;
+
     private string? _questionnaireId;
 
     public ResponseDetailPageViewModel(IQuestionnaireService questionnaireService)
@@ -51,6 +56,7 @@ public partial class ResponseDetailPageViewModel : ObservableRecipient
 
             _questionnaireId = session.QuestionnaireId;
             QuestionnaireName = session.Questionnaire?.Name ?? string.Empty;
+            QuestionnaireDescription = session.Questionnaire?.Description ?? string.Empty;
             QuestionnaireColor = session.Questionnaire?.Color ?? "#4CB3B3";
             SubmittedDate = session.SubmittedDate.ToLocalTime().ToString("MMMM dd, yyyy h:mm tt");
             IsComplete = session.IsComplete;
@@ -98,5 +104,46 @@ public partial class ResponseDetailPageViewModel : ObservableRecipient
         }
     }
 
+    [RelayCommand]
+    private async Task ExportTocsv()
+    {
+        var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+        savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+        savePicker.FileTypeChoices.Add("CSV File", new List<string>() { ".csv" });
+        savePicker.SuggestedFileName = $"{QuestionnaireName.Replace(" ", "_")}_Export";
+
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+        WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hwnd);
+
+        var file = await savePicker.PickSaveFileAsync();
+        if (file != null)
+        {
+            var csv = new StringBuilder();
+
+            // Metadata Header
+            csv.AppendLine($"Form Title:,\"{Escapecsv(QuestionnaireName)}\"");
+            csv.AppendLine($"Description:,\"{Escapecsv(QuestionnaireDescription)}\"");
+            csv.AppendLine($"Submitted Date:,\"{SubmittedDate}\"");
+            csv.AppendLine();
+
+            // 1. Generate the Questions Row
+            // Using LINQ to wrap each question in quotes and join with commas
+            var questionRow = "Questions," + string.Join(",", ResponseItems.Select(r => $"\"{Escapecsv(r.QuestionText)}\""));
+            csv.AppendLine(questionRow);
+
+            // 2. Generate the Answers Row
+            var answerRow = "Answers," + string.Join(",", ResponseItems.Select(r => $"\"{Escapecsv(r.AnswerText)}\""));
+            csv.AppendLine(answerRow);
+
+            await Windows.Storage.FileIO.WriteTextAsync(file, csv.ToString());
+        }
+    }
+
+    // Helper method to handle internal quotes in strings
+    private string Escapecsv(string? text)
+    {
+        if (string.IsNullOrEmpty(text)) return string.Empty;
+        return text.Replace("\"", "\"\"");
+    }
     public string? QuestionnaireId => _questionnaireId;
 }
