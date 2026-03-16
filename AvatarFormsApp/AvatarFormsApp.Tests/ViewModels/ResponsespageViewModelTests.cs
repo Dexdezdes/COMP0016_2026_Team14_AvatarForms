@@ -1,133 +1,285 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using System.Reflection;
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Models;
-using System.Collections.ObjectModel;
+using AvatarFormsApp.ViewModels;
+using Xunit;
 
-namespace AvatarFormsApp.Tests.ViewModels;
+namespace AvatarFormsApp.Tests;
 
-public partial class ResponsesPageViewModel : ObservableRecipient
+// ── Fake service ──────────────────────────────────────────────────────────────
+
+internal class FakeQuestionnaireServiceForResponses : IQuestionnaireService
 {
-    private readonly IQuestionnaireService _questionnaireService;
+    public Questionnaire? QuestionnaireToReturn { get; set; }
+    public List<ResponseSession> SessionsToReturn { get; set; } = new();
+    public bool ThrowOnLoad { get; set; } = false;
 
-    [ObservableProperty]
-    private string questionnaireName = string.Empty;
-
-    [ObservableProperty]
-    private string questionnaireColor = "#4CB3B3";
-
-    [ObservableProperty]
-    private ObservableCollection<ResponseSession> responseSessions = new();
-
-    [ObservableProperty]
-    private bool hasResponseSessions = false;
-
-    [ObservableProperty]
-    private bool isLoading = false;
-
-    private string? _questionnaireId;
-
-    public ResponsesPageViewModel(IQuestionnaireService questionnaireService)
+    public Task<Questionnaire?> GetByIdAsync(string id)
     {
-        _questionnaireService = questionnaireService;
+        if (ThrowOnLoad) throw new Exception("Simulated failure");
+        return Task.FromResult(QuestionnaireToReturn);
     }
 
-    public async Task LoadResponseSessionsAsync(string questionnaireId)
+    public Task<List<ResponseSession>> GetResponseSessionsAsync(string questionnaireId)
     {
-        _questionnaireId = questionnaireId;
-
-        try
-        {
-            IsLoading = true;
-
-            var questionnaire = await _questionnaireService.GetByIdAsync(questionnaireId);
-            if (questionnaire != null)
-            {
-                QuestionnaireName = questionnaire.Name;
-                QuestionnaireColor = questionnaire.Color;
-            }
-
-            var sessions = await _questionnaireService.GetResponseSessionsAsync(questionnaireId);
-            ResponseSessions = new ObservableCollection<ResponseSession>(sessions);
-            HasResponseSessions = sessions.Count > 0;
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error loading response sessions: {ex.Message}");
-            ResponseSessions = new ObservableCollection<ResponseSession>();
-            HasResponseSessions = false;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        if (ThrowOnLoad) throw new Exception("Simulated failure");
+        return Task.FromResult(SessionsToReturn);
     }
 
-    [RelayCommand]
-    private async Task ExportAllTocsv()
+    public Task<List<Questionnaire>> GetAllAsync() => Task.FromResult(new List<Questionnaire>());
+    public Task<Questionnaire> AddAsync(Questionnaire q) => Task.FromResult(q);
+    public Task<Questionnaire> UpdateAsync(Questionnaire q) => Task.FromResult(q);
+    public Task<bool> DeleteAsync(string id) => Task.FromResult(true);
+    public Task<List<Questionnaire>> SearchAsync(string s) => Task.FromResult(new List<Questionnaire>());
+    public Task<List<Questionnaire>> GetByStatusAsync(string s) => Task.FromResult(new List<Questionnaire>());
+    public Task<List<Questionnaire>> GetByOwnerAsync(string s) => Task.FromResult(new List<Questionnaire>());
+    public Task<Questionnaire?> GetWithQuestionsAsync(string id) => Task.FromResult<Questionnaire?>(null);
+    public Task<Questionnaire?> GetWithResponsesAsync(string id) => Task.FromResult<Questionnaire?>(null);
+    public Task<int> GetResponseCountAsync(string id) => Task.FromResult(0);
+    public Task<ResponseSession?> GetResponseSessionByIdAsync(string id) => Task.FromResult<ResponseSession?>(null);
+}
+
+// ── Tests ─────────────────────────────────────────────────────────────────────
+
+public class ResponsesPageViewModelTest
+{
+    private readonly FakeQuestionnaireServiceForResponses _fakeService = new();
+    private readonly ResponsesPageViewModel _sut;
+
+    public ResponsesPageViewModelTest()
     {
-        if (ResponseSessions == null || !ResponseSessions.Any()) return;
-
-        var savePicker = new Windows.Storage.Pickers.FileSavePicker();
-        savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-        savePicker.FileTypeChoices.Add("CSV File", new List<string>() { ".csv" });
-        savePicker.SuggestedFileName = $"{QuestionnaireName.Replace(" ", "_")}_All_Responses";
-
-        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
-        WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hwnd);
-
-        var file = await savePicker.PickSaveFileAsync();
-        if (file != null)
-        {
-            var csv = new System.Text.StringBuilder();
-
-            // 1. Metadata Header (matching detail page style)
-            // We fetch the description from the first session's questionnaire object
-            var description = ResponseSessions.FirstOrDefault()?.Questionnaire?.Description ?? string.Empty;
-            csv.AppendLine($"Form Title:,\"{Escapecsv(QuestionnaireName)}\"");
-            csv.AppendLine($"Description:,\"{Escapecsv(description)}\"");
-            csv.AppendLine();
-
-            // 2. Get All Unique Questions (Ordered by their 'Order' property)
-            // This ensures the columns are consistent across all rows
-            var questions = ResponseSessions
-                .SelectMany(s => s.Responses)
-                .Where(r => r.Question != null)
-                .Select(r => r.Question!)
-                .GroupBy(q => q.Id)
-                .Select(g => g.First())
-                .OrderBy(q => q.Order)
-                .ToList();
-
-            // 3. Generate the Questions Row
-            var questionHeader = "Questions," + string.Join(",", questions.Select(q => $"\"{Escapecsv(q.Text)}\""));
-            csv.AppendLine(questionHeader);
-
-            // 4. Generate the Answers Rows (one for each session)
-            int sessionIndex = 1;
-            foreach (var session in ResponseSessions)
-            {
-                var answers = new List<string>();
-                foreach (var q in questions)
-                {
-                    // Find the response for this specific question in this specific session
-                    var response = session.Responses.FirstOrDefault(r => r.QuestionId == q.Id);
-                    answers.Add($"\"{Escapecsv(response?.AnswerText ?? string.Empty)}\"");
-                }
-
-                var answerRow = $"Answer{sessionIndex}," + string.Join(",", answers);
-                csv.AppendLine(answerRow);
-                sessionIndex++;
-            }
-
-            await Windows.Storage.FileIO.WriteTextAsync(file, csv.ToString());
-        }
+        _sut = new ResponsesPageViewModel(_fakeService);
     }
 
-    // Helper method to handle internal quotes in strings
-    private string Escapecsv(string? text)
+    private string InvokeEscapeCsv(string? text)
     {
-        if (string.IsNullOrEmpty(text)) return string.Empty;
-        return text.Replace("\"", "\"\"");
+        var method = typeof(ResponsesPageViewModel)
+            .GetMethod("Escapecsv", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        return (string)method.Invoke(_sut, new object?[] { text })!;
+    }
+
+    // ── Initial state ─────────────────────────────────────────────────────────
+
+    [Fact]
+    public void InitialState_QuestionnaireName_IsEmpty()
+    {
+        Assert.Equal(string.Empty, _sut.QuestionnaireName);
+    }
+
+    [Fact]
+    public void InitialState_QuestionnaireColor_IsDefault()
+    {
+        Assert.Equal("#4CB3B3", _sut.QuestionnaireColor);
+    }
+
+    [Fact]
+    public void InitialState_ResponseSessions_IsEmpty()
+    {
+        Assert.Empty(_sut.ResponseSessions);
+    }
+
+    [Fact]
+    public void InitialState_HasResponseSessions_IsFalse()
+    {
+        Assert.False(_sut.HasResponseSessions);
+    }
+
+    [Fact]
+    public void InitialState_IsLoading_IsFalse()
+    {
+        Assert.False(_sut.IsLoading);
+    }
+
+    // ── LoadResponseSessionsAsync — happy path ────────────────────────────────
+
+    [Fact]
+    public async Task Load_SetsQuestionnaireName()
+    {
+        _fakeService.QuestionnaireToReturn = new Questionnaire { Id = "q1", Name = "My Survey", Color = "#FF0000", OwnerId = "u1" };
+        _fakeService.SessionsToReturn = new List<ResponseSession>();
+
+        await _sut.LoadResponseSessionsAsync("q1");
+
+        Assert.Equal("My Survey", _sut.QuestionnaireName);
+    }
+
+    [Fact]
+    public async Task Load_SetsQuestionnaireColor()
+    {
+        _fakeService.QuestionnaireToReturn = new Questionnaire { Id = "q1", Name = "Survey", Color = "#FF0000", OwnerId = "u1" };
+        _fakeService.SessionsToReturn = new List<ResponseSession>();
+
+        await _sut.LoadResponseSessionsAsync("q1");
+
+        Assert.Equal("#FF0000", _sut.QuestionnaireColor);
+    }
+
+    [Fact]
+    public async Task Load_SetsResponseSessions()
+    {
+        _fakeService.QuestionnaireToReturn = new Questionnaire { Id = "q1", Name = "Survey", Color = "#000", OwnerId = "u1" };
+        _fakeService.SessionsToReturn = new List<ResponseSession>
+        {
+            new ResponseSession { Id = "s1", QuestionnaireId = "q1" },
+            new ResponseSession { Id = "s2", QuestionnaireId = "q1" }
+        };
+
+        await _sut.LoadResponseSessionsAsync("q1");
+
+        Assert.Equal(2, _sut.ResponseSessions.Count);
+    }
+
+    [Fact]
+    public async Task Load_SetsHasResponseSessions_True_WhenSessionsExist()
+    {
+        _fakeService.QuestionnaireToReturn = new Questionnaire { Id = "q1", Name = "Survey", Color = "#000", OwnerId = "u1" };
+        _fakeService.SessionsToReturn = new List<ResponseSession> { new ResponseSession { Id = "s1", QuestionnaireId = "q1" } };
+
+        await _sut.LoadResponseSessionsAsync("q1");
+
+        Assert.True(_sut.HasResponseSessions);
+    }
+
+    [Fact]
+    public async Task Load_SetsHasResponseSessions_False_WhenNoSessions()
+    {
+        _fakeService.QuestionnaireToReturn = new Questionnaire { Id = "q1", Name = "Survey", Color = "#000", OwnerId = "u1" };
+        _fakeService.SessionsToReturn = new List<ResponseSession>();
+
+        await _sut.LoadResponseSessionsAsync("q1");
+
+        Assert.False(_sut.HasResponseSessions);
+    }
+
+    [Fact]
+    public async Task Load_IsLoading_IsFalse_AfterCompletion()
+    {
+        _fakeService.QuestionnaireToReturn = new Questionnaire { Id = "q1", Name = "Survey", Color = "#000", OwnerId = "u1" };
+        _fakeService.SessionsToReturn = new List<ResponseSession>();
+
+        await _sut.LoadResponseSessionsAsync("q1");
+
+        Assert.False(_sut.IsLoading);
+    }
+
+    [Fact]
+    public async Task Load_HandlesNullQuestionnaire_Gracefully()
+    {
+        _fakeService.QuestionnaireToReturn = null;
+        _fakeService.SessionsToReturn = new List<ResponseSession>();
+
+        var ex = await Record.ExceptionAsync(() => _sut.LoadResponseSessionsAsync("q1"));
+
+        Assert.Null(ex);
+    }
+
+    [Fact]
+    public async Task Load_DoesNotChangeName_WhenQuestionnaireIsNull()
+    {
+        _fakeService.QuestionnaireToReturn = null;
+        _fakeService.SessionsToReturn = new List<ResponseSession>();
+
+        await _sut.LoadResponseSessionsAsync("q1");
+
+        Assert.Equal(string.Empty, _sut.QuestionnaireName);
+    }
+
+    [Fact]
+    public async Task Load_CanBeCalledMultipleTimes()
+    {
+        _fakeService.QuestionnaireToReturn = new Questionnaire { Id = "q1", Name = "First", Color = "#000", OwnerId = "u1" };
+        _fakeService.SessionsToReturn = new List<ResponseSession>();
+        await _sut.LoadResponseSessionsAsync("q1");
+
+        _fakeService.QuestionnaireToReturn = new Questionnaire { Id = "q2", Name = "Second", Color = "#111", OwnerId = "u1" };
+        await _sut.LoadResponseSessionsAsync("q2");
+
+        Assert.Equal("Second", _sut.QuestionnaireName);
+    }
+
+    // ── LoadResponseSessionsAsync — error handling ────────────────────────────
+
+    [Fact]
+    public async Task Load_OnException_HasResponseSessions_IsFalse()
+    {
+        _fakeService.ThrowOnLoad = true;
+
+        await _sut.LoadResponseSessionsAsync("q1");
+
+        Assert.False(_sut.HasResponseSessions);
+    }
+
+    [Fact]
+    public async Task Load_OnException_ResponseSessions_IsEmpty()
+    {
+        _fakeService.ThrowOnLoad = true;
+
+        await _sut.LoadResponseSessionsAsync("q1");
+
+        Assert.Empty(_sut.ResponseSessions);
+    }
+
+    [Fact]
+    public async Task Load_OnException_IsLoading_IsFalse()
+    {
+        _fakeService.ThrowOnLoad = true;
+
+        await _sut.LoadResponseSessionsAsync("q1");
+
+        Assert.False(_sut.IsLoading);
+    }
+
+    [Fact]
+    public async Task Load_OnException_DoesNotThrow()
+    {
+        _fakeService.ThrowOnLoad = true;
+
+        var ex = await Record.ExceptionAsync(() => _sut.LoadResponseSessionsAsync("q1"));
+
+        Assert.Null(ex);
+    }
+
+    // ── EscapeCsv ─────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void EscapeCsv_ReturnsEmpty_ForNull()
+    {
+        Assert.Equal(string.Empty, InvokeEscapeCsv(null));
+    }
+
+    [Fact]
+    public void EscapeCsv_ReturnsEmpty_ForEmptyString()
+    {
+        Assert.Equal(string.Empty, InvokeEscapeCsv(string.Empty));
+    }
+
+    [Fact]
+    public void EscapeCsv_ReturnsUnchanged_ForPlainText()
+    {
+        Assert.Equal("Hello World", InvokeEscapeCsv("Hello World"));
+    }
+
+    [Fact]
+    public void EscapeCsv_DoublesQuotes()
+    {
+        Assert.Equal("say \"\"hello\"\"", InvokeEscapeCsv("say \"hello\""));
+    }
+
+    [Fact]
+    public void EscapeCsv_DoublesMultipleQuotes()
+    {
+        Assert.Equal("\"\"a\"\",\"\"b\"\"", InvokeEscapeCsv("\"a\",\"b\""));
+    }
+
+    [Fact]
+    public void EscapeCsv_HandlesTextWithNoSpecialChars()
+    {
+        Assert.Equal("simple text 123", InvokeEscapeCsv("simple text 123"));
+    }
+
+    [Fact]
+    public void EscapeCsv_HandlesOnlyQuotes()
+    {
+        Assert.Equal("\"\"", InvokeEscapeCsv("\""));
     }
 }
