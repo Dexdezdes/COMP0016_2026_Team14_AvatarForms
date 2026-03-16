@@ -5,6 +5,7 @@
     <PackageVersion Include="Microsoft.Playwright" Version="1.58.0" />
     <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.11" />
     <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.3719.77" />
+    <PackageVersion Include="System.Management" Version="10.0.5" />
     <PackageVersion Include="System.Speech" Version="10.0.2" />
     <PackageVersion Include="Uno.WinUI" Version="5.2.161" />
     <PackageVersion Include="Uno.Material.WinUI" Version="5.3.1" />

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Management;
 using AvatarFormsApp.Contracts.Services;
 
 namespace AvatarFormsApp.Services;
@@ -40,10 +41,33 @@ public class LlamafileProcessService : ILlamafileProcessService
 
             OutputReceived?.Invoke($"[LLAMAFILE] Found: {llamafilePath}");
 
+            var (gpuName, gpuMem) = GetGpuInfo();
+            System.Diagnostics.Debug.WriteLine($"Detected GPU: {gpuName} with {gpuMem} MB VRAM");
+            var gpuArgs = 0; // Default to CPU
+            var contextArgs = 1024; // Default to 1K context window for CPU
+            if (gpuName.Contains("NVIDIA", StringComparison.OrdinalIgnoreCase)
+                || gpuName.Contains("AMD", StringComparison.OrdinalIgnoreCase))
+            {
+                if (gpuMem > 6144) // 6GB+ VRAM
+                {
+                    gpuArgs = 9999;
+                    contextArgs = 4096;
+                }
+                else if (gpuMem > 4096) // 4GB+ VRAM
+                {
+                    gpuArgs = 9999;
+                    contextArgs = 2048;
+                }
+            }
+            else
+            {
+                OutputReceived?.Invoke($"[LLAMAFILE] No compatible GPU detected, using CPU with limited context");
+            }
+
             var start = new ProcessStartInfo
             {
                 FileName = llamafilePath,
-                Arguments = $"--server --host 127.0.0.1 --port {Port} --ctx-size 4096 -ngl 9999 --nobrowser",
+                Arguments = $"--server --host 127.0.0.1 --port {Port} --ctx-size {contextArgs} -ngl {gpuArgs} --nobrowser",
                 WorkingDirectory = Path.GetDirectoryName(llamafilePath),
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -97,6 +121,44 @@ public class LlamafileProcessService : ILlamafileProcessService
             try { _llamafileProcess.Kill(entireProcessTree: true); } catch { }
         }
         _llamafileProcess = null;
+    }
+
+    private (string type, long mem) GetGpuInfo()
+    {
+        string gpuName = "No GPU";
+        long gpuMem = 0;
+
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}");
+            if (key != null)
+            {
+                foreach (var subKeyName in key.GetSubKeyNames())
+                {
+                    if (subKeyName.StartsWith("0"))
+                    {
+                        using var subKey = key.OpenSubKey(subKeyName);
+                        var name = subKey?.GetValue("HardwareInformation.AdapterString");
+                        var mem = subKey?.GetValue("HardwareInformation.qwMemorySize");
+                        if (mem != null)
+                        {
+                            long vram = Convert.ToInt64(mem) / (1024 * 1024);
+                            if (vram > gpuMem)
+                            {
+                                gpuName = name?.ToString() ?? gpuName;
+                                gpuMem = vram;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to get GPU Info: {ex.Message}");
+        }
+
+        return (gpuName, gpuMem);
     }
 
     private static async Task<bool> WaitForPortAsync(int port)
