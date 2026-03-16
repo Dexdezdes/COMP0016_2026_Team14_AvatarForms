@@ -174,7 +174,7 @@ public sealed partial class AvatarPage : Page
 
             // Navigate to HeadTTS index.html
             LogToConsole("[NAV] Navigating to HeadTTS index.html...");
-            AvatarWebView.CoreWebView2.Navigate($"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}");
+            AvatarWebView.CoreWebView2.Navigate(GetHeadTTSUrl());
         }
         catch (Exception ex)
         {
@@ -300,7 +300,64 @@ public sealed partial class AvatarPage : Page
         _ = _localSettingsService.SaveSettingAsync("SelectedAvatar", _selectedAvatar);
 
         if (_isAvatarInitialized && AvatarWebView?.CoreWebView2 != null)
-            AvatarWebView.CoreWebView2.Navigate($"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}");
+            AvatarWebView.CoreWebView2.Navigate(GetHeadTTSUrl());
+    }
+
+    private string GetHeadTTSUrl()
+    {
+        var (gpuName, gpuMem) = GetGpuInfo();
+        bool useWasm = true;
+        
+        if (gpuMem > 6144 && (gpuName.Contains("NVIDIA", StringComparison.OrdinalIgnoreCase) || gpuName.Contains("AMD", StringComparison.OrdinalIgnoreCase)))
+        {
+            useWasm = false; // Run on current logic (local inference/non-wasm)
+        }
+
+        string url = $"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}";
+        if (useWasm)
+        {
+            url += "&wasm=true";
+        }
+        
+        return url;
+    }
+
+    private (string type, long mem) GetGpuInfo()
+    {
+        string gpuName = "No GPU";
+        long gpuMem = 0;
+
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}");
+            if (key != null)
+            {
+                foreach (var subKeyName in key.GetSubKeyNames())
+                {
+                    if (subKeyName.StartsWith("0"))
+                    {
+                        using var subKey = key.OpenSubKey(subKeyName);
+                        var name = subKey?.GetValue("HardwareInformation.AdapterString");
+                        var mem = subKey?.GetValue("HardwareInformation.qwMemorySize");
+                        if (mem != null)
+                        {
+                            long vram = Convert.ToInt64(mem) / (1024 * 1024);
+                            if (vram > gpuMem)
+                            {
+                                gpuName = name?.ToString() ?? gpuName;
+                                gpuMem = vram;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to get GPU Info: {ex.Message}");
+        }
+
+        return (gpuName, gpuMem);
     }
 
     private void SendMessage()

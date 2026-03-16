@@ -81,6 +81,7 @@
 
     const params = new URLSearchParams(window.location.search);
     const avatarName = params.get("avatar");
+    const useWasm = params.get("wasm") === "true";
     let currentPerson = persons[avatarName] || persons.julia;
     let isPersonReady = false;
     const pendingSpeech = [];
@@ -218,7 +219,7 @@
 
       // Instantiate HeadTTS text-to-speech class
       headtts = new HeadTTS({
-        endpoints: ["webgpu", "ws://127.0.0.1:8882/", "wasm"], // Endpoints
+        endpoints: useWasm ? ["wasm"] : ["webgpu", "ws://127.0.0.1:8882/", "wasm"], // Endpoints
         languages: ["en-us"], // Language to be pre-loaded
         voices: ["af_bella","am_fenrir"], // Voices to be pre-loaded
         voiceURL: "../voices", // Use local voice files
