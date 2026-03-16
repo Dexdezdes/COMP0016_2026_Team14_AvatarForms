@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Hosting;
+using Microsoft.Windows.ApplicationModel.DynamicDependency;
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.Views;
 using Xunit;
@@ -15,16 +16,8 @@ public class AvatarPageTest : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        try
-        {
-            var bootstrapType = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(a => { try { return a.GetTypes(); } catch { return Array.Empty<Type>(); } })
-                .FirstOrDefault(t => t.FullName == "Microsoft.Windows.ApplicationModel.DynamicDependency.Bootstrap");
-            bootstrapType?
-                .GetMethod("Initialize", BindingFlags.Public | BindingFlags.Static, new[] { typeof(uint) })?
-                .Invoke(null, new object[] { 0x00010007u });
-        }
-        catch { }
+        // Must call Bootstrap BEFORE CreateOnDedicatedThread — not after
+        try { Bootstrap.Initialize(0x00010007); } catch { }
 
         _controller = DispatcherQueueController.CreateOnDedicatedThread();
         _queue = _controller.DispatcherQueue;
@@ -106,9 +99,7 @@ public class AvatarPageTest : IAsyncLifetime
         await OnUiThread(() =>
         {
             var page = CreateUninitializedPage();
-            var result = Invoke(page, "AnsiCodeToBrush", "30");
-            Assert.NotNull(result);
-            var brush = (Microsoft.UI.Xaml.Media.SolidColorBrush)result!;
+            var brush = (Microsoft.UI.Xaml.Media.SolidColorBrush)Invoke(page, "AnsiCodeToBrush", "30")!;
             Assert.Equal(Microsoft.UI.Colors.Black, brush.Color);
         });
     }
@@ -391,7 +382,7 @@ public class AvatarPageTest : IAsyncLifetime
         });
     }
 
-    // ── SendMessage — IsRunning=false early return ────────────────────────────
+    // ── SendMessage ───────────────────────────────────────────────────────────
 
     [Fact]
     public async Task SendMessage_DoesNotThrow_WhenNotRunning()
@@ -404,7 +395,20 @@ public class AvatarPageTest : IAsyncLifetime
         });
     }
 
-    // ── OnConsoleToggleChanged — null guard ───────────────────────────────────
+    // ── OnSendClicked ─────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task OnSendClicked_DoesNotThrow_WhenNotRunning()
+    {
+        await OnUiThread(() =>
+        {
+            var page = CreatePageWithFakeServices();
+            var ex = Record.Exception(() => Invoke(page, "OnSendClicked", null!, null!));
+            Assert.Null(ex);
+        });
+    }
+
+    // ── OnConsoleToggleChanged ────────────────────────────────────────────────
 
     [Fact]
     public async Task OnConsoleToggleChanged_DoesNotThrow_WhenControlsNull()
@@ -417,7 +421,7 @@ public class AvatarPageTest : IAsyncLifetime
         });
     }
 
-    // ── OnSettingsToggleChanged — null guard ──────────────────────────────────
+    // ── OnSettingsToggleChanged ───────────────────────────────────────────────
 
     [Fact]
     public async Task OnSettingsToggleChanged_DoesNotThrow_WhenControlsNull()
@@ -430,7 +434,7 @@ public class AvatarPageTest : IAsyncLifetime
         });
     }
 
-    // ── OnCloseSettingsClicked — null guard ───────────────────────────────────
+    // ── OnCloseSettingsClicked ────────────────────────────────────────────────
 
     [Fact]
     public async Task OnCloseSettingsClicked_DoesNotThrow_WhenControlsNull()
@@ -443,7 +447,7 @@ public class AvatarPageTest : IAsyncLifetime
         });
     }
 
-    // ── OnAvatarSelectionChanged — null guard ─────────────────────────────────
+    // ── OnAvatarSelectionChanged ──────────────────────────────────────────────
 
     [Fact]
     public async Task OnAvatarSelectionChanged_DoesNotThrow_WhenControlsNull()
@@ -456,7 +460,7 @@ public class AvatarPageTest : IAsyncLifetime
         });
     }
 
-    // ── OnInputTextChanged — empty method ─────────────────────────────────────
+    // ── OnInputTextChanged ────────────────────────────────────────────────────
 
     [Fact]
     public async Task OnInputTextChanged_DoesNotThrow()
@@ -469,7 +473,7 @@ public class AvatarPageTest : IAsyncLifetime
         });
     }
 
-    // ── StopVoiceInput — null speechRecognizer ────────────────────────────────
+    // ── StopVoiceInput ────────────────────────────────────────────────────────
 
     [Fact]
     public async Task StopVoiceInput_DoesNotThrow_WhenSpeechRecognizerNull()
@@ -484,7 +488,7 @@ public class AvatarPageTest : IAsyncLifetime
         });
     }
 
-    // ── StopAllServicesAsync — fake services ──────────────────────────────────
+    // ── StopAllServicesAsync ──────────────────────────────────────────────────
 
     [Fact]
     public async Task StopAllServicesAsync_DoesNotThrow_WithFakeServices()
@@ -514,7 +518,7 @@ public class AvatarPageTest : IAsyncLifetime
         });
     }
 
-    // ── Field defaults ────────────────────────────────────────────────────────
+    // ── Field defaults / injection ────────────────────────────────────────────
 
     [Fact]
     public async Task UninitializedPage_IsMicEnabled_DefaultsFalse()
@@ -555,17 +559,6 @@ public class AvatarPageTest : IAsyncLifetime
             var page = CreateUninitializedPage();
             SetField(page, "_autoSendEnabled", true);
             Assert.True(GetField<bool>(page, "_autoSendEnabled"));
-        });
-    }
-
-    [Fact]
-    public async Task OnSendClicked_DoesNotThrow_WhenNotRunning()
-    {
-        await OnUiThread(() =>
-        {
-            var page = CreatePageWithFakeServices();
-            var ex = Record.Exception(() => Invoke(page, "OnSendClicked", null!, null!));
-            Assert.Null(ex);
         });
     }
 }
