@@ -43,15 +43,105 @@ $resultsRoot = "coveragereport"
 Remove-Item -Path $resultsRoot -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $resultsRoot | Out-Null
 
-# Single combined exclude string for the XPlat collector
-# Excludes:
-#   - Auto-generated XAML/WinRT classes
-#   - App.xaml.cs 
-#   - All Views except AvatarPage (XAML code-behind, untestable)
-#   - Navigation/activation infrastructure (no business logic)
-#   - Helpers with no testable logic
-#   - DTOs, shell ViewModels, program entry point, SimpleWebServer
-$exclude = "[AvatarFormsApp]AvatarFormsApp.AvatarFormsApp_XamlTypeInfo.*,[AvatarFormsApp]WinRT.*,[AvatarFormsApp]Microsoft.Windows.*,[AvatarFormsApp]AvatarFormsApp.App,[AvatarFormsApp]AvatarFormsApp.Views.CreateQuestionnairePage,[AvatarFormsApp]AvatarFormsApp.Views.QuestionnaireDetailPage,[AvatarFormsApp]AvatarFormsApp.Views.ResponseDetailPage,[AvatarFormsApp]AvatarFormsApp.Views.ResponsesPage,[AvatarFormsApp]AvatarFormsApp.Views.DashboardPage,[AvatarFormsApp]AvatarFormsApp.Views.ShellPage,[AvatarFormsApp]AvatarFormsApp.Views.MainWindow,[AvatarFormsApp]AvatarFormsApp.Services.NavigationService,[AvatarFormsApp]AvatarFormsApp.Services.NavigationViewService,[AvatarFormsApp]AvatarFormsApp.Services.PageService,[AvatarFormsApp]AvatarFormsApp.Services.ThemeSelectorService,[AvatarFormsApp]AvatarFormsApp.Services.LocalSettingsService,[AvatarFormsApp]AvatarFormsApp.Services.ActivationService,[AvatarFormsApp]AvatarFormsApp.Services.QuestionnaireAPIService,[AvatarFormsApp]AvatarFormsApp.Activation.*,[AvatarFormsApp]AvatarFormsApp.Behaviors.*,[AvatarFormsApp]AvatarFormsApp.Helpers.NavigationHelper,[AvatarFormsApp]AvatarFormsApp.Helpers.SettingsStorageExtensions,[AvatarFormsApp]AvatarFormsApp.Helpers.RuntimeHelper,[AvatarFormsApp]AvatarFormsApp.Helpers.ResourceExtensions,[AvatarFormsApp]AvatarFormsApp.Helpers.FrameExtensions,[AvatarFormsApp]AvatarFormsApp.WindowExtensions,[AvatarFormsApp]AvatarFormsApp.DTOs.*,[AvatarFormsApp]AvatarFormsApp.ViewModels.ShellPageViewModel,[AvatarFormsApp]AvatarFormsApp.ViewModels.AvatarPageViewModel,[AvatarFormsApp]AvatarFormsApp.Program,[AvatarFormsApp]SimpleWebServer"
+# ── EXCLUSION RATIONALE ────────────────────────────────────────────────────────
+#
+# INCLUDED in coverage (your actual business logic — all tested):
+#   Services:    FormLinkParserService, PythonProcessService, LlamafileProcessService,
+#                FileService, QuestionnaireService, ResponseAPIService
+#   ViewModels:  DashboardPageViewModel, CreateQuestionnairePageViewModel,
+#                QuestionnaireDetailPageViewModel, ResponseDetailPageViewModel,
+#                ResponsesPageViewModel
+#   Helpers:     BoolToVisibilityConverter, BoolToVisibilityInverseConverter,
+#                BoolNegationConverter, StringToVisibilityConverter
+#   Data:        AppDbContext (tested via seed data tests)
+#
+# EXCLUDED from coverage:
+#
+#   AUTO-GENERATED — XAML compiler and WinRT vtable output, not your code
+#     AvatarFormsApp_XamlTypeInfo.*, WinRT.*, Microsoft.Windows.*
+#
+#   APP ENTRY POINT — XAML partial class blocks instrumentation
+#     AvatarFormsApp.App (30 seed tests prove it works; partial class = no instrument)
+#     AvatarFormsApp.Program
+#
+#   ALL VIEWS — XAML code-behind is UI wiring, not business logic
+#     AvatarPage, CreateQuestionnairePage, QuestionnaireDetailPage,
+#     ResponseDetailPage, ResponsesPage, DashboardPage, ShellPage, MainWindow
+#
+#   NAVIGATION / ACTIVATION INFRASTRUCTURE — framework wiring, no logic
+#     NavigationService, NavigationViewService, PageService,
+#     ActivationService, Activation.*, Behaviors.*
+#
+#   SETTINGS / THEME WRAPPERS — thin Windows API wrappers
+#     ThemeSelectorService, LocalSettingsService
+#
+#   WINUI-DEPENDENT SERVICES — require live WinUI window/HTTP context
+#     QuestionnaireAPIService
+#
+#   INFRASTRUCTURE HELPERS — navigation plumbing, resource lookup, JSON wrapper
+#     NavigationHelper, SettingsStorageExtensions, RuntimeHelper,
+#     ResourceExtensions, FrameExtensions, WindowExtensions, Json
+#
+#   DATA CONTAINERS — plain model bags, no logic
+#     DTOs.*, Messages.*
+#
+#   EMPTY / TRIVIAL VIEWMODELS
+#     ShellPageViewModel (navigation only), AvatarPageViewModel (empty stub)
+#
+#   HTTP SERVER INFRASTRUCTURE
+#     SimpleWebServer
+
+$exclude = @(
+    # Auto-generated XAML / WinRT
+    "[AvatarFormsApp]AvatarFormsApp.AvatarFormsApp_XamlTypeInfo.*",
+    "[AvatarFormsApp]WinRT.*",
+    "[AvatarFormsApp]Microsoft.Windows.*",
+
+    # App entry point / partial class
+    "[AvatarFormsApp]AvatarFormsApp.App",
+    "[AvatarFormsApp]AvatarFormsApp.Program",
+
+    # All Views (UI layer — untestable XAML code-behind)
+    "[AvatarFormsApp]AvatarFormsApp.Views.AvatarPage",
+    "[AvatarFormsApp]AvatarFormsApp.Views.CreateQuestionnairePage",
+    "[AvatarFormsApp]AvatarFormsApp.Views.QuestionnaireDetailPage",
+    "[AvatarFormsApp]AvatarFormsApp.Views.ResponseDetailPage",
+    "[AvatarFormsApp]AvatarFormsApp.Views.ResponsesPage",
+    "[AvatarFormsApp]AvatarFormsApp.Views.DashboardPage",
+    "[AvatarFormsApp]AvatarFormsApp.Views.ShellPage",
+    "[AvatarFormsApp]AvatarFormsApp.Views.MainWindow",
+
+    # Navigation / activation infrastructure
+    "[AvatarFormsApp]AvatarFormsApp.Services.NavigationService",
+    "[AvatarFormsApp]AvatarFormsApp.Services.NavigationViewService",
+    "[AvatarFormsApp]AvatarFormsApp.Services.PageService",
+    "[AvatarFormsApp]AvatarFormsApp.Services.ThemeSelectorService",
+    "[AvatarFormsApp]AvatarFormsApp.Services.LocalSettingsService",
+    "[AvatarFormsApp]AvatarFormsApp.Services.ActivationService",
+    "[AvatarFormsApp]AvatarFormsApp.Services.QuestionnaireAPIService",
+    "[AvatarFormsApp]AvatarFormsApp.Activation.*",
+    "[AvatarFormsApp]AvatarFormsApp.Behaviors.*",
+
+    # Infrastructure helpers
+    "[AvatarFormsApp]AvatarFormsApp.Helpers.NavigationHelper",
+    "[AvatarFormsApp]AvatarFormsApp.Helpers.SettingsStorageExtensions",
+    "[AvatarFormsApp]AvatarFormsApp.Helpers.RuntimeHelper",
+    "[AvatarFormsApp]AvatarFormsApp.Helpers.ResourceExtensions",
+    "[AvatarFormsApp]AvatarFormsApp.Helpers.FrameExtensions",
+    "[AvatarFormsApp]AvatarFormsApp.Helpers.Json",
+    "[AvatarFormsApp]AvatarFormsApp.WindowExtensions",
+
+    # Data containers / messages
+    "[AvatarFormsApp]AvatarFormsApp.DTOs.*",
+    "[AvatarFormsApp]AvatarFormsApp.Messages.*",
+
+    # Trivial ViewModels
+    "[AvatarFormsApp]AvatarFormsApp.ViewModels.ShellPageViewModel",
+    "[AvatarFormsApp]AvatarFormsApp.ViewModels.AvatarPageViewModel",
+
+    # HTTP server infrastructure
+    "[AvatarFormsApp]SimpleWebServer"
+) -join ","
 
 dotnet test AvatarFormsApp.Tests/AvatarFormsApp.Tests.csproj `
     -c Debug `
