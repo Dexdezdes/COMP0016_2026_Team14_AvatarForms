@@ -58,7 +58,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="../../Backend/**/*">
+        <Content Include="../../Backend/**/*" Exclude="../../Backend/env/**/*;../../Backend/**/__pycache__/**/*">
             <Link>Backend/%(RecursiveDir)%(FileName)%(Extension)</Link>
             <LogicalName>Backend/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
