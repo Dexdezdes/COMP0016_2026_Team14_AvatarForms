@@ -7,21 +7,22 @@
     xmlns:models="using:AvatarFormsApp.Models"
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea" Padding="20">
+    <Grid x:Name="ContentArea" Padding="30">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="1" Margin="0,18,0,0">
-            <TextBlock Text="Welcome to AvatarForms" FontSize="20" FontWeight="SemiBold" />
-            <TextBlock Text="Check out latest responses" Foreground="Gray" Margin="0,4,0,12" />
+        <StackPanel Grid.Row="1" Margin="0,27,0,0">
+            <TextBlock Text="Welcome to AvatarForms" FontSize="30" FontWeight="SemiBold" Margin="24,0,0,0"/>
+            <TextBlock Text="Check out latest responses" Foreground="Gray" FontSize="16"  Margin="24,6,0,6" />
 
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,6,0,12">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="24,12,0,12">
                 <!-- Filter ComboBox with Binding -->
                 <ComboBox x:Name="FilterComboBox"
-                          Width="200" 
-                          Margin="0,0,8,0" 
+                          Width="300" 
+                          Margin="0,0,12,0" 
+                          FontSize="16"
                           SelectedIndex="0"
                           SelectedItem="{x:Bind ViewModel.SelectedFilter, Mode=TwoWay}">
                     <x:String>All Questionnaires</x:String>
@@ -29,8 +30,9 @@
 
                 <!-- Sort ComboBox with Binding -->
                 <ComboBox x:Name="SortComboBox"
-                          Width="180" 
-                          Margin="12,0" 
+                          Width="270" 
+                          Margin="18,0" 
+                          FontSize="16"
                           HorizontalAlignment="Right"
                           SelectedIndex="0"
                           SelectedItem="{x:Bind ViewModel.SelectedSort, Mode=TwoWay}">
@@ -41,10 +43,11 @@
 
                 <!-- Search TextBox with Binding -->
                 <TextBox x:Name="SearchBox"
-                         Width="220" 
+                         Width="330" 
+                         FontSize="16"
                          PlaceholderText="Search for questionnaires..." 
                          HorizontalAlignment="Right" 
-                         Margin="12,0"
+                         Margin="18,0"
                          Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
 
@@ -53,15 +56,15 @@
                         Visibility="{x:Bind ViewModel.HasQuestionnaires, Mode=OneWay, Converter={StaticResource BoolToVisibilityInverseConverter}}"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Margin="0,60,0,0">
-                <FontIcon Glyph="&#xE8F1;" FontSize="64" Foreground="Gray" HorizontalAlignment="Center" />
+                        Margin="0,90,0,0">
+                <FontIcon Glyph="&#xE8F1;" FontSize="96" Foreground="Gray" HorizontalAlignment="Center" />
                 <TextBlock Text="No questionnaires available" 
-                           FontSize="18" 
+                           FontSize="27" 
                            Foreground="Gray" 
-                           Margin="0,16,0,8"
+                           Margin="0,24,0,12"
                            HorizontalAlignment="Center" />
                 <TextBlock Text="Upload a questionnaire to get started" 
-                           FontSize="14" 
+                           FontSize="21" 
                            Foreground="Gray" 
                            HorizontalAlignment="Center" />
             </StackPanel>
@@ -78,22 +81,22 @@
                     <Grid Padding="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="140" />
-                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="210" />
+                            <ColumnDefinition Width="120" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Questionnaire" FontWeight="Bold" Margin="16,0,0,0" />
-                        <TextBlock Grid.Column="1" Text="Responses" FontWeight="Bold" HorizontalAlignment="Center" />
-                        <TextBlock Grid.Column="2" Text="Actions" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock Text="Questionnaire" FontWeight="Bold" Margin="24,0,0,0" FontSize="18" />
+                        <TextBlock Grid.Column="1" Text="Responses" FontWeight="Bold" HorizontalAlignment="Center" FontSize="18" />
+                        <TextBlock Grid.Column="2" Text="Actions" FontWeight="Bold" HorizontalAlignment="Center" FontSize="18" />
                     </Grid>
                 </ListView.Header>
 
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:Questionnaire">
-                        <Grid Padding="8">
+                        <Grid Padding="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="140" />
-                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="210" />
+                                <ColumnDefinition Width="120" />
                             </Grid.ColumnDefinitions>
 
                             <Grid>
@@ -101,25 +104,26 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Rectangle Width="4" Fill="{x:Bind Color}" Margin="0,0,12,0" RadiusX="2" RadiusY="2" />
+                                <Rectangle Width="6" Fill="{x:Bind Color}" Margin="0,0,18,0" RadiusX="3" RadiusY="3" />
                                 <StackPanel Grid.Column="1">
-                                    <TextBlock Text="{x:Bind Name}" FontWeight="SemiBold" />
-                                    <ProgressBar Value="100" Minimum="0" Maximum="100" Height="2" Foreground="{x:Bind Color}" Margin="0,8,12,0" />
+                                    <TextBlock Text="{x:Bind Name}" FontWeight="SemiBold" FontSize="21" />
+                                    <ProgressBar Value="100" Minimum="0" Maximum="100" Height="3" Foreground="{x:Bind Color}" Margin="0,12,18,0" />
                                 </StackPanel>
                             </Grid>
 
                             <TextBlock Grid.Column="1" 
                                        Text="{x:Bind ResponseSessions.Count}"
+                                       FontSize="21"
                                        HorizontalAlignment="Center" 
                                        VerticalAlignment="Center" />
 
                             <Button Grid.Column="2"
                                     Content="&#xE74D;"
                                     FontFamily="Segoe MDL2 Assets"
-                                    FontSize="16"
+                                    FontSize="24"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Padding="8"
+                                    Padding="12"
                                     ToolTipService.ToolTip="Delete questionnaire"
                                     Click="OnDeleteClick"
                                     Tag="{x:Bind Id}">
@@ -144,7 +148,9 @@
                     Click="OnUploadClick"
                     HorizontalAlignment="Right"
                     Style="{StaticResource AccentButtonStyle}"
-                    Margin="0,20,45,0" />
+                    Margin="0,30,36,30"
+                    FontSize="18"
+                    Padding="18,8" />
         </StackPanel>
     </Grid>
 </Page>
