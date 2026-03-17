@@ -79,11 +79,25 @@ public sealed partial class AvatarPage : Page
     private async Task InitializeAsync()
     {
         var saved = await _localSettingsService.ReadSettingAsync<string>("SelectedAvatar");
-        if (saved is "julia" or "david")
+        if (!string.IsNullOrEmpty(saved))
         {
             _selectedAvatar = saved;
-            if (_selectedAvatar == "david" && AvatarDavidRadio != null)
-                AvatarDavidRadio.IsChecked = true;
+            
+            if (AvatarComboBox != null)
+            {
+                foreach (ComboBoxItem item in AvatarComboBox.Items)
+                {
+                    if (item.Tag is string tag && tag == _selectedAvatar)
+                    {
+                        AvatarComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+        }
+        else if (AvatarComboBox != null)
+        {
+            AvatarComboBox.SelectedIndex = 0;
         }
 
         InitializeAvatar();
@@ -292,15 +306,16 @@ public sealed partial class AvatarPage : Page
         LogToConsole($"[SETTINGS] Auto-send: {(_autoSendEnabled ? "ON" : "OFF")}");
     }
 
-    private void OnAvatarSelectionChanged(object sender, RoutedEventArgs e)
+    private void OnAvatarSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (AvatarJuliaRadio == null || AvatarDavidRadio == null) return;
+        if (sender is ComboBox cb && cb.SelectedItem is ComboBoxItem item && item.Tag is string tag)
+        {
+            _selectedAvatar = tag;
+            _ = _localSettingsService.SaveSettingAsync("SelectedAvatar", _selectedAvatar);
 
-        _selectedAvatar = AvatarDavidRadio.IsChecked == true ? "david" : "julia";
-        _ = _localSettingsService.SaveSettingAsync("SelectedAvatar", _selectedAvatar);
-
-        if (_isAvatarInitialized && AvatarWebView?.CoreWebView2 != null)
-            AvatarWebView.CoreWebView2.Navigate(GetHeadTTSUrl());
+            if (_isAvatarInitialized && AvatarWebView?.CoreWebView2 != null)
+                AvatarWebView.CoreWebView2.Navigate(GetHeadTTSUrl());
+        }
     }
 
     private string GetHeadTTSUrl()

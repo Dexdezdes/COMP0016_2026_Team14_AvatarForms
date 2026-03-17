@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="icon" href="data:,">
 
-  <title>HeadTTS - TalkingHead Demo</title>
+  <title>HeadTTS</title>
 
   <style>
     body, html { width:100%; height:100%; height:100dvh; margin: 0; padding: 0; position: relative; background-color: #202020; color: white; overflow: hidden; }
@@ -68,10 +68,66 @@
           avatarMood: "neutral"
         },
         view: {
-          cameraY: -0.04 // David is taller, so compensate
+          cameraY: 0
         },
         setup: {
           voice: "am_fenrir",
+          language: "en-us",
+          speed: 1,
+          audioEncoding: "wav"
+        }
+        },
+
+      "doozy": {
+        avatar: {
+          url: './avatars/doozy.glb',
+          body: 'M',
+          avatarMood: 'happy',
+          retarget: {
+            Hips: { y: 0.03 }, Spine: { y: 0.02 }, Spine1: { y: 0.02, z: 0.01 },
+            Spine2: { y: 0.02, z: 0.01 }, Neck: { z: 0.02, y: 0.01 }, Head: { z: 0.02 },
+            LeftShoulder: { rx: -0.5 }, RightShoulder: { rx: -0.5 },
+            scaleToHipsLevel: 1.0
+          },
+          baseline: {
+            headRotateX: -0.05,
+            eyeBlinkLeft: 0.15,
+            eyeBlinkRight: 0.15
+          }
+        },
+        view: {
+          cameraY: 0
+        },
+        setup: {
+          voice: "am_fenrir",
+          language: "en-us",
+          speed: 1,
+          audioEncoding: "wav"
+        }
+      },
+
+      "sam": {
+        avatar: {
+          url: './avatars/sam.glb',
+          body: 'M',
+          avatarMood: 'happy',
+          retarget: {
+            Hips: { y: 0.03 }, Spine: { y: 0.02 }, Spine1: { y: 0.02, z: 0.01 },
+            Spine2: { y: 0.02, z: 0.01 }, Neck: { z: 0.02, y: 0.01 }, Head: { z: 0.02 },
+            LeftShoulder: { rx: -0.5 }, RightShoulder: { rx: -0.5 },
+            scaleToHipsLevel: 1.0
+          },
+          baseline: {
+            headRotateX: -0.05,
+            eyeBlinkLeft: 0.15,
+            eyeBlinkRight: 0.15
+          }
+        },
+        view: {
+          cameraY: 0
+        },
+        setup: {
+          voice: "bm_fable",
           language: "en-us",
           speed: 1,
           audioEncoding: "wav"
@@ -221,7 +277,7 @@
       headtts = new HeadTTS({
         endpoints: useWasm ? ["wasm"] : ["webgpu", "ws://127.0.0.1:8882/", "wasm"], // Endpoints
         languages: ["en-us"], // Language to be pre-loaded
-        voices: ["af_bella","am_fenrir"], // Voices to be pre-loaded
+        voices: ["af_bella","am_fenrir", "bm_fable"], // Voices to be pre-loaded
         voiceURL: "../voices", // Use local voice files
         audioCtx: head.audioCtx, // Share audio context with TalkingHead
         defaultVoice: currentPerson.setup.voice,
