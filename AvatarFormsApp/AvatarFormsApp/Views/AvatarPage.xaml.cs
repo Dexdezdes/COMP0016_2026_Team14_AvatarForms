@@ -26,6 +26,7 @@ public sealed partial class AvatarPage : Page
     private bool _isTalkerActive;
     private bool _autoSendEnabled = false;
     private string _selectedAvatar = "julia";
+    private string _selectedVoice = "";
 
     private DispatcherTimer? _speechSilenceTimer;
     private string _finalizedSpeech = "";
@@ -98,6 +99,28 @@ public sealed partial class AvatarPage : Page
         else if (AvatarComboBox != null)
         {
             AvatarComboBox.SelectedIndex = 0;
+        }
+
+        var savedVoice = await _localSettingsService.ReadSettingAsync<string>("SelectedVoice");
+        if (!string.IsNullOrEmpty(savedVoice))
+        {
+            _selectedVoice = savedVoice;
+
+            if (VoiceComboBox != null)
+            {
+                foreach (ComboBoxItem item in VoiceComboBox.Items)
+                {
+                    if (item.Tag is string tag && tag == _selectedVoice)
+                    {
+                        VoiceComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+        }
+        else if (VoiceComboBox != null)
+        {
+            VoiceComboBox.SelectedIndex = 0;
         }
 
         InitializeAvatar();
@@ -318,22 +341,39 @@ public sealed partial class AvatarPage : Page
         }
     }
 
+    private void OnVoiceSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox cb && cb.SelectedItem is ComboBoxItem item && item.Tag is string tag)
+        {
+            _selectedVoice = tag;
+            _ = _localSettingsService.SaveSettingAsync("SelectedVoice", _selectedVoice);
+
+            if (_isAvatarInitialized && AvatarWebView?.CoreWebView2 != null)
+                AvatarWebView.CoreWebView2.Navigate(GetHeadTTSUrl());
+        }
+    }
+
     private string GetHeadTTSUrl()
     {
         var (gpuName, gpuMem) = GetGpuInfo();
         bool useWasm = true;
-        
+
         if (gpuMem > 6144 && (gpuName.Contains("NVIDIA", StringComparison.OrdinalIgnoreCase) || gpuName.Contains("AMD", StringComparison.OrdinalIgnoreCase)))
         {
             useWasm = false; // Run on current logic (local inference/non-wasm)
         }
 
         string url = $"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}";
+        if (!string.IsNullOrEmpty(_selectedVoice))
+        {
+            url += $"&voice={_selectedVoice}";
+        }
+
         if (useWasm)
         {
             url += "&wasm=true";
         }
-        
+
         return url;
     }
 
