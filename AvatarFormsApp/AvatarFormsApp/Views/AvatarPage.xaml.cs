@@ -7,6 +7,8 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Windows.Media.SpeechRecognition;
+using Windows.Media.Playback;
+using Windows.Media.Core;
 using WinUIEx.Messaging;
 
 namespace AvatarFormsApp.Views;
@@ -22,8 +24,14 @@ public sealed partial class AvatarPage : Page
     private bool _isAvatarInitialized;
     private bool _isMicEnabled;
     private bool _isTalkerActive;
-    private bool _autoSendEnabled = true;
+    private bool _autoSendEnabled = false;
     private string _selectedAvatar = "julia";
+
+    private DispatcherTimer? _speechSilenceTimer;
+    private string _finalizedSpeech = "";
+
+    private readonly MediaPlayer _micOnPlayer;
+    private readonly MediaPlayer _micOffPlayer;
 
     // Stored so they can be unsubscribed when leaving the page
     private readonly Action<string> _onPythonOutput;
@@ -39,6 +47,12 @@ public sealed partial class AvatarPage : Page
         _responseAPIService = App.GetService<IResponseAPIService>();
         _localSettingsService = App.GetService<ILocalSettingsService>();
 
+        _micOnPlayer = new MediaPlayer();
+        _micOnPlayer.Source = MediaSource.CreateFromUri(new Uri("C:\\Windows\\Media\\Speech On.wav"));
+
+        _micOffPlayer = new MediaPlayer();
+        _micOffPlayer.Source = MediaSource.CreateFromUri(new Uri("C:\\Windows\\Media\\Speech Off.wav"));
+
         // Store handlers so they can be unsubscribed when leaving the page
         _onPythonOutput = msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
         _onPythonError  = msg => DispatcherQueue.TryEnqueue(() => LogToConsole(msg));
@@ -47,6 +61,16 @@ public sealed partial class AvatarPage : Page
         _pythonProcessService.OutputReceived += _onPythonOutput;
         _pythonProcessService.ErrorReceived  += _onPythonError;
         _llamafileProcessService.OutputReceived += _onLlamaOutput;
+
+        _speechSilenceTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+        _speechSilenceTimer.Tick += (s, e) =>
+        {
+            _speechSilenceTimer.Stop();
+            if (_autoSendEnabled && !string.IsNullOrWhiteSpace(UserInput.Text))
+            {
+                SendMessage();
+            }
+        };
 
         AutoSendToggle.IsOn = true;
         _ = InitializeAsync();
@@ -150,7 +174,7 @@ public sealed partial class AvatarPage : Page
 
             // Navigate to HeadTTS index.html
             LogToConsole("[NAV] Navigating to HeadTTS index.html...");
-            AvatarWebView.CoreWebView2.Navigate($"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}");
+            AvatarWebView.CoreWebView2.Navigate(GetHeadTTSUrl());
         }
         catch (Exception ex)
         {
@@ -276,7 +300,64 @@ public sealed partial class AvatarPage : Page
         _ = _localSettingsService.SaveSettingAsync("SelectedAvatar", _selectedAvatar);
 
         if (_isAvatarInitialized && AvatarWebView?.CoreWebView2 != null)
-            AvatarWebView.CoreWebView2.Navigate($"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}");
+            AvatarWebView.CoreWebView2.Navigate(GetHeadTTSUrl());
+    }
+
+    private string GetHeadTTSUrl()
+    {
+        var (gpuName, gpuMem) = GetGpuInfo();
+        bool useWasm = true;
+        
+        if (gpuMem > 6144 && (gpuName.Contains("NVIDIA", StringComparison.OrdinalIgnoreCase) || gpuName.Contains("AMD", StringComparison.OrdinalIgnoreCase)))
+        {
+            useWasm = false; // Run on current logic (local inference/non-wasm)
+        }
+
+        string url = $"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}";
+        if (useWasm)
+        {
+            url += "&wasm=true";
+        }
+        
+        return url;
+    }
+
+    private (string type, long mem) GetGpuInfo()
+    {
+        string gpuName = "No GPU";
+        long gpuMem = 0;
+
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}");
+            if (key != null)
+            {
+                foreach (var subKeyName in key.GetSubKeyNames())
+                {
+                    if (subKeyName.StartsWith("0"))
+                    {
+                        using var subKey = key.OpenSubKey(subKeyName);
+                        var name = subKey?.GetValue("HardwareInformation.AdapterString");
+                        var mem = subKey?.GetValue("HardwareInformation.qwMemorySize");
+                        if (mem != null)
+                        {
+                            long vram = Convert.ToInt64(mem) / (1024 * 1024);
+                            if (vram > gpuMem)
+                            {
+                                gpuName = name?.ToString() ?? gpuName;
+                                gpuMem = vram;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to get GPU Info: {ex.Message}");
+        }
+
+        return (gpuName, gpuMem);
     }
 
     private void SendMessage()
@@ -289,6 +370,20 @@ public sealed partial class AvatarPage : Page
             _pythonProcessService.SendInput(message);
             LogToConsole($"You: {message}");
             UserInput.Text = "";
+            _finalizedSpeech = "";
+
+            if (_isMicEnabled)
+            {
+                _isMicEnabled = false;
+                _speechSilenceTimer?.Stop();
+                if (MicIcon != null)
+                {
+                    MicIcon.Glyph = "\uF12E";
+                    MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+                }
+                try { _micOffPlayer.Play(); } catch { }
+                _ = StopVoiceInput();
+            }
         }
     }
 
@@ -315,13 +410,16 @@ public sealed partial class AvatarPage : Page
             if (_isMicEnabled)
             {
                 MicIcon.Glyph = "\uE720";
-                MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Red);
+                MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["SystemFillColorCriticalBrush"];
+                try { _micOnPlayer.Play(); } catch { }
                 await StartVoiceInput();
             }
             else
             {
+                _speechSilenceTimer?.Stop();
                 MicIcon.Glyph = "\uF12E";
-                MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Black);
+                MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+                try { _micOffPlayer.Play(); } catch { }
                 await StopVoiceInput();
             }
         }
@@ -359,7 +457,16 @@ public sealed partial class AvatarPage : Page
 
             _speechRecognizer.HypothesisGenerated += (s, args) =>
             {
-                DispatcherQueue.TryEnqueue(() => UserInput.Text = args.Hypothesis.Text);
+                DispatcherQueue.TryEnqueue(() => 
+                {
+                    _speechSilenceTimer?.Stop();
+                    var currentText = args.Hypothesis.Text;
+                    UserInput.Text = string.IsNullOrWhiteSpace(_finalizedSpeech) 
+                        ? currentText 
+                        : $"{_finalizedSpeech} {currentText}";
+
+                    if (_autoSendEnabled) _speechSilenceTimer?.Start();
+                });
             };
 
             _speechRecognizer.ContinuousRecognitionSession.ResultGenerated += (s, args) =>
@@ -368,12 +475,21 @@ public sealed partial class AvatarPage : Page
                 {
                     DispatcherQueue.TryEnqueue(() =>
                     {
-                        UserInput.Text = args.Result.Text;
-                        
-                        // Auto-send if enabled
+                        _speechSilenceTimer?.Stop();
+                        var newText = args.Result.Text;
+                        if (!string.IsNullOrWhiteSpace(newText))
+                        {
+                            _finalizedSpeech = string.IsNullOrWhiteSpace(_finalizedSpeech)
+                                ? newText
+                                : $"{_finalizedSpeech} {newText}";
+                        }
+
+                        UserInput.Text = _finalizedSpeech;
+
+                        // Start timer for natural pause before auto-send
                         if (_autoSendEnabled)
                         {
-                            SendMessage();
+                            _speechSilenceTimer?.Start();
                         }
                     });
                 }
@@ -385,7 +501,7 @@ public sealed partial class AvatarPage : Page
         {
         _isMicEnabled = false;
             MicIcon.Glyph = "\uF12E";
-            MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Black);
+            MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
 
             _speechRecognizer?.Dispose();
             _speechRecognizer = null;
@@ -450,8 +566,9 @@ public sealed partial class AvatarPage : Page
     private async void OnBackClicked(object sender, RoutedEventArgs e)
     {
         _isMicEnabled = false;
+        _speechSilenceTimer?.Stop();
         MicIcon.Glyph = "\uE720";
-        MicIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Black);
+        MicIcon.Foreground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
 
         await StopVoiceInput();
         await StopAllServicesAsync();

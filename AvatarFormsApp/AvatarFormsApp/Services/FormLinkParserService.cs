@@ -71,7 +71,7 @@ public class FormLinkParserService
             Log("CoreWebView2 ready.");
 
             // Route to the correct platform parser
-            if (url.Contains("docs.google.com/forms"))
+            if (url.Contains("docs.google.com/forms") || url.Contains("forms.gle"))
             {
                 Log("Detected Google Forms URL.");
                 return await ParseGoogleFormAsync(url, webView);

@@ -41,7 +41,7 @@ class HeadTTS {
 
       model: "onnx-community/Kokoro-82M-v1.0-ONNX-timestamped",
       dtypeWebgpu: "fp32", // "fp32" | "fp16" | "q8" | "q4" | "q4f16"
-      dtypeWasm: "q4", // "fp32" | "fp16" | "q8" | "q4" | "q4f16"
+      dtypeWasm: "fp32", // "fp32" | "fp16" | "q8" | "q4" | "q4f16"
       styleDim: 256,
       frameRate: 40,
       audioSampleRate: 24000,
