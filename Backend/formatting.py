@@ -2,7 +2,7 @@
 import json
 import re
 
-def clean_script(text):
+def clean_script(text: str) -> str:
     # Remove LLM tags and any text within brackets (), [], {}
     # Remove emojis
     text = LLM_strip(text)
@@ -13,7 +13,7 @@ def clean_script(text):
 # def emojiStrip(text):
 #     return ''.join(c for c in text if c.isalnum() or c.isspace() or c in ['.', ',', '!', '?', ':', ';', '-', '_', '"', "'"])
 
-def emojiStrip(text):
+def emojiStrip(text: str) -> str:
 
     emoji_pattern = re.compile("["
         u"\U0001F600-\U0001F64F"  # emoticons
@@ -36,24 +36,24 @@ def emojiStrip(text):
     text = emoji_pattern.sub(r'', text)
     return text
 
-def LLM_strip(text):
+def LLM_strip(text: str) -> str:
     text = re.sub(r"<[^>]*>.*?</[^>]*>", "", text, flags=re.DOTALL)
     return text.strip()
 
-def bracketStrip(text):
+def bracketStrip(text: str) -> str:
     tag = [["(", ")"], ["[", "]"], ["{", "}"]]
     for t in tag:
         text = tagStrip(text, t[0], t[1])
     return text
 
-def tagStrip(text, start_tag, end_tag):
+def tagStrip(text: str, start_tag: str, end_tag: str) -> str:
     while start_tag in text and end_tag in text:
         start = text.index(start_tag)
         end = text.index(end_tag)
         text = text[:start] + text[end + len(end_tag):]
     return text.strip()
 
-def outputToJSON(text):
+def outputToJSON(text: str) -> dict:
     try:
         text = LLM_strip(text)
         return json.loads(text)
@@ -62,10 +62,10 @@ def outputToJSON(text):
         print(f"Received output: {text}")
         return None
 
-def conversationToText(conversation):
+def conversationToText(conversation: list) -> str:
     return "\n".join([f"{message['role'].capitalize()}: {message['content']}" for message in conversation])
 
-def format_q_and_as(q_and_as):
+def format_q_and_as(q_and_as: dict) -> str:
     text = ""
     for question, answer in q_and_as.items():
         text += f"Q: {question}\nA: {answer}\n\n"
@@ -82,15 +82,15 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-def format_question(question_dict):
+def format_question(question) -> str:
     """Format a structured question dict into a string for the LLM.
 
     For open-ended questions, returns just the text.
     For MCQ questions, appends the numbered options.
     """
-    text = question_dict["text"]
-    q_type = question_dict.get("type", "open_ended")
-    options = question_dict.get("options")
+    text = question.text
+    q_type = question.question_type
+    options = question.options
 
     if q_type == "mcq" and options:
         options_str = "\n".join(f"  {i+1}. {opt}" for i, opt in enumerate(options))
@@ -98,7 +98,7 @@ def format_question(question_dict):
 
     return text
 
-def match_mcq_option(answer, options):
+def match_mcq_option(answer: str, options: list) -> str:
     """Try to match a free-text answer to one of the MCQ options.
 
     Uses case-insensitive substring matching. Returns the best-matching
