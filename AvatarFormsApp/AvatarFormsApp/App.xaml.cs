@@ -157,11 +157,9 @@ public partial class App : Application
             services.AddTransient<ResponseDetailPageViewModel>();
             services.AddTransient<ResponseDetailPage>();
             services.AddTransient<ShellPage>();
-            services.AddTransient<ConversationPage>();
             services.AddTransient<CreateQuestionnairePage>();  
             services.AddSingleton<MainWindow>();
             services.AddTransient<ShellPageViewModel>();
-            services.AddTransient<ConversationPageViewModel>();
             services.AddTransient<CreateQuestionnairePageViewModel>();
 
             // Configuration

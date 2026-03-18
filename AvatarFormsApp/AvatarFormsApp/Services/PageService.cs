@@ -15,7 +15,6 @@ public class PageService : IPageService
     public PageService()
     {
         Configure<DashboardPageViewModel, DashboardPage>();
-        Configure<ConversationPageViewModel, ConversationPage>();
         Configure<ShellPageViewModel, ShellPage>();
         Configure<CreateQuestionnairePageViewModel, CreateQuestionnairePage>();
         Configure<QuestionnaireDetailPageViewModel, QuestionnaireDetailPage>();
