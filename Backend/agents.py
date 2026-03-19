@@ -19,6 +19,12 @@ class Question:
         options = question_dict.get("options")
         return cls(text, question_type, options)
 
+    def __name__(self):
+        return f"Question(text={self.text}, type={self.question_type}, options={self.options})"
+    
+    def __str__(self):
+        return self.__name__()
+
 class Model:
     def __init__(self, url: str, model: str, api_key: str = None, params: dict = None) -> None:
         self.url = url
@@ -93,7 +99,7 @@ class TalkerAgent(Agent):
         prompt = self.system_prompt + task_prompt
         messages = [{"role": "system", "content": prompt}]
         # print(conversationToText(messages))
-        output = self.run(messages, temperature=0.3)
+        output = self.run(messages, temperature=0.5)
         return clean_script(output)
 
     def ask_followup(self, question: str, reasoning: str, transcript: list, previous_q_and_a: list = None, follow_up: str = None) -> str:
@@ -104,7 +110,7 @@ class TalkerAgent(Agent):
         prompt = self.system_prompt + task_prompt
         messages = [{"role": "system", "content": prompt}]
         # print(conversationToText(messages))
-        output = self.run(messages, temperature=0.5)
+        output = self.run(messages, temperature=0.6)
         return clean_script(output)
     
     def closing_statement(self) -> str:

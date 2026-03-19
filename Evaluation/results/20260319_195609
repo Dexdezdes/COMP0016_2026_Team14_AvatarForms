@@ -1,0 +1,237 @@
+{
+    "testCases": [
+        {
+            "name": "Talker - MCQ question with options",
+            "input": "Interview context: Healthcare questionnaire\nConversation history: \nQuestion: How would you rate your overall health?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Excellent\n  2. Good\n  3. Fair\n  4. Poor",
+            "actualOutput": "How would you rate your overall health? Would you say excellent, good, fair, or poor?",
+            "expectedOutput": "How would you rate your overall health? Would you say excellent, good, fair, or poor?",
+            "retrievalContext": [
+                "Healthcare questionnaire"
+            ],
+            "completionTime": 2.2508334000012837,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant statements and directly matched the questionnaire prompt; it cannot be higher since 1.00 represents a perfect relevancy score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0021065,
+                    "verboseLogs": "Statements:\n[\n    \"How would you rate your overall health?\",\n    \"Would you say excellent, good, fair, or poor?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output precisely reproduces the Expected Output: identical wording, punctuation, and option order (excellent, good, fair, poor). Clarity and grammar are unchanged and unambiguous, and there are no missing, extra, or misordered elements, so content, clarity, and format fully align.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00148575,
+                    "verboseLogs": "Criteria:\nDetermine if the question is asked appropriately, clearly, and matches the expected format. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output to confirm the question content and intent are the same, verifying Actual reproduces the main prompt and required context.\",\n    \"Assess clarity and appropriateness by checking wording, grammar, and specificity in Actual versus Expected; note any ambiguity or tone mismatches that alter meaning.\",\n    \"Check format compliance by comparing structure, required fields/tokens, and ordering between Actual and Expected; identify any missing, extra, or misordered elements.\",\n    \"Decide match or mismatch: if content, clarity, and format align mark as match; otherwise list specific discrepancies and their impact on whether the question is usable.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 30.627096400014125,
+            "evaluationCost": 0.00359225,
+            "order": 2
+        },
+        {
+            "name": "Talker - MCQ follow-up when answer is ambiguous",
+            "input": "Interview context: Information collection survey\nConversation history: User: I guess I'm doing okay\nQuestion: How would you rate your mood from 1 to 10?",
+            "actualOutput": "On a scale from 1 to 10, how would you rate your mood today?",
+            "expectedOutput": "To help us better understand, would you say your mood is closer to 1 (very bad), 5 (neutral), or 10 (very good)?",
+            "retrievalContext": [
+                "Information collection survey"
+            ],
+            "completionTime": 2.913464399985969,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output directly addressed the mood-rating question, stayed concise, and included no irrelevant statements; it\u2019s fully on-topic and appropriate for the interview context.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00250975,
+                    "verboseLogs": "Statements:\n[\n    \"The scale is from 1 to 10.\",\n    \"Asks the respondent to rate their mood today.\",\n    \"This sentence is a question requesting a mood rating.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": false,
+                    "score": 0.2,
+                    "reason": "Fails Step 1 and 2: the Actual Output is a generic 1\u201310 rating question, while the Expected asks respondents to choose which anchor they are closer to and provides labels for 1 (very bad), 5 (neutral), and 10 (very good). The Actual omits the anchor points and the guiding phrasing (\u201cTo help us better understand\u2026\u201d), altering meaning and reducing clarity. Discrepancies: missing descriptors/anchor choices and changed phrasing/format. To correct, restore the anchor labels and ask whether mood is closer to 1, 5, or 10 using the expected wording/structure.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0023924999999999997,
+                    "verboseLogs": "Criteria:\nDetermine if the question is asked appropriately, clearly, and matches the expected format. \n \nEvaluation Steps:\n[\n    \"Verify Expected Output presents the question in the required format: appropriately phrased, clear, unambiguous, and adheres to any structural/formatting rules.\",\n    \"Compare Actual Output to Expected Output for both content and format: check for exact match or valid semantic equivalence, identical field names/order, and preserved clarity.\",\n    \"Identify and document any discrepancies between Actual and Expected: missing elements, extra content, altered meaning, formatting violations, or introduced ambiguity.\",\n    \"Decide pass/fail based on whether Actual preserves the Expected question's clarity and format; if failing, list specific corrections needed to align Actual with Expected.\"\n] \n \nRubric:\nNone \n \nScore: 0.2"
+                }
+            ],
+            "runDuration": 29.50332109996816,
+            "evaluationCost": 0.0049022499999999995,
+            "order": 5
+        },
+        {
+            "name": "Talker - Rephrasing when answer is unclear",
+            "input": "Interview context: Sleep quality survey\nConversation history: User: I don't know, I was asleep\nQuestion: How did you sleep last night?",
+            "actualOutput": "On a scale from 1 to 10, how would you rate your sleep last night?",
+            "expectedOutput": "Fair enough. Did you wake up feeling rested, or still tired?",
+            "retrievalContext": [
+                "Sleep quality survey"
+            ],
+            "completionTime": 3.106988799991086,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response directly addressed the sleep question with no irrelevant content. It cannot be higher because 1.00 is the maximum possible score, and the output already contains no extraneous statements.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00208475,
+                    "verboseLogs": "Statements:\n[\n    \"The text asks to rate your sleep last night on a scale from 1 to 10.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": false,
+                    "score": 0.2,
+                    "reason": "The Actual Output and Expected Output address the same general topic (sleep last night) but differ in content and intent: the Actual asks for a numeric 1\u201310 rating while the Expected asks a qualitative follow-up about feeling rested vs tired (mismatch per Step 1). The Actual is clear and unambiguous (Step 2), and both are plain questions so format/structure are comparable (Step 3). However, the Actual omits the required qualitative element and adds an extraneous numeric scale not present in the Expected Output (Step 4), so it does not fulfill the Expected prompt's requested action.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0023425,
+                    "verboseLogs": "Criteria:\nDetermine if the question is asked appropriately, clearly, and matches the expected format. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output for content and intent: verify the question in the Actual Output asks for the same subject, scope, and requested action as the Expected Output.\",\n    \"Assess clarity and appropriateness: confirm the Actual Output's question is clearly worded, unambiguous, and includes necessary details; flag if it is vague, leading, or inappropriate relative to the Expected Output.\",\n    \"Verify format and structure conformity: check that the Actual Output matches the Expected Output's required format (e.g., JSON keys, field names, placeholders, code blocks, punctuation and ordering); any structural deviations should be noted.\",\n    \"Identify omissions and extraneous content: ensure the Actual Output contains all required elements from the Expected Output and no unrelated or additional content; report specific missing or extra parts to determine pass/fail.\"\n] \n \nRubric:\nNone \n \nScore: 0.2"
+                }
+            ],
+            "runDuration": 31.21799540001666,
+            "evaluationCost": 0.00442725,
+            "order": 4
+        },
+        {
+            "name": "Talker - Simple open-ended question 2",
+            "input": "Interview context: Sleep quality survey\nConversation history: \nQuestion: How did you sleep last night?",
+            "actualOutput": "How would you rate your sleep last night? A) Excellent, B) Good, C) Fair, D) Poor.",
+            "expectedOutput": "How did you sleep last night? Could you describe the quality of your sleep?",
+            "retrievalContext": [
+                "Sleep quality survey"
+            ],
+            "completionTime": 16.886138600006234,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant statements and directly addressed the sleep-quality question; it can\u2019t be higher because 1.00 is the maximum possible score. Nice and focused!",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0024879999999999998,
+                    "verboseLogs": "Statements:\n[\n    \"How would you rate your sleep last night?\",\n    \"A) Excellent\",\n    \"B) Good\",\n    \"C) Fair\",\n    \"D) Poor\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": false,
+                    "score": 0.3,
+                    "reason": "The Actual Output addresses sleep quality but diverges from the Expected Output\u2019s required open-ended descriptive prompt. It is clear and grammatically correct, but it changes format to a closed multiple-choice rating (A\u2013D) rather than asking the respondent to \u201cdescribe the quality of your sleep.\u201d Required element (request for a description) is missing and extraneous labeled choices are added, so the intent and response format are not preserved.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0018412499999999998,
+                    "verboseLogs": "Criteria:\nDetermine if the question is asked appropriately, clearly, and matches the expected format. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output to confirm the question follows the same required format (structure, fields, ordering, and any explicit templates).\",\n    \"Evaluate clarity and appropriateness by checking that both Actual and Expected use clear, unambiguous wording, correct grammar, and a direct question that matches the prompt intent.\",\n    \"Verify that all required elements from the Expected Output are present in the Actual Output (labels, examples, constraints) and that no extraneous or missing items alter the meaning.\",\n    \"Record any mismatches between Actual and Expected (format deviations, clarity issues, missing/extra content) and mark whether the Actual Output preserves the Expected Output's intent and validity.\"\n] \n \nRubric:\nNone \n \nScore: 0.3"
+                }
+            ],
+            "runDuration": 36.474430300004315,
+            "evaluationCost": 0.00432925,
+            "order": 1
+        },
+        {
+            "name": "Talker - Simple open-ended question 1",
+            "input": "Interview context: Job interview for a software developer position\nConversation history: \nQuestion: What is your greatest strength?",
+            "actualOutput": "What is your greatest strength as a software developer?",
+            "expectedOutput": "Could you tell me about your greatest strength?",
+            "retrievalContext": [
+                "Job interview for a software developer position"
+            ],
+            "completionTime": 6.486917600035667,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response stayed fully focused on answering the interview question with no irrelevant statements. It can\u2019t be higher since 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00178925,
+                    "verboseLogs": "Statements:\n[\n    \"What is your greatest strength as a software developer?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 0.7,
+                    "reason": "Both outputs ask about a person\u2019s greatest strength and are clear and unambiguous, so intent and clarity largely align. However, the Actual output adds the phrase \u201cas a software developer,\u201d which narrows the scope from the Expected\u2019s general question\u2014this is a substantive difference (major) because it changes the target domain. There is also a minor stylistic difference: the Expected\u2019s more polite phrasing (\u201cCould you tell me about\u2026\u201d) versus Actual\u2019s direct phrasing. No format or structural issues are present. Overall alignment is good but reduced by the scope change.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00196875,
+                    "verboseLogs": "Criteria:\nDetermine if the question is asked appropriately, clearly, and matches the expected format. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output: confirm the question in Actual matches the Expected in intent, scope, and required information.\",\n    \"Assess clarity and appropriateness: verify both Actual and Expected are phrased clearly, use appropriate language, and are unambiguous for the target audience.\",\n    \"Check format conformity: ensure Actual follows the exact expected format, structure, required fields, and any specified syntax or placeholders.\",\n    \"Report discrepancies and impact: list specific differences between Actual and Expected (wording, meaning, or format), and classify each as minor (stylistic) or major (changes intent or breaks format).\"\n] \n \nRubric:\nNone \n \nScore: 0.7"
+                }
+            ],
+            "runDuration": 46.0714275999926,
+            "evaluationCost": 0.003758,
+            "order": 0
+        },
+        {
+            "name": "Talker - Rephrased question based on context",
+            "input": "Interview context: Job interview\nConversation history: User: I'm good at solving complex problems\nQuestion: Could you tell me about a time where you demonstrated this strength?",
+            "actualOutput": "Could you share an example of a time when you applied your problem-solving skills to overcome a challenging situation?",
+            "expectedOutput": "I hear you mentioned that you're good at solving complex problems. Could you provide a specific example of a problem you've solved in the past?",
+            "retrievalContext": [
+                "Job interview"
+            ],
+            "completionTime": 2.376532300026156,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output was fully focused on answering the interview question with a concrete example of complex problem-solving and contained no irrelevant statements; it cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00187425,
+                    "verboseLogs": "Statements:\n[\n    \"The requester asks for an example of a time when the respondent applied their problem-solving skills to overcome a challenging situation.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 0.9,
+                    "reason": "Step 1: Both Expected and Actual are single-sentence behavioral prompts asking for an example of problem-solving, so expected format is a short question. Step 2: The Actual aligns with the Expected in intent \u2014 requesting a past example of problem-solving \u2014 and uses an appropriate question form. Step 3: Clarity is good in both; the Actual is unambiguous. Step 4: Discrepancies are minor: the Actual omits the Expected's opening acknowledgement (\u201cI hear you mentioned...\u201d) and does not explicitly include the word \u201cspecific,\u201d though it implies specificity; the Expected mentions \u201ccomplex problems\u201d while the Actual says \u201cchallenging situation.\u201d These are wording differences but do not change intent, so the Actual passes with minor deviations.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00242825,
+                    "verboseLogs": "Criteria:\nDetermine if the question is asked appropriately, clearly, and matches the expected format. \n \nEvaluation Steps:\n[\n    \"Confirm the Expected Output's required format, structure, and mandatory components to use as the evaluation baseline.\",\n    \"Compare the Actual Output against the Expected Output for exact format alignment (field names, data types, structure, and order when required).\",\n    \"Evaluate clarity and appropriateness by checking that the Actual Output's question wording is unambiguous, matches the Expected Output's intent, and includes all necessary details.\",\n    \"List and classify discrepancies between Actual and Expected (missing/extra elements, format violations, ambiguous wording) and mark whether the Actual Output passes or fails against the Expected criteria.\"\n] \n \nRubric:\nNone \n \nScore: 0.9"
+                }
+            ],
+            "runDuration": 114.3025327999494,
+            "evaluationCost": 0.0043025,
+            "order": 3
+        }
+    ],
+    "conversationalTestCases": [],
+    "metricsScores": [],
+    "prompts": [],
+    "runDuration": 0.0,
+    "evaluationCost": 0.0253115
+}

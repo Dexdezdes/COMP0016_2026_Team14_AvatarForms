@@ -1,0 +1,275 @@
+{
+    "testCases": [
+        {
+            "name": "RAG - Extract from conversation with follow-ups",
+            "input": "Question: <agents.Question object at 0x000001DA73265D90>",
+            "actualOutput": "Software engineer for about three years",
+            "expectedOutput": "I am a software engineer and I have been in this role for about three years.",
+            "retrievalContext": [
+                "Interview context: Employment history\nConversation history: Assistant: What is your current job?\nUser: I work as a software engineer\nAssistant: How long have you been in this role?\nUser: About three years now"
+            ],
+            "completionTime": 9.096698700042907,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contains no irrelevant statements and directly addresses the input; 1.00 is the maximum possible score so it cannot be higher. Nice clear and on-topic response.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002136,
+                    "verboseLogs": "Statements:\n[\n    \"Has been a software engineer for about three years.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"The actual question content is not provided (only a placeholder object). A statement about three years as a software engineer could be relevant if the question concerns background, experience, or qualifications, but may be irrelevant for other questions.\"\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the Contradictions list is empty, indicating no discrepancies were found and the actual output fully aligns with the retrieval context\u2014well done!",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0024912500000000004,
+                    "verboseLogs": "Truths (limit=None):\n[\n    \"The interview context is employment history.\",\n    \"The assistant asked, \"What is your current job?\"\",\n    \"The user replied, \"I work as a software engineer.\"\",\n    \"The assistant asked, \"How long have you been in this role?\"\",\n    \"The user replied, \"About three years now.\"\",\n    \"According to the user, their current job is software engineer.\",\n    \"According to the user, they have been in this role for about three years.\"\n] \n \nClaims:\n[\n    \"Software engineer for about three years\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                }
+            ],
+            "runDuration": 40.875380799989216,
+            "evaluationCost": 0.00462725,
+            "order": 2
+        },
+        {
+            "name": "RAG - MCQ option matching",
+            "input": "Question: <agents.Question object at 0x000001DA73265E50>\nOptions:\n1. Excellent\n2. Good\n3. Fair\n4. Poor",
+            "actualOutput": "Good",
+            "expectedOutput": "Good",
+            "retrievalContext": [
+                "Interview context: Health survey\nConversation history: Assistant: How would you describe your sleep quality?\nUser: Most nights I sleep pretty well, but sometimes I have trouble"
+            ],
+            "completionTime": 1.9626322999829426,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the actual output contained no irrelevant statements and directly addressed the input; this is the maximum possible score so it cannot be higher. Nice, clear and focused response.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0015214999999999998,
+                    "verboseLogs": "Statements:\n[\n    \"Good\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the Contradictions list is empty, indicating no discrepancies and that the actual output fully aligns with the retrieval context \u2014 great job!",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00377275,
+                    "verboseLogs": "Truths (limit=None):\n[\n    \"The interview context is a health survey.\",\n    \"The assistant asked, \"How would you describe your sleep quality?\"\",\n    \"The user replied, \"Most nights I sleep pretty well, but sometimes I have trouble.\"\",\n    \"The user reports that most nights they sleep pretty well.\",\n    \"The user reports that sometimes they have trouble sleeping.\",\n    \"The exchange is part of a conversation history.\",\n    \"The topic of the assistant's question was the user's sleep quality.\",\n    \"The assistant prompted the user to describe their sleep quality.\"\n] \n \nClaims:\n[\n    \"The AI output provided is the single word \"Good\".\",\n    \"The AI output consists of one word: \"Good\".\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"Retrieval context does not state that the AI output was the single word \\\"Good.\\\" It shows the assistant asked, \\\"How would you describe your sleep quality?\\\" and the user replied, \\\"Most nights I sleep pretty well, but sometimes I have trouble.\\\"\"\n    },\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"Retrieval context provides no evidence that the AI output consisted of the one word \\\"Good.\\\" Instead, it records the assistant question and the user's reply: \\\"Most nights I sleep pretty well, but sometimes I have trouble.\\\"\"\n    }\n]"
+                }
+            ],
+            "runDuration": 47.435793000040576,
+            "evaluationCost": 0.00529425,
+            "order": 3
+        },
+        {
+            "name": "RAG - Don't hallucinate information",
+            "input": "Question: <agents.Question object at 0x000001DA73266110>",
+            "actualOutput": "I'm in my thirties",
+            "expectedOutput": "I am in my thirties",
+            "retrievalContext": [
+                "Interview context: Personal information\nConversation history: Assistant: What is your age?\nUser: I'm in my thirties"
+            ],
+            "completionTime": 3.178609199996572,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output was fully relevant to the input and contained no irrelevant statements. It cannot be higher since 1.00 is the maximum\u2014well done.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0019825,
+                    "verboseLogs": "Statements:\n[\n    \"I am in my thirties.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"The question content is not provided (only an object reference), so it is unclear whether the speaker's age is relevant. Being in one\\u2019s thirties could be relevant for age-specific questions but irrelevant for others.\"\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the Contradictions list is empty, indicating there are no detected mismatches and the actual output fully aligns with the retrieval context \u2014 great job!",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00405225,
+                    "verboseLogs": "Truths (limit=None):\n[\n    \"The text is labeled as an interview context about personal information.\",\n    \"The assistant asked the question: \"What is your age?\"\",\n    \"The user replied: \"I'm in my thirties\".\",\n    \"The user self-reported that their age falls in their thirties.\",\n    \"Saying \"I'm in my thirties\" implies an age between 30 and 39 years old.\",\n    \"The user did not provide an exact numeric age, only an age range.\",\n    \"The conversation history contains at least one assistant utterance and one user utterance.\",\n    \"The user's statement refers to their age at the time of the conversation.\"\n] \n \nClaims:\n[\n    \"I'm in my thirties.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                }
+            ],
+            "runDuration": 43.63001730001997,
+            "evaluationCost": 0.00603475,
+            "order": 5
+        },
+        {
+            "name": "RAG - Extract from verbose answer",
+            "input": "Question: <agents.Question object at 0x000001DA73265C10>",
+            "actualOutput": "Penicillin, cats",
+            "expectedOutput": "I am allergic to penicillin and cats.",
+            "retrievalContext": [
+                "Interview context: Medical history\nConversation history: Assistant: Do you have any allergies?\nUser: Well, let me think. I remember when I was a kid, I had a bad reaction to penicillin. Also, I'm pretty sure I'm allergic to cats because I always sneeze around them."
+            ],
+            "completionTime": 6.909597099991515,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contains no irrelevant statements and fully addresses the input; it cannot be higher since 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0022362499999999995,
+                    "verboseLogs": "Statements:\n[\n    \"Penicillin\",\n    \"cats\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"The input provides only an object reference, not the question text. Cannot determine if 'Penicillin' (an antibiotic; relevant to medical, allergy, or treatment questions) applies to the unknown question.\"\n    },\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"The input is an object reference without the actual question. 'cats' could be relevant for questions about pets, allergies, biology, behavior, or culture, but relevance is unclear from the provided input.\"\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the contradictions list is empty, indicating no discrepancies between the actual output and the retrieval context\u2014great job!",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0051407499999999995,
+                    "verboseLogs": "Truths (limit=None):\n[\n    \"The conversation is an interview about medical history.\",\n    \"The assistant asked the user if they have any allergies.\",\n    \"The user recalls having a bad reaction to penicillin when they were a kid.\",\n    \"The user says they are \"pretty sure\" they are allergic to cats.\",\n    \"The user reports that they always sneeze around cats.\",\n    \"The user links their sneezing around cats to their belief that they are allergic to cats.\"\n] \n \nClaims:\n[\n    \"The AI output lists \"Penicillin\".\",\n    \"The AI output lists \"cats\".\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"The retrieval context shows the user recalled a bad reaction to penicillin, but it does not show the assistant's output or confirm that the AI explicitly listed 'Penicillin'.\"\n    },\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"The retrieval context shows the user saying they are 'pretty sure' they are allergic to cats and that they sneeze around cats, but it does not show the assistant's output or confirm that the AI explicitly listed 'cats'.\"\n    }\n]"
+                }
+            ],
+            "runDuration": 55.860817299981136,
+            "evaluationCost": 0.007376999999999999,
+            "order": 1
+        },
+        {
+            "name": "RAG - Handle multiple pieces of information",
+            "input": "Question: <agents.Question object at 0x000001DA73266010>",
+            "actualOutput": "Every six months",
+            "expectedOutput": "I visit the dentist every six months and my last visit was about three months ago.",
+            "retrievalContext": [
+                "Interview context: Dental intake\nConversation history: Assistant: How often do you visit the dentist?\nUser: I try to go every six months\nAssistant: When was your last visit?\nUser: About three months ago"
+            ],
+            "completionTime": 3.967967500037048,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant statements and directly addressed the input; it cannot be higher because 1.00 is the maximum on the provided scale.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.001369,
+                    "verboseLogs": "Statements:\n[\n    \"Every six months\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"The input question is an opaque object reference (<agents.Question object ...>), so I cannot see its content. \\\"Every six months\\\" could be relevant if the question asked about frequency/schedule, but may be irrelevant otherwise.\"\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 0.5,
+                    "reason": "The score is 0.50 because the retrieval context shows the user said they try to go every six months; it does not say the AI output the text 'Every six months', so the actual output\u2019s presentation of that exact phrasing misattributes or fabricates the model\u2019s wording, creating a partial contradiction.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00493475,
+                    "verboseLogs": "Truths (limit=None):\n[\n    \"The context is a dental intake interview.\",\n    \"The assistant asked the user how often they visit the dentist.\",\n    \"The user said they try to go every six months.\",\n    \"The assistant asked when the user's last visit was.\",\n    \"The user said their last visit was about three months ago.\",\n    \"The conversation history includes alternating turns by an assistant and a user.\"\n] \n \nClaims:\n[\n    \"The AI output is the text \"Every six months\".\",\n    \"The phrase \"Every six months\" indicates a recurring event with an interval of six months between occurrences.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"no\",\n        \"reason\": \"The retrieval context shows the user said they try to go every six months; it does not say the AI output the text 'Every six months'.\"\n    },\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"The context records the user saying 'I try to go every six months', which implies a recurring event, but the context does not explicitly state that the phrase means an interval of six months between occurrences.\"\n    }\n]"
+                }
+            ],
+            "runDuration": 51.495040599955246,
+            "evaluationCost": 0.00630375,
+            "order": 4
+        },
+        {
+            "name": "RAG - Simple answer extraction",
+            "input": "Question: <agents.Question object at 0x000001DA73265B10>",
+            "actualOutput": "John Michael Smith",
+            "expectedOutput": "John Michael Smith",
+            "retrievalContext": [
+                "Interview context: Job application\nConversation history: Assistant: What is your full name?\nUser: My name is John Michael Smith"
+            ],
+            "completionTime": 7.639749599969946,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response fully addressed the input with no irrelevant statements; it can't be higher since 1.00 is the maximum possible score. Nice work\u2014clear, focused, and on-topic.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0017174999999999998,
+                    "verboseLogs": "Statements:\n[\n    \"John Michael Smith\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"The input shows only a Question object reference with no content. Without the question text or context, it is impossible to determine whether the name 'John Michael Smith' is relevant.\"\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness",
+                    "threshold": 0.5,
+                    "success": false,
+                    "score": 0.0,
+                    "reason": "The score is 0.00 because the actual output wrongly attributes the user-produced line 'My name is John Michael Smith.' to the AI: the contradictions state the User, not the AI, produced that text; they note the AI did not output the words John, Michael, and Smith; and they confirm the AI asked 'What is your full name?' rather than outputting that single-line name.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.005037,
+                    "verboseLogs": "Truths (limit=None):\n[\n    \"The conversation context is a job application interview.\",\n    \"The Assistant asked, \"What is your full name?\"\",\n    \"The User replied, \"My name is John Michael Smith.\"\",\n    \"The User provided their full name as John Michael Smith.\",\n    \"The conversation participants are an Assistant and a User.\",\n    \"The exchange includes a question from the Assistant and an answer from the User.\"\n] \n \nClaims:\n[\n    \"The AI output consists of the text \"John Michael Smith\".\",\n    \"The AI output contains the three words \"John\", \"Michael\", and \"Smith\" in that order.\",\n    \"The AI output is presented as a single line containing only \"John Michael Smith\".\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"no\",\n        \"reason\": \"The retrieval context shows the User replied, \\\"My name is John Michael Smith.\\\" The text was produced by the User, not the AI (the AI's utterance was the question \\\"What is your full name?\\\").\"\n    },\n    {\n        \"verdict\": \"no\",\n        \"reason\": \"The context indicates the words \\\"John\\\", \\\"Michael\\\", and \\\"Smith\\\" were in the User's reply; the statement that the AI output contains them contradicts the context because the User, not the AI, produced that text.\"\n    },\n    {\n        \"verdict\": \"no\",\n        \"reason\": \"The context records the User providing the single-line text \\\"My name is John Michael Smith.\\\" The claim that the AI output is that single line contradicts the context, which shows the AI asked \\\"What is your full name?\\\" and did not output that name.\"\n    }\n]"
+                }
+            ],
+            "runDuration": 60.785335100023076,
+            "evaluationCost": 0.0067545,
+            "order": 0
+        },
+        {
+            "name": "RAG - Handle preferences and ratings",
+            "input": "Question: <agents.Question object at 0x000001DA73266210>",
+            "actualOutput": "My favorite movie genre is science fiction, especially those about space exploration.",
+            "expectedOutput": "Science fiction, particularly space exploration themes",
+            "retrievalContext": [
+                "Interview context: Movie preference survey\nConversation history: Assistant: What's your favorite movie genre?\nUser: I really enjoy science fiction, especially ones about space exploration"
+            ],
+            "completionTime": 2.7845029000309296,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant statements and fully addressed the input; it cannot be higher since 1.00 is the maximum. Nice work \u2014 the response is fully relevant.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0021174999999999996,
+                    "verboseLogs": "Statements:\n[\n    \"My favorite movie genre is science fiction.\",\n    \"I especially like science fiction movies about space exploration.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"The input is an unspecified Question object; without knowing the question content, I cannot determine whether a personal statement about favorite movie genre is relevant.\"\n    },\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"The input is an unspecified Question object; without knowing the question content, I cannot determine whether a personal statement about liking space-exploration sci-fi movies is relevant.\"\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the contradictions list is empty, indicating the actual output fully aligns with the retrieval context \u2014 excellent, faithful match.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.005718249999999999,
+                    "verboseLogs": "Truths (limit=None):\n[\n    \"The interaction is described as an interview context: a movie preference survey.\",\n    \"The assistant asked, \"What's your favorite movie genre?\".\",\n    \"The user responded that they really enjoy science fiction.\",\n    \"The user specified a preference for science fiction films about space exploration.\",\n    \"The conversation history records an exchange between an assistant and a user.\",\n    \"The user's response follows the assistant's question in the conversation history.\"\n] \n \nClaims:\n[\n    \"My favorite movie genre is science fiction, especially those about space exploration.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                }
+            ],
+            "runDuration": 48.94092800002545,
+            "evaluationCost": 0.007835749999999999,
+            "order": 6
+        }
+    ],
+    "conversationalTestCases": [],
+    "metricsScores": [],
+    "prompts": [],
+    "runDuration": 0.0,
+    "evaluationCost": 0.044227249999999996
+}
