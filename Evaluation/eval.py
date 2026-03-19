@@ -13,14 +13,14 @@ from deepeval import evaluate
 from deepeval.models import GPTModel
 
 class AgentEvaluation:
-    def __init__(self, judge_model: str, agent_model: Model, talker_agent: Agent, evaluator_agent: Agent, summariser_agent: Agent):
+    def __init__(self, judge_model: str, agent_model: Model, talker_agent: Agent, evaluator_agent: Agent, summariser_agent: Agent) -> None:
         self.judge_model = GPTModel(model=judge_model)
         self.agent_model = agent_model
         self.talker_agent = talker_agent
         self.evaluator_agent = evaluator_agent
         self.summariser_agent = summariser_agent
 
-    def run_summariser_tests(self, test_cases: list[SummariserTestCase]):
+    def run_summariser_tests(self, test_cases: list[SummariserTestCase]) -> None:
         deepeval_test_cases = [test_case.deepeval_testcase(model=self.agent_model, summariser_agent=self.summariser_agent) for test_case in test_cases]
         
         metrics = [
@@ -29,7 +29,7 @@ class AgentEvaluation:
         ]
         evaluate(deepeval_test_cases, metrics)
     
-    def run_evaluator_tests(self, test_cases: list[EvaluatorTestCase]):
+    def run_evaluator_tests(self, test_cases: list[EvaluatorTestCase]) -> None:
         deepeval_test_cases = [test_case.deepeval_testcase(model=self.agent_model, evaluator_agent=self.evaluator_agent) for test_case in test_cases]
         
         # Define metrics for Evaluator evaluation
@@ -51,7 +51,7 @@ class AgentEvaluation:
         ]
         evaluate(deepeval_test_cases, metrics)
 
-    def run_talker_tests(self, test_cases: list[TalkerTestCase]):
+    def run_talker_tests(self, test_cases: list[TalkerTestCase]) -> None:
         deepeval_test_cases = [test_case.deepeval_testcase(model=self.agent_model, talker_agent=self.talker_agent) for test_case in test_cases]
                 # Define metrics for Talker evaluation
         metrics = [
@@ -79,12 +79,8 @@ if __name__ == "__main__":
         summariser_agent=RAG_Agent
     )
 
-    # Run evaluations and capture results
-    summariser_results = agent_evaluation.run_summariser_tests(summariser_test_cases)
-    print(summariser_results)
-    
-    evaluator_results = agent_evaluation.run_evaluator_tests(evaluator_test_cases)
-    print(evaluator_results)
-    
-    talker_results = agent_evaluation.run_talker_tests(talker_test_cases)
-    print(talker_results)
+    # Run evaluations
+    # Results save to folder specified in .env file (DEEPEVAL_RESULTS_FOLDER)
+    agent_evaluation.run_summariser_tests(summariser_test_cases)
+    agent_evaluation.run_evaluator_tests(evaluator_test_cases)
+    agent_evaluation.run_talker_tests(talker_test_cases)
