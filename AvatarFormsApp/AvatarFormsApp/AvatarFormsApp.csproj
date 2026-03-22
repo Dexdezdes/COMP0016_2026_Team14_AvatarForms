@@ -58,7 +58,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="../../Backend/**/*">
+        <Content Include="../../Backend/**/*" Exclude="../../Backend/env/**/*;../../Backend/**/__pycache__/**/*">
             <Link>Backend/%(RecursiveDir)%(FileName)%(Extension)</Link>
             <LogicalName>Backend/%(RecursiveDir)%(FileName)%(Extension)</LogicalName>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -76,16 +76,14 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Playwright" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
         <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="Microsoft.Web.WebView2" />
         <PackageReference Include="Newtonsoft.Json" />
-        <PackageReference Include="System.Speech" />
+        <PackageReference Include="System.Management" />
     </ItemGroup>
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-        <Reference Include="System.Speech" />
         <PackageReference Include="WinUIEx" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" />
     </ItemGroup>
@@ -100,5 +98,7 @@
       <Content Remove="..\..\Backend\google_gemma-3-4b-it-Q6_K.llamafile" />
       <Content Remove="..\..\Backend\requirements.txt" />
     </ItemGroup>
+
+    <Target Name="GetTargetPathWithTargetPlatformMoniker" Returns="@(TargetPathWithTargetPlatformMoniker)" />
 
     </Project>

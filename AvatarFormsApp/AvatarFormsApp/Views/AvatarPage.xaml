@@ -26,7 +26,7 @@
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" Click="OnBackClicked" Background="Transparent" BorderBrush="Transparent">
                     <StackPanel Orientation="Horizontal">
-                        <FontIcon Glyph="&#xE72B;" FontSize="16" Foreground="Gray"/>
+                        <FontIcon Glyph="&#xE72B;" FontSize="16" Foreground="LightGray"/>
                     </StackPanel>
                 </Button>
                 <AppBarToggleButton x:Name="SettingsToggle"
@@ -40,7 +40,7 @@
                                     Checked="OnSettingsToggleChanged"
                                     Unchecked="OnSettingsToggleChanged">
                     <AppBarToggleButton.Icon>
-                        <FontIcon Glyph="&#xE713;" FontSize="24" Foreground="#444"/>
+                        <FontIcon Glyph="&#xE713;" FontSize="24" Foreground="LightGray"/>
                     </AppBarToggleButton.Icon>
                 </AppBarToggleButton>
                 <AppBarToggleButton x:Name="ConsoleToggle"
@@ -53,7 +53,7 @@
                                     Checked="OnConsoleToggleChanged"
                                     Unchecked="OnConsoleToggleChanged">
                     <AppBarToggleButton.Icon>
-                        <FontIcon Glyph="&#xE756;" FontSize="30" Foreground="#444"/>
+                        <FontIcon Glyph="&#xE756;" FontSize="30" Foreground="LightGray"/>
                     </AppBarToggleButton.Icon>
                 </AppBarToggleButton>
             </Grid>
@@ -172,17 +172,46 @@
                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                        TextWrapping="Wrap"
                                                        Margin="0,0,0,8"/>
-                                            <StackPanel Orientation="Horizontal" Spacing="16">
-                                                <RadioButton x:Name="AvatarJuliaRadio"
-                                                             Content="Julia"
-                                                             IsChecked="True"
-                                                             GroupName="AvatarSelection"
-                                                             Checked="OnAvatarSelectionChanged"/>
-                                                <RadioButton x:Name="AvatarDavidRadio"
-                                                             Content="David"
-                                                             GroupName="AvatarSelection"
-                                                             Checked="OnAvatarSelectionChanged"/>
-                                            </StackPanel>
+                                            <ComboBox x:Name="AvatarComboBox"
+                                                      SelectionChanged="OnAvatarSelectionChanged"
+                                                      HorizontalAlignment="Stretch">
+                                                <ComboBoxItem Content="Julia" Tag="julia" />
+                                                <ComboBoxItem Content="David" Tag="david" />
+                                                <ComboBoxItem Content="Doozy" Tag="doozy" />
+                                                <ComboBoxItem Content="Sam" Tag="sam" />
+                                            </ComboBox>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Voice Section -->
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Voice"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                                    <Border Background="#E61A1A1A"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="4"
+                                            Padding="16,12">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="Select voice"
+                                                       FontSize="14"
+                                                       FontWeight="Medium"/>
+                                            <TextBlock Text="Choose the voice for the avatar"
+                                                       FontSize="12"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,0,0,8"/>
+                                            <ComboBox x:Name="VoiceComboBox"
+                                                      SelectionChanged="OnVoiceSelectionChanged"
+                                                      HorizontalAlignment="Stretch">
+                                                <ComboBoxItem Content="Fenrir (American Male)" Tag="am_fenrir" />
+                                                <ComboBoxItem Content="Bella (American Female)" Tag="af_bella" />
+                                                <ComboBoxItem Content="Fable (British Male)" Tag="bm_fable" />
+                                            </ComboBox>
                                         </StackPanel>
                                     </Border>
                                 </StackPanel>
@@ -228,14 +257,8 @@
             </Grid>
 
             <Grid Grid.Row="2" VerticalAlignment="Bottom" Margin="25,0,25,25">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
                 <TextBox x:Name="UserInput" 
-                        Grid.Column="0"
-                        Height="40"
+                        Height="48"
                         TextWrapping="Wrap"
                         VerticalAlignment="Bottom"
                         VerticalContentAlignment="Center"
@@ -246,33 +269,44 @@
                         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                         BorderBrush="LightGray"
                         BorderThickness="1"
+                        Padding="12,12,88,0"
                         CornerRadius="4"/> 
 
-                <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Margin="20,0,0,0" Spacing="8">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
-                        <Button x:Name="MicButton" 
-                                Click="OnMicClicked"
-                                Width="40" Height="40"
-                                Padding="0"
-                                CornerRadius="28"
-                                HorizontalContentAlignment="Center" 
-                                VerticalContentAlignment="Center"> 
-                            <FontIcon x:Name="MicIcon" 
-                                    Glyph="&#xE720;" 
-                                    FontSize="20" 
-                                    Foreground="White" 
-                                    HorizontalAlignment="Center" 
-                                    VerticalAlignment="Center"/> 
-                        </Button>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0" Spacing="4">
+                    <Button x:Name="MicButton" 
+                            Click="OnMicClicked"
+                            Style="{ThemeResource DefaultButtonStyle}"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            Width="36" Height="36"
+                            Padding="0"
+                            CornerRadius="18"
+                            HorizontalContentAlignment="Center" 
+                            VerticalContentAlignment="Center"> 
+                        <FontIcon x:Name="MicIcon" 
+                                Glyph="&#xE720;" 
+                                FontSize="18" 
+                                Foreground="{ThemeResource TextFillColorPrimaryBrush}" 
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Center"/> 
+                    </Button>
 
-                        <Button Content="Send" 
-                                Click="OnSendClicked" 
-                                Width="70" Height="40"
-                                FontSize="14"
-                                FontWeight="Bold"
-                                CornerRadius="8"
-                                BorderThickness="0"/> 
-                    </StackPanel>
+                    <Button Click="OnSendClicked" 
+                            Style="{ThemeResource DefaultButtonStyle}"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            Width="36" Height="36"
+                            Padding="0"
+                            CornerRadius="18"
+                            HorizontalContentAlignment="Center" 
+                            VerticalContentAlignment="Center"
+                            ToolTipService.ToolTip="Send"> 
+                        <FontIcon Glyph="&#xE122;" 
+                                FontSize="18" 
+                                Foreground="{ThemeResource TextFillColorPrimaryBrush}" 
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Center"/> 
+                    </Button> 
                 </StackPanel>
             </Grid>
         </Grid> 

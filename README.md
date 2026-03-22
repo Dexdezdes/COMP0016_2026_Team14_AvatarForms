@@ -1,93 +1,129 @@
 # AvatarForms
 
-This project uses a C# WinUI 3 frontend and a Python-based AI backend powered by Ollama.
+AvatarForms is a Windows application for conversion of digital forms into 3D avatars with a fully local AI interview pipeline.
 
-## Setup Instructions
+## Project Structure
 
-### 1. Install Ollama
-Download and install Ollama from [ollama.com](https://ollama.com).
-Once installed, pull the required model (Dex uses gemma3:1b because of Ram constraints change local_prototype.py if needed):
-```bash
-ollama pull gemma3:1b
+```
+.
+├── AvatarFormsApp/    # Backend (.NET 10), Frontend (WinUI), Database (SQLite).
+├── Backend/           # Python AI agent orchestration layer with APIs (HTTP + WebSocket)
+├── HeadTTS/           # Open-sourced JavaScript TTS solution by @met4citizen 
+├── .gitignore         # Git ignore configuration
+└── README.MD          # This file
 ```
 
-### 2. Import the github project into Visual Studio
-Clone from github and paste the url of this repository.
+## Current Project Configuration
 
-### 3. Set Up Python Environment
-In the AvatarFormsApp directory just below the AvatarForms root folder
-Create the python virtual environment:
+1. SDK: `Uno.Sdk` `6.5.31`
 
-```bash
-#Windows
-python -m venv env
-#Mac
-python3 -m venv env
-```
+2. .NET: `net10.0-windows10.0.19041.0` (Windows)
 
-For windows, scripts are disabled by default. So you need to open up powershell as administrator and run this command.
+3. Frontend packages include:
+   - `Uno.WinUI` `5.2.161`
+   - `Uno.Material.WinUI` `5.3.1`
+   - `Uno.Toolkit.WinUI` `8.3.2`
+   - `CommunityToolkit.Mvvm` `8.4.0`
+   - `Microsoft.EntityFrameworkCore.Sqlite` `10.0.2`
 
-```bash
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-Then windows will ask "Do you want to change the execution policy?"
-Type Y to confirm.
-Then return to the project terminal.
+The application copies `Backend/**/*` and `HeadTTS/**/*` into build output and manages services within the app.
 
-```bash
-# Windows
-.\env\Scripts\activate
-# Mac
-source env/bin/activate
-```
+## Requirements
 
-Install dependencies (Just Ollama and dotnet for local and requests for cloud)
+1. Visual Studio 2022 or newer (with Windows App SDK/WinUI workload) or VS Code + .NET tooling
+2. .NET 10 SDK
+3. Windows 10/11 SDK `10.0.19041.0` or newer
+4. Python 3.x
+5. A `.llamafile` model placed in `Backend/` (Qwen3_4B_Q6_K is recommended)
+ 
+### Note
 
-```bash
-pip install -r requirements.txt
-```
+"Enable long paths" option must be enabled to overcome Windows 260-character limit for file paths, which NuGet packages often break.
 
-### 4. Add cloud ai token
-Add a file called "token.txt" in the Cloud folder where the cloud_prototype.py file is located and paste your token there. Name is "token" and file format is txt.
+#### **Option A:** Admin PowerShell
 
-The cloud_prototype.py file currently uses firework.ai as the cloud ai provider.
-
-### 5. Allow long paths
-Windows has a 260-character limit for file paths, and NuGet packages often break this. 
-
-Need to open powershell as admin then do
-```bash
+```powershell
 New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
 ```
 
-After running the command, right click the solution 'AvatarformsApp' and select the restore nuget packages in Visual studio.
+#### **Option B:** Windows Settings
 
-### 6. Run app in Visual Studio
-Choose to run AvatarFormsApp.sln 
-Choose the AvatarFormsApp (Desktop).
-Use Debug and x64 (sometimes these two options do not show up in Visual Studio and it is fine). 
+1. Navigate to Settings > System > Advanced.
 
-## MacBook special (replaces step 5 and 6 which are windows steps)
-Because of the MacOS security, there are steps to follow to launch the app.
-Make sure that you are in the inner AvatarFormsApp folder when 
-performing these commands.
+2. Make sure the "Enable long paths" option is enabled.
 
-### 5. Kill the old app first (just in case)
-```bash
-killall AvatarFormsApp || true
+
+## Setup
+
+1. Clone the repository.
+2. From the repository root:
+
+```powershell
+cd Backend
+python -m venv env
+.\env\Scripts\activate
+pip install -r requirements.txt
+```
+3. Compile the Python into an executable:
+
+```powershell
+pyinstaller main.spec
+```
+4. Ensure at least one `.llamafile` exists in `Backend/`. `Qwen3_4B_Q6_K` is recommended. Can be downloaded from Hugging Face: https://huggingface.co/mozilla-ai/Qwen3-4B-llamafile/tree/main.
+
+## How To Run
+
+From repository root, build the solution:
+
+```powershell
+dotnet build .\AvatarFormsApp\AvatarFormsApp.sln
 ```
 
-### 6. Build the updated code
-```bash
-dotnet build -f net10.0-maccatalyst
+Then run from Visual Studio or CLI:
+
+```powershell
+dotnet run --project .\AvatarFormsApp\AvatarFormsApp\AvatarFormsApp.csproj -f net10.0-windows10.0.19041.0
 ```
 
-### 7. Strip the security flags (requires device password)
-```bash
-sudo xattr -cr bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/AvatarFormsApp.app
-```
+You can also use workspace tasks:
+- `build`
+- `publish`
+- `watch`
 
-### 8. Launch
-```bash
-open -n bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/AvatarFormsApp.app
-```
+## Runtime
+
+When you start an interview flow in the app:
+- `LlamafileProcessService` starts the `.llamafile` server on port `8081`.
+- `PythonProcessService` starts the Python backend using the compiled `Backend/dist/main/main.exe`.
+- `ResponseAPIService` starts the response API server for response collection on port `5000`.
+- `QuestionnaireAPIService` sends in questionnaire data to the questionnaire API server started in `api.py` on port `8882`.
+- The Python backend initialises WebSocket API for real-time speech relay between the Python agent orchestration layer and HeadTTS (3D avatar rendering + TTS layer) on port `8083`.
+- Avatar is loaded through WebView2.
+
+## Environment Variables
+
+- Cloud mode requires `FIREWORKS_API_KEY` (read by Python backend).
+- Local mode is the default app flow and uses `--local` with the `.llamafile` server.
+
+## Troubleshooting
+
+- No AI model starts:
+	- Verify a `*.llamafile` exists in `Backend`.
+- Python backend fails:
+	- Verify `Backend\env\Scripts\python.exe` exists and packages are installed from `requirements.txt`.
+- Build/path issues on Windows:
+	- Enable long paths and restore NuGet packages.
+- Web avatar does not render:
+	- Ensure WebView2 runtime is installed and `HeadTTS` files are present in output.
+
+## Packaging
+
+For packaging/distribution details, see:
+- `AvatarFormsApp/PACKAGING_GUIDE.md`
+
+## Additional Development References
+
+- WinUI control/design reference:
+	- WinUI Gallery: https://www.microsoft.com/store/productId/9P3JFPWWDZRC
+- Unpackaged deployment reference:
+	- https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps

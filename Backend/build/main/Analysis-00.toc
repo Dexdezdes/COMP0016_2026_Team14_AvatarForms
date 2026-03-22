@@ -1618,6 +1618,10 @@
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\_py_abc.py',
    'PYMODULE'),
+  ('tracemalloc',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\tracemalloc.py',
+   'PYMODULE'),
   ('dotenv',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\dotenv\\__init__.py',
@@ -2862,6 +2866,10 @@
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\VCRUNTIME140.dll',
    'BINARY'),
+  ('libssl-3.dll',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\DLLs\\libssl-3.dll',
+   'BINARY'),
   ('libcrypto-3.dll',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\DLLs\\libcrypto-3.dll',
@@ -2929,7 +2937,7 @@
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\top_level.txt',
    'DATA'),
-  ('markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
+  ('werkzeug-3.1.6.dist-info\\RECORD',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
    'DATA'),
@@ -3072,6 +3080,10 @@
   ('_collections_abc',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\_collections_abc.py',
+   'PYMODULE'),
+  ('reprlib',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\reprlib.py',
    'PYMODULE'),
   ('encodings.zlib_codec',
    'C:\\Users\\Fakhrurrazi '
@@ -3676,6 +3688,26 @@
   ('abc',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\abc.py',
+   'PYMODULE'),
+  ('types',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\types.py',
+   'PYMODULE'),
+  ('copyreg',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\copyreg.py',
+   'PYMODULE'),
+  ('locale',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\locale.py',
+   'PYMODULE'),
+  ('codecs',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\codecs.py',
+   'PYMODULE'),
+  ('genericpath',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\Lib\\genericpath.py',
    'PYMODULE'),
   ('os',
    'C:\\Users\\Fakhrurrazi '

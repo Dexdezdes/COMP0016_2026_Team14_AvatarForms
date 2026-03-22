@@ -1,15 +1,10 @@
 <Project>
-  <PropertyGroup>
-    <UnoPlatformIDE>vscode</UnoPlatformIDE>
-    <UnoPlatformIDEVersion>1.108.1</UnoPlatformIDEVersion>
-    <UnoPlatformExtension>unoplatform.vscode 0.23.15</UnoPlatformExtension>
-    <UnoRemoteControlPort>50723</UnoRemoteControlPort>
-    <UnoVSCodeCSharpExtension>ms-dotnettools.csharp 2.110.4</UnoVSCodeCSharpExtension>
-    <UnoVSCodeCSharpDevKitExtension>ms-dotnettools.csdevkit 1.90.2</UnoVSCodeCSharpDevKitExtension>
-  </PropertyGroup>
-  <ItemGroup>
-    <Page Update="Views\AvatarPage.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
+	<PropertyGroup>
+		<UnoPlatformIDE>vscode</UnoPlatformIDE>
+		<UnoPlatformIDEVersion>1.111.0</UnoPlatformIDEVersion>
+		<UnoPlatformExtension>unoplatform.vscode 0.24.1</UnoPlatformExtension>
+		<UnoRemoteControlPort>63775</UnoRemoteControlPort>
+		<UnoVSCodeCSharpExtension>ms-dotnettools.csharp 2.120.3</UnoVSCodeCSharpExtension>
+		<UnoVSCodeCSharpDevKitExtension>ms-dotnettools.csdevkit 2.10.3</UnoVSCodeCSharpDevKitExtension>
+	</PropertyGroup>
 </Project>
