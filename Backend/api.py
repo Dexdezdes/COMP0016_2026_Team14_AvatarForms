@@ -37,9 +37,9 @@ def receive_questionnaire():
         for question in data["questions"]:
             question_type = question["type"]
             if question_type == "mcq":
-                print(f"{bcolors.OKCYAN}[MCQ] {question["text"]} -> Options: {question["options"]}{bcolors.ENDC}")
+                print(f"{bcolors.OKCYAN}[MCQ] {question['text']} -> Options: {question['options']}{bcolors.ENDC}")
             else:
-                print(f"{bcolors.OKCYAN}[Open] {question["text"]}{bcolors.ENDC}")
+                print(f"{bcolors.OKCYAN}[Open] {question['text']}{bcolors.ENDC}")
 
         return jsonify({"status": "success", "message": "Questionnaire received"}), 200
 

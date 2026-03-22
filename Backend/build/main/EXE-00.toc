@@ -85,10 +85,10 @@
  [],
  False,
  False,
- 1773700464,
+ 1774219019,
  [('run.exe',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\run.exe',
    'EXECUTABLE')],
- 'C:\\Program '
- 'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\\python313.dll')
+ 'C:\\Users\\Fakhrurrazi '
+ 'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\python313.dll')
