@@ -20,7 +20,7 @@
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,6,0,12">
                 <!-- Filter ComboBox with Binding -->
                 <ComboBox x:Name="FilterComboBox"
-                          Width="200" 
+                          Width="240" 
                           Margin="0,0,8,0" 
                           SelectedIndex="0"
                           SelectedItem="{x:Bind ViewModel.SelectedFilter, Mode=TwoWay}">
@@ -29,7 +29,7 @@
 
                 <!-- Sort ComboBox with Binding -->
                 <ComboBox x:Name="SortComboBox"
-                          Width="180" 
+                          Width="240" 
                           Margin="12,0" 
                           HorizontalAlignment="Right"
                           SelectedIndex="0"
@@ -41,7 +41,7 @@
 
                 <!-- Search TextBox with Binding -->
                 <TextBox x:Name="SearchBox"
-                         Width="220" 
+                         Width="280" 
                          PlaceholderText="Search for questionnaires..." 
                          HorizontalAlignment="Right" 
                          Margin="12,0"

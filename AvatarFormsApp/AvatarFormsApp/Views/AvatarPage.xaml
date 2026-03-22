@@ -172,17 +172,46 @@
                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                        TextWrapping="Wrap"
                                                        Margin="0,0,0,8"/>
-                                            <StackPanel Orientation="Horizontal" Spacing="16">
-                                                <RadioButton x:Name="AvatarJuliaRadio"
-                                                             Content="Julia"
-                                                             IsChecked="True"
-                                                             GroupName="AvatarSelection"
-                                                             Checked="OnAvatarSelectionChanged"/>
-                                                <RadioButton x:Name="AvatarDavidRadio"
-                                                             Content="David"
-                                                             GroupName="AvatarSelection"
-                                                             Checked="OnAvatarSelectionChanged"/>
-                                            </StackPanel>
+                                            <ComboBox x:Name="AvatarComboBox"
+                                                      SelectionChanged="OnAvatarSelectionChanged"
+                                                      HorizontalAlignment="Stretch">
+                                                <ComboBoxItem Content="Julia" Tag="julia" />
+                                                <ComboBoxItem Content="David" Tag="david" />
+                                                <ComboBoxItem Content="Doozy" Tag="doozy" />
+                                                <ComboBoxItem Content="Sam" Tag="sam" />
+                                            </ComboBox>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Voice Section -->
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Voice"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                                    <Border Background="#E61A1A1A"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="4"
+                                            Padding="16,12">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="Select voice"
+                                                       FontSize="14"
+                                                       FontWeight="Medium"/>
+                                            <TextBlock Text="Choose the voice for the avatar"
+                                                       FontSize="12"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,0,0,8"/>
+                                            <ComboBox x:Name="VoiceComboBox"
+                                                      SelectionChanged="OnVoiceSelectionChanged"
+                                                      HorizontalAlignment="Stretch">
+                                                <ComboBoxItem Content="Fenrir (American Male)" Tag="am_fenrir" />
+                                                <ComboBoxItem Content="Bella (American Female)" Tag="af_bella" />
+                                                <ComboBoxItem Content="Fable (British Male)" Tag="bm_fable" />
+                                            </ComboBox>
                                         </StackPanel>
                                     </Border>
                                 </StackPanel>

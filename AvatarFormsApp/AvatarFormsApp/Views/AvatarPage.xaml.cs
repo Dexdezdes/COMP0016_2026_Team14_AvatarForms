@@ -26,6 +26,7 @@ public sealed partial class AvatarPage : Page
     private bool _isTalkerActive;
     private bool _autoSendEnabled = false;
     private string _selectedAvatar = "julia";
+    private string _selectedVoice = "";
 
     private DispatcherTimer? _speechSilenceTimer;
     private string _finalizedSpeech = "";
@@ -79,11 +80,47 @@ public sealed partial class AvatarPage : Page
     private async Task InitializeAsync()
     {
         var saved = await _localSettingsService.ReadSettingAsync<string>("SelectedAvatar");
-        if (saved is "julia" or "david")
+        if (!string.IsNullOrEmpty(saved))
         {
             _selectedAvatar = saved;
-            if (_selectedAvatar == "david" && AvatarDavidRadio != null)
-                AvatarDavidRadio.IsChecked = true;
+            
+            if (AvatarComboBox != null)
+            {
+                foreach (ComboBoxItem item in AvatarComboBox.Items)
+                {
+                    if (item.Tag is string tag && tag == _selectedAvatar)
+                    {
+                        AvatarComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+        }
+        else if (AvatarComboBox != null)
+        {
+            AvatarComboBox.SelectedIndex = 0;
+        }
+
+        var savedVoice = await _localSettingsService.ReadSettingAsync<string>("SelectedVoice");
+        if (!string.IsNullOrEmpty(savedVoice))
+        {
+            _selectedVoice = savedVoice;
+
+            if (VoiceComboBox != null)
+            {
+                foreach (ComboBoxItem item in VoiceComboBox.Items)
+                {
+                    if (item.Tag is string tag && tag == _selectedVoice)
+                    {
+                        VoiceComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+        }
+        else if (VoiceComboBox != null)
+        {
+            VoiceComboBox.SelectedIndex = 0;
         }
 
         InitializeAvatar();
@@ -292,33 +329,51 @@ public sealed partial class AvatarPage : Page
         LogToConsole($"[SETTINGS] Auto-send: {(_autoSendEnabled ? "ON" : "OFF")}");
     }
 
-    private void OnAvatarSelectionChanged(object sender, RoutedEventArgs e)
+    private void OnAvatarSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (AvatarJuliaRadio == null || AvatarDavidRadio == null) return;
+        if (sender is ComboBox cb && cb.SelectedItem is ComboBoxItem item && item.Tag is string tag)
+        {
+            _selectedAvatar = tag;
+            _ = _localSettingsService.SaveSettingAsync("SelectedAvatar", _selectedAvatar);
 
-        _selectedAvatar = AvatarDavidRadio.IsChecked == true ? "david" : "julia";
-        _ = _localSettingsService.SaveSettingAsync("SelectedAvatar", _selectedAvatar);
+            if (_isAvatarInitialized && AvatarWebView?.CoreWebView2 != null)
+                AvatarWebView.CoreWebView2.Navigate(GetHeadTTSUrl());
+        }
+    }
 
-        if (_isAvatarInitialized && AvatarWebView?.CoreWebView2 != null)
-            AvatarWebView.CoreWebView2.Navigate(GetHeadTTSUrl());
+    private void OnVoiceSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox cb && cb.SelectedItem is ComboBoxItem item && item.Tag is string tag)
+        {
+            _selectedVoice = tag;
+            _ = _localSettingsService.SaveSettingAsync("SelectedVoice", _selectedVoice);
+
+            if (_isAvatarInitialized && AvatarWebView?.CoreWebView2 != null)
+                AvatarWebView.CoreWebView2.Navigate(GetHeadTTSUrl());
+        }
     }
 
     private string GetHeadTTSUrl()
     {
         var (gpuName, gpuMem) = GetGpuInfo();
         bool useWasm = true;
-        
+
         if (gpuMem > 6144 && (gpuName.Contains("NVIDIA", StringComparison.OrdinalIgnoreCase) || gpuName.Contains("AMD", StringComparison.OrdinalIgnoreCase)))
         {
             useWasm = false; // Run on current logic (local inference/non-wasm)
         }
 
         string url = $"http://127.0.0.1:5501/index.html?avatar={_selectedAvatar}";
+        if (!string.IsNullOrEmpty(_selectedVoice))
+        {
+            url += $"&voice={_selectedVoice}";
+        }
+
         if (useWasm)
         {
             url += "&wasm=true";
         }
-        
+
         return url;
     }
 
