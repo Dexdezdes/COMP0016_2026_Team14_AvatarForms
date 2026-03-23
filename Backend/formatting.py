@@ -36,8 +36,11 @@ def emojiStrip(text):
     text = emoji_pattern.sub(r'', text)
     return text
 
-def LLM_strip(text):
-    text = re.sub(r"<[^>]*>.*?</[^>]*>", "", text, flags=re.DOTALL)
+def LLM_strip(text: str) -> str:
+    tags = re.findall(r"<[^>/]*>", text, flags=re.DOTALL)
+    for tag in tags:
+        pattern = re.escape(tag) + r".*?" + re.escape(tag.replace("<", "</"))
+        text = re.sub(pattern, "", text, flags=re.DOTALL)
     return text.strip()
 
 def bracketStrip(text):
@@ -123,3 +126,6 @@ def match_mcq_option(answer, options):
 
     # No match found, return original answer
     return answer
+
+
+print("YES")
