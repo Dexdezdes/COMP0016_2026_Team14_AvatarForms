@@ -1,5 +1,5 @@
 import sys
-sys.path.append("..\\Backend")  # Add parent directory to sys.path to allow imports from Backend
+sys.path.append("..\\Backend")  # Add Backend directory to sys.path to allow imports
 
 from agents import Agent, TalkerAgent, EvaluatorAgent, RAG_Agent, Model
 from main import AvatarFormsInterviewer

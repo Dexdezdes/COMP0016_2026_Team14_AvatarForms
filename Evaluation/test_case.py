@@ -2,7 +2,7 @@ import sys
 import timeit
 import json
 
-sys.path.append("..\\Backend")  # Add parent directory to sys.path to allow imports from Backend
+sys.path.append("..\\Backend")  # Add Backend directory to sys.path to allow imports
 
 from agents import Question, Model, TalkerAgent, EvaluatorAgent, RAG_Agent
 from formatting import conversationToText, format_question

@@ -3,7 +3,7 @@ Test cases for evaluating the different agents.
 Contains predefined test cases for Talker, Evaluator, and RAG agents.
 """
 import sys
-sys.path.append("..\\Backend")  # Add parent directory to sys.path to allow imports from Backend
+sys.path.append("..\\Backend")  # Add Backend directory to sys.path to allow imports
 
 from test_case import TalkerTestCase, EvaluatorTestCase, SummariserTestCase
 from agents import Question
