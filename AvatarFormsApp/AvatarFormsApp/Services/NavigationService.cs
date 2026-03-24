@@ -25,15 +25,25 @@ public class NavigationService : INavigationService
         {
             if (_frame == null)
             {
-                if (App.MainWindow is AvatarFormsApp.Views.MainWindow mainWindow && mainWindow.RootFrame != null)
+                try
                 {
-                    _frame = mainWindow.RootFrame;
+                    if (App.Current is App)
+                    {
+                        if (App.MainWindow is AvatarFormsApp.Views.MainWindow mainWindow && mainWindow.RootFrame != null)
+                        {
+                            _frame = mainWindow.RootFrame;
+                        }
+                        else if (App.MainWindow.Content is Grid grid)
+                        {
+                            _frame = grid.Children.OfType<Frame>().FirstOrDefault();
+                        }
+                    }
                 }
-                else if (App.MainWindow.Content is Grid grid)
+                catch
                 {
-                    _frame = grid.Children.OfType<Frame>().FirstOrDefault();
+                    // Ignore in test environment
                 }
-            
+
                 if (_frame != null)
                 {
                     RegisterFrameEvents();
