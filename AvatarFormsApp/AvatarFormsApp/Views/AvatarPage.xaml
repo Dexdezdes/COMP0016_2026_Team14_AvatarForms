@@ -215,6 +215,36 @@
                                         </StackPanel>
                                     </Border>
                                 </StackPanel>
+
+                                <!-- Speech Language Section -->
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Language"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                                    <Border Background="#E61A1A1A"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="4"
+                                            Padding="16,12">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="Select recognition language"
+                                                       FontSize="14"
+                                                       FontWeight="Medium"/>
+                                            <TextBlock Text="Choose the language for speech recognition"
+                                                       FontSize="12"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,0,0,8"/>
+                                            <ComboBox x:Name="LanguageComboBox"
+                                                      SelectionChanged="OnLanguageSelectionChanged"
+                                                      HorizontalAlignment="Stretch"
+                                                      DisplayMemberPath="DisplayName">
+                                            </ComboBox>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
                             </StackPanel>
                         </ScrollViewer>
                     </Grid>
