@@ -1606,10 +1606,6 @@
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\_distutils_hack\\override.py',
    'PYMODULE'),
-  ('_py_abc',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\_py_abc.py',
-   'PYMODULE'),
   ('tracemalloc',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\tracemalloc.py',
@@ -1617,6 +1613,10 @@
   ('stringprep',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\stringprep.py',
+   'PYMODULE'),
+  ('_py_abc',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\_py_abc.py',
    'PYMODULE'),
   ('dotenv',
    'C:\\Users\\Fakhrurrazi '
@@ -2880,234 +2880,194 @@
    'BINARY')],
  [],
  [],
- [('importlib_metadata-8.7.1.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\importlib_metadata-8.7.1.dist-info\\METADATA',
-   'DATA'),
-  ('importlib_metadata-8.7.1.dist-info\\top_level.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
-   'DATA'),
-  ('importlib_metadata-8.7.1.dist-info\\RECORD',
+ [('importlib_metadata-8.7.1.dist-info\\RECORD',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\importlib_metadata-8.7.1.dist-info\\RECORD',
-   'DATA'),
-  ('importlib_metadata-8.7.1.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\importlib_metadata-8.7.1.dist-info\\INSTALLER',
    'DATA'),
   ('importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
    'DATA'),
+  ('importlib_metadata-8.7.1.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\importlib_metadata-8.7.1.dist-info\\INSTALLER',
+   'DATA'),
+  ('importlib_metadata-8.7.1.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\importlib_metadata-8.7.1.dist-info\\METADATA',
+   'DATA'),
   ('importlib_metadata-8.7.1.dist-info\\WHEEL',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\importlib_metadata-8.7.1.dist-info\\WHEEL',
+   'DATA'),
+  ('importlib_metadata-8.7.1.dist-info\\top_level.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
    'DATA'),
   ('setuptools\\_vendor\\jaraco\\text\\Lorem ipsum.txt',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\setuptools\\_vendor\\jaraco\\text\\Lorem '
    'ipsum.txt',
    'DATA'),
-  ('certifi\\py.typed',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\certifi\\py.typed',
-   'DATA'),
   ('certifi\\cacert.pem',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\certifi\\cacert.pem',
    'DATA'),
-  ('markupsafe-3.0.3.dist-info\\RECORD',
+  ('certifi\\py.typed',
    'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\RECORD',
-   'DATA'),
-  ('click-8.3.1.dist-info\\RECORD',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\RECORD',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\RECORD',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\RECORD',
-   'DATA'),
-  ('websockets-16.0.dist-info\\RECORD',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\RECORD',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\METADATA',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\top_level.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\top_level.txt',
-   'DATA'),
-  ('click-8.3.1.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\INSTALLER',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\INSTALLER',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\WHEEL',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\WHEEL',
-   'DATA'),
-  ('websockets-16.0.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\INSTALLER',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\METADATA',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\LICENSE.rst',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\LICENSE.rst',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\LICENSE.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\LICENSE.txt',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\INSTALLER',
-   'DATA'),
-  ('click-8.3.1.dist-info\\WHEEL',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\WHEEL',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\entry_points.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\entry_points.txt',
-   'DATA'),
-  ('click-8.3.1.dist-info\\licenses\\LICENSE.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\licenses\\LICENSE.txt',
-   'DATA'),
-  ('websockets-16.0.dist-info\\REQUESTED',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\REQUESTED',
-   'DATA'),
-  ('websockets-16.0.dist-info\\entry_points.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\entry_points.txt',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\WHEEL',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\WHEEL',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\METADATA',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\WHEEL',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\WHEEL',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\INSTALLER',
-   'DATA'),
-  ('websockets-16.0.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\METADATA',
-   'DATA'),
-  ('werkzeug-3.1.7.dist-info\\WHEEL',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\werkzeug-3.1.7.dist-info\\WHEEL',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\RECORD',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\RECORD',
-   'DATA'),
-  ('werkzeug-3.1.7.dist-info\\INSTALLER',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\werkzeug-3.1.7.dist-info\\INSTALLER',
-   'DATA'),
-  ('websockets-16.0.dist-info\\WHEEL',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\WHEEL',
-   'DATA'),
-  ('werkzeug-3.1.7.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\werkzeug-3.1.7.dist-info\\METADATA',
-   'DATA'),
-  ('flask-3.0.0.dist-info\\REQUESTED',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\REQUESTED',
-   'DATA'),
-  ('websockets-16.0.dist-info\\top_level.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\top_level.txt',
-   'DATA'),
-  ('werkzeug-3.1.7.dist-info\\RECORD',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\werkzeug-3.1.7.dist-info\\RECORD',
-   'DATA'),
-  ('werkzeug-3.1.7.dist-info\\licenses\\LICENSE.txt',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\werkzeug-3.1.7.dist-info\\licenses\\LICENSE.txt',
-   'DATA'),
-  ('click-8.3.1.dist-info\\METADATA',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\METADATA',
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\certifi\\py.typed',
    'DATA'),
   ('websockets-16.0.dist-info\\licenses\\LICENSE',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\licenses\\LICENSE',
    'DATA'),
+  ('websockets-16.0.dist-info\\WHEEL',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\WHEEL',
+   'DATA'),
+  ('click-8.3.1.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\INSTALLER',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\METADATA',
+   'DATA'),
+  ('werkzeug-3.1.7.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\werkzeug-3.1.7.dist-info\\INSTALLER',
+   'DATA'),
+  ('websockets-16.0.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\METADATA',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\METADATA',
+   'DATA'),
+  ('click-8.3.1.dist-info\\licenses\\LICENSE.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\entry_points.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\entry_points.txt',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\LICENSE.rst',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\LICENSE.rst',
+   'DATA'),
+  ('click-8.3.1.dist-info\\WHEEL',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\WHEEL',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\WHEEL',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\WHEEL',
+   'DATA'),
+  ('werkzeug-3.1.7.dist-info\\licenses\\LICENSE.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\werkzeug-3.1.7.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('werkzeug-3.1.7.dist-info\\WHEEL',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\werkzeug-3.1.7.dist-info\\WHEEL',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\METADATA',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\REQUESTED',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\REQUESTED',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\RECORD',
+   'DATA'),
+  ('websockets-16.0.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('click-8.3.1.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\METADATA',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\WHEEL',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\WHEEL',
+   'DATA'),
+  ('werkzeug-3.1.7.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\werkzeug-3.1.7.dist-info\\RECORD',
+   'DATA'),
+  ('click-8.3.1.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\click-8.3.1.dist-info\\RECORD',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('websockets-16.0.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\RECORD',
+   'DATA'),
+  ('websockets-16.0.dist-info\\top_level.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\top_level.txt',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\RECORD',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\WHEEL',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\WHEEL',
+   'DATA'),
+  ('websockets-16.0.dist-info\\REQUESTED',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\REQUESTED',
+   'DATA'),
+  ('flask-3.0.0.dist-info\\RECORD',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\flask-3.0.0.dist-info\\RECORD',
+   'DATA'),
+  ('websockets-16.0.dist-info\\entry_points.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\websockets-16.0.dist-info\\entry_points.txt',
+   'DATA'),
+  ('werkzeug-3.1.7.dist-info\\METADATA',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\werkzeug-3.1.7.dist-info\\METADATA',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\top_level.txt',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\top_level.txt',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\INSTALLER',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\env\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\INSTALLER',
+   'DATA'),
   ('base_library.zip',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\source\\repos\\AvatarForms\\Backend\\build\\main\\base_library.zip',
    'DATA')],
- [('locale',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\locale.py',
-   'PYMODULE'),
-  ('posixpath',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\posixpath.py',
-   'PYMODULE'),
-  ('genericpath',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\genericpath.py',
-   'PYMODULE'),
-  ('ntpath',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\ntpath.py',
-   'PYMODULE'),
-  ('reprlib',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\reprlib.py',
-   'PYMODULE'),
-  ('abc',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\abc.py',
-   'PYMODULE'),
-  ('enum',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\enum.py',
-   'PYMODULE'),
-  ('weakref',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\weakref.py',
-   'PYMODULE'),
-  ('warnings',
+ [('warnings',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\warnings.py',
-   'PYMODULE'),
-  ('stat',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\stat.py',
-   'PYMODULE'),
-  ('types',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\types.py',
    'PYMODULE'),
   ('codecs',
    'C:\\Users\\Fakhrurrazi '
@@ -3117,17 +3077,13 @@
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\_collections_abc.py',
    'PYMODULE'),
-  ('copyreg',
+  ('genericpath',
    'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\copyreg.py',
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\genericpath.py',
    'PYMODULE'),
-  ('heapq',
+  ('weakref',
    'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\heapq.py',
-   'PYMODULE'),
-  ('operator',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\operator.py',
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\weakref.py',
    'PYMODULE'),
   ('encodings.zlib_codec',
    'C:\\Users\\Fakhrurrazi '
@@ -3617,13 +3573,85 @@
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\encodings\\__init__.py',
    'PYMODULE'),
+  ('_weakrefset',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\_weakrefset.py',
+   'PYMODULE'),
+  ('locale',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\locale.py',
+   'PYMODULE'),
+  ('posixpath',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\posixpath.py',
+   'PYMODULE'),
+  ('reprlib',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\reprlib.py',
+   'PYMODULE'),
+  ('types',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\types.py',
+   'PYMODULE'),
   ('keyword',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\keyword.py',
    'PYMODULE'),
-  ('_weakrefset',
+  ('traceback',
    'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\_weakrefset.py',
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\traceback.py',
+   'PYMODULE'),
+  ('heapq',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\heapq.py',
+   'PYMODULE'),
+  ('abc',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\abc.py',
+   'PYMODULE'),
+  ('sre_compile',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\sre_compile.py',
+   'PYMODULE'),
+  ('collections',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\collections\\__init__.py',
+   'PYMODULE'),
+  ('stat',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\stat.py',
+   'PYMODULE'),
+  ('enum',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\enum.py',
+   'PYMODULE'),
+  ('ntpath',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\ntpath.py',
+   'PYMODULE'),
+  ('sre_parse',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\sre_parse.py',
+   'PYMODULE'),
+  ('sre_constants',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\sre_constants.py',
+   'PYMODULE'),
+  ('functools',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\functools.py',
+   'PYMODULE'),
+  ('linecache',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\linecache.py',
+   'PYMODULE'),
+  ('copyreg',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\copyreg.py',
+   'PYMODULE'),
+  ('io',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\io.py',
    'PYMODULE'),
   ('re._parser',
    'C:\\Users\\Fakhrurrazi '
@@ -3645,37 +3673,9 @@
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\re\\__init__.py',
    'PYMODULE'),
-  ('sre_parse',
+  ('operator',
    'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\sre_parse.py',
-   'PYMODULE'),
-  ('sre_compile',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\sre_compile.py',
-   'PYMODULE'),
-  ('functools',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\functools.py',
-   'PYMODULE'),
-  ('collections',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\collections\\__init__.py',
-   'PYMODULE'),
-  ('io',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\io.py',
-   'PYMODULE'),
-  ('sre_constants',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\sre_constants.py',
-   'PYMODULE'),
-  ('traceback',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\traceback.py',
-   'PYMODULE'),
-  ('linecache',
-   'C:\\Users\\Fakhrurrazi '
-   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\linecache.py',
+   'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\operator.py',
    'PYMODULE'),
   ('os',
    'C:\\Users\\Fakhrurrazi '
