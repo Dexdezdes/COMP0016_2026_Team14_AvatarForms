@@ -5,6 +5,7 @@ using Xunit;
 
 namespace AvatarFormsApp.Tests.Services;
 
+[Collection("ProcessServices")]
 public class LlamafileProcessServiceTests : IDisposable
 {
     private readonly LlamafileProcessService _sut = new();
@@ -13,8 +14,18 @@ public class LlamafileProcessServiceTests : IDisposable
     public void Dispose()
     {
         _sut.Dispose();
+
         if (Directory.Exists(_backendDir))
-            Directory.Delete(_backendDir, recursive: true);
+        {
+            try
+            {
+                Directory.Delete(_backendDir, recursive: true);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                // Ignore if locked
+            }
+        }
     }
 
     private bool InvokeShouldFilterLog(string logLine)
@@ -107,6 +118,10 @@ public class LlamafileProcessServiceTests : IDisposable
     [Fact]
     public async Task StartAsync_ReturnsFalse_WhenNoLlamafileInBackend()
     {
+        if (Directory.Exists(_backendDir))
+        {
+            try { Directory.Delete(_backendDir, recursive: true); } catch { }
+        }
         Directory.CreateDirectory(_backendDir);
 
         var outputs = new List<string>();
