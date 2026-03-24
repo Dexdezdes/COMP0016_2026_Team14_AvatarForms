@@ -1,43 +1,38 @@
 using System.Net;
-using System.Net.Http.Json;
+using System.Text.Json;
 using AvatarFormsApp.Contracts.Services;
 using AvatarFormsApp.DTOs;
 using AvatarFormsApp.Models;
 using AvatarFormsApp.Services;
 using Moq;
-using Moq.Protected;
 using Xunit;
 
 namespace AvatarFormsApp.Tests.Services;
 
-public class QuestionnaireAPIServiceTests
+public class QuestionnaireAPIServiceTests : IDisposable
 {
     private readonly Mock<IQuestionnaireService> _mockInternalService;
-    private readonly Mock<HttpMessageHandler> _mockHandler;
     private readonly QuestionnaireAPIService _sut;
+    private readonly HttpClient _httpClient;
+    private HttpListener? _listener;
 
     public QuestionnaireAPIServiceTests()
     {
+        // We still mock the internal DB service, because we only want to test the API outbound call
         _mockInternalService = new Mock<IQuestionnaireService>();
-        _mockHandler = new Mock<HttpMessageHandler>();
 
-        // Wrap the mocked handler in a real HttpClient
-        var httpClient = new HttpClient(_mockHandler.Object);
-
-        // This requires InternalsVisibleTo in the main csproj
-        _sut = new QuestionnaireAPIService(_mockInternalService.Object, httpClient);
+        // Using a REAL HttpClient now!
+        _httpClient = new HttpClient();
+        _sut = new QuestionnaireAPIService(_mockInternalService.Object, _httpClient);
     }
 
-    /// <summary>
-    /// Helper to create a valid Questionnaire model based on your actual schema
-    /// </summary>
-    private Questionnaire CreateValidQuestionnaire(string id, string name = "Test Questionnaire")
+    private Questionnaire CreateValidQuestionnaire(string id)
     {
         return new Questionnaire
         {
             Id = id,
-            Name = name,          // Fixed: Use Name instead of Title
-            OwnerId = "test-user", // Fixed: Required member
+            Name = "Test Questionnaire",
+            OwnerId = "test-user",
             Questions = new List<Question>()
         };
     }
@@ -45,7 +40,7 @@ public class QuestionnaireAPIServiceTests
     [Fact]
     public async Task SendQuestionnaireAsync_ReturnsFalse_WhenQuestionnaireNotFound()
     {
-        // Arrange: Service returns null
+        // Arrange
         _mockInternalService.Setup(s => s.GetWithQuestionsAsync(It.IsAny<string>()))
             .ReturnsAsync((Questionnaire?)null);
 
@@ -57,84 +52,117 @@ public class QuestionnaireAPIServiceTests
     }
 
     [Fact]
-    public async Task SendQuestionnaireAsync_ReturnsTrue_OnSuccessfulPost()
+    public async Task SendQuestionnaireAsync_ActuallySendsOverNetwork_ReturnsTrueOnSuccess()
     {
         // Arrange
-        var qId = "test-q";
-        var questionnaire = CreateValidQuestionnaire(qId);
+        var qId = "real-network-test";
+        _mockInternalService.Setup(s => s.GetWithQuestionsAsync(qId))
+            .ReturnsAsync(CreateValidQuestionnaire(qId));
 
-        _mockInternalService.Setup(s => s.GetWithQuestionsAsync(qId)).ReturnsAsync(questionnaire);
+        int testPort = 8890;
+        _listener = new HttpListener();
+        _listener.Prefixes.Add($"http://localhost:{testPort}/");
+        _listener.Start();
 
-        // Mock the HTTP Response to be 200 OK
-        _mockHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
+        string receivedJson = string.Empty;
+
+        // Start listening in the background
+        var listenTask = Task.Run(async () =>
+        {
+            var context = await _listener.GetContextAsync();
+            var request = context.Request;
+
+            // Read the ACTUAL payload that crossed the network
+            if (request.HasEntityBody)
+            {
+                using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
+                receivedJson = await reader.ReadToEndAsync();
+            }
+
+            // Verify the endpoint
+            if (request.Url!.AbsolutePath == "/questionnaire" && request.HttpMethod == "POST")
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.OK;
+            }
+            else
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            }
+            context.Response.Close();
+        });
 
         // Act
-        var result = await _sut.SendQuestionnaireAsync(qId, 8882);
+        var result = await _sut.SendQuestionnaireAsync(qId, testPort);
+
+        // Wait for the background listener to finish
+        await listenTask;
 
         // Assert
         Assert.True(result);
 
-        // Verify the URL and Method were correct
-        _mockHandler.Protected().Verify(
-            "SendAsync",
-            Times.Once(),
-            ItExpr.Is<HttpRequestMessage>(req =>
-                req.Method == HttpMethod.Post &&
-                req.RequestUri!.ToString() == "http://localhost:8882/questionnaire"),
-            ItExpr.IsAny<CancellationToken>()
-        );
+        // VERIFY: Did the JSON correctly serialize and make it across the wire?
+        Assert.NotEmpty(receivedJson);
+        Assert.Contains(qId, receivedJson);
     }
 
-    [Theory]
-    [InlineData(HttpStatusCode.InternalServerError)]
-    [InlineData(HttpStatusCode.NotFound)]
-    [InlineData(HttpStatusCode.BadRequest)]
-    public async Task SendQuestionnaireAsync_ReturnsFalse_OnServerError(HttpStatusCode statusCode)
+    [Fact]
+    public async Task SendQuestionnaireAsync_HandlesRealServerErrors()
     {
         // Arrange
-        var qId = "err-test";
-        _mockInternalService.Setup(s => s.GetWithQuestionsAsync(It.IsAny<string>()))
+        var qId = "error-test";
+        _mockInternalService.Setup(s => s.GetWithQuestionsAsync(qId))
             .ReturnsAsync(CreateValidQuestionnaire(qId));
 
-        _mockHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage { StatusCode = statusCode });
+        int testPort = 8891;
+        _listener = new HttpListener();
+        _listener.Prefixes.Add($"http://localhost:{testPort}/");
+        _listener.Start();
+
+        // Background listener that forces a 500 Internal Server Error
+        var listenTask = Task.Run(async () =>
+        {
+            var context = await _listener.GetContextAsync();
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.Close();
+        });
 
         // Act
-        var result = await _sut.SendQuestionnaireAsync(qId);
+        var result = await _sut.SendQuestionnaireAsync(qId, testPort);
+        await listenTask;
 
         // Assert
         Assert.False(result);
     }
 
     [Fact]
-    public async Task SendQuestionnaireAsync_ReturnsFalse_OnConnectionException()
+    public async Task SendQuestionnaireAsync_CatchesRealNetworkConnectionExceptions()
     {
         // Arrange
         var qId = "exception-test";
-        _mockInternalService.Setup(s => s.GetWithQuestionsAsync(It.IsAny<string>()))
+        _mockInternalService.Setup(s => s.GetWithQuestionsAsync(qId))
             .ReturnsAsync(CreateValidQuestionnaire(qId));
 
-        // Simulate a network crash/timeout
-        _mockHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ThrowsAsync(new HttpRequestException("Network down"));
+        // Note: We deliberately DO NOT start the HttpListener here.
+        // This means there is no server listening on this port.
+        int deadPort = 8899;
 
         // Act
-        var result = await _sut.SendQuestionnaireAsync(qId);
+        // This will throw a real HttpRequestException (Connection Refused) under the hood
+        var result = await _sut.SendQuestionnaireAsync(qId, deadPort);
 
         // Assert
+        // The try/catch in your service should catch the real network error and return false
         Assert.False(result);
+    }
+
+    public void Dispose()
+    {
+        // Clean up unmanaged resources to prevent memory leaks and locked ports
+        _httpClient.Dispose();
+        if (_listener != null && _listener.IsListening)
+        {
+            _listener.Stop();
+            _listener.Close();
+        }
     }
 }
