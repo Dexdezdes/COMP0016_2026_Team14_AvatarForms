@@ -1,4 +1,5 @@
 using System.Net;
+<<<<<<< api-tests
 using System.Net.Sockets;
 using System.Text.Json;
 using AvatarFormsApp.Contracts.Services;
@@ -6,10 +7,18 @@ using AvatarFormsApp.DTOs;
 using AvatarFormsApp.Models;
 using AvatarFormsApp.Services;
 using Moq;
+=======
+using AvatarFormsApp.Contracts.Services;
+using AvatarFormsApp.Models;
+using AvatarFormsApp.Services;
+using Moq;
+using Moq.Protected;
+>>>>>>> main
 using Xunit;
 
 namespace AvatarFormsApp.Tests.Services;
 
+<<<<<<< api-tests
 public class QuestionnaireAPIServiceTests : IDisposable
 {
     private readonly Mock<IQuestionnaireService> _mockInternalService;
@@ -192,12 +201,54 @@ public class QuestionnaireAPIServiceTests : IDisposable
         // Act
         var result = await _sut.SendQuestionnaireAsync(qId, port);
         await serverTask;
+=======
+public class QuestionnaireAPIServiceTests
+{
+    private readonly Mock<IQuestionnaireService> _mockService = new();
+
+    private HttpClient CreateMockClient(HttpStatusCode statusCode, bool throwException = false)
+    {
+        var handler = new Mock<HttpMessageHandler>();
+        if (throwException)
+        {
+            handler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ThrowsAsync(new HttpRequestException("Test exception"));
+        }
+        else
+        {
+            handler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage(statusCode));
+        }
+
+        return new HttpClient(handler.Object) { Timeout = TimeSpan.FromSeconds(3) };
+    }
+
+    [Fact]
+    public async Task SendQuestionnaireAsync_ReturnsFalse_WhenQuestionnaireNotFound()
+    {
+        // Arrange
+        _mockService.Setup(s => s.GetWithQuestionsAsync(It.IsAny<string>()))
+            .ReturnsAsync((Questionnaire)null!);
+        var sut = new QuestionnaireAPIService(_mockService.Object);
+
+        // Act
+        var result = await sut.SendQuestionnaireAsync("id", 8882);
+>>>>>>> main
 
         // Assert
         Assert.False(result);
     }
 
     [Fact]
+<<<<<<< api-tests
     public async Task SendQuestionnaireAsync_ServerReturns400_ReturnsFalse()
     {
         // Arrange
@@ -230,12 +281,43 @@ public class QuestionnaireAPIServiceTests : IDisposable
         // Act
         var result = await _sut.SendQuestionnaireAsync(qId, port);
         await serverTask;
+=======
+    public async Task SendQuestionnaireAsync_ReturnsTrue_WhenPostSucceeds()
+    {
+        // Arrange
+        var q = new Questionnaire { Name = "Test Title", OwnerId = "owner-1", Id = "id-123", Questions = new() };
+        _mockService.Setup(s => s.GetWithQuestionsAsync("id-123"))
+            .ReturnsAsync(q);
+        var client = CreateMockClient(HttpStatusCode.OK);
+        var sut = new QuestionnaireAPIService(_mockService.Object, client);
+
+        // Act
+        var result = await sut.SendQuestionnaireAsync("id-123", 8882);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task SendQuestionnaireAsync_ReturnsFalse_WhenPostStatusNotSuccess()
+    {
+        // Arrange
+        var q = new Questionnaire { Name = "Test Title", OwnerId = "owner-1", Id = "id-123", Questions = new() };
+        _mockService.Setup(s => s.GetWithQuestionsAsync("id-123"))
+            .ReturnsAsync(q);
+        var client = CreateMockClient(HttpStatusCode.BadRequest);
+        var sut = new QuestionnaireAPIService(_mockService.Object, client);
+
+        // Act
+        var result = await sut.SendQuestionnaireAsync("id-123", 8882);
+>>>>>>> main
 
         // Assert
         Assert.False(result);
     }
 
     [Fact]
+<<<<<<< api-tests
     public async Task SendQuestionnaireAsync_ConnectionRefused_ReturnsFalse()
     {
         // Arrange
@@ -248,10 +330,24 @@ public class QuestionnaireAPIServiceTests : IDisposable
 
         // Act
         var result = await _sut.SendQuestionnaireAsync(qId, deadPort);
+=======
+    public async Task SendQuestionnaireAsync_ReturnsFalse_WhenExceptionThrown()
+    {
+        // Arrange
+        var q = new Questionnaire { Name = "Test Title", OwnerId = "owner-1", Id = "id-123", Questions = new() };
+        _mockService.Setup(s => s.GetWithQuestionsAsync("id-123"))
+            .ReturnsAsync(q);
+        var client = CreateMockClient(HttpStatusCode.OK, throwException: true);
+        var sut = new QuestionnaireAPIService(_mockService.Object, client);
+
+        // Act
+        var result = await sut.SendQuestionnaireAsync("id-123", 8882);
+>>>>>>> main
 
         // Assert
         Assert.False(result);
     }
+<<<<<<< api-tests
 
     [Fact]
     public async Task SendQuestionnaireAsync_Timeout_ReturnsFalse()
@@ -466,4 +562,6 @@ public class QuestionnaireAPIServiceTests : IDisposable
             _listener.Close();
         }
     }
+=======
+>>>>>>> main
 }

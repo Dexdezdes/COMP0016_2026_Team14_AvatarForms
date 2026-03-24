@@ -5,6 +5,7 @@ using Xunit;
 
 namespace AvatarFormsApp.Tests.Services;
 
+[Collection("ProcessServices")]
 public class LlamafileProcessServiceTests : IDisposable
 {
     private readonly LlamafileProcessService _sut = new();
@@ -13,8 +14,18 @@ public class LlamafileProcessServiceTests : IDisposable
     public void Dispose()
     {
         _sut.Dispose();
+
         if (Directory.Exists(_backendDir))
-            Directory.Delete(_backendDir, recursive: true);
+        {
+            try
+            {
+                Directory.Delete(_backendDir, recursive: true);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                // Ignore if locked
+            }
+        }
     }
 
     private bool InvokeShouldFilterLog(string logLine)
@@ -107,6 +118,10 @@ public class LlamafileProcessServiceTests : IDisposable
     [Fact]
     public async Task StartAsync_ReturnsFalse_WhenNoLlamafileInBackend()
     {
+        if (Directory.Exists(_backendDir))
+        {
+            try { Directory.Delete(_backendDir, recursive: true); } catch { }
+        }
         Directory.CreateDirectory(_backendDir);
 
         var outputs = new List<string>();
@@ -163,6 +178,94 @@ public class LlamafileProcessServiceTests : IDisposable
             try { proc.Kill(); } catch { }
             proc.Dispose();
             field.SetValue(_sut, null);
+        }
+    }
+
+    [Fact]
+    public async Task StartAsync_ReturnsFalse_WhenProcessStartThrows()
+    {
+        Directory.CreateDirectory(_backendDir);
+        var dummyFile = Path.Combine(_backendDir, "dummy_invalid.llamafile");
+        await File.WriteAllTextAsync(dummyFile, "Not an executable");
+
+        var outputs = new List<string>();
+        _sut.OutputReceived += msg => outputs.Add(msg);
+
+        try
+        {
+            var result = await _sut.StartAsync();
+            Assert.False(result);
+            Assert.Contains(outputs, o => o.Contains("Failed to start"));
+        }
+        finally
+        {
+            if (File.Exists(dummyFile))
+                File.Delete(dummyFile);
+        }
+    }
+
+    [Fact]
+    public async Task StartAsync_ReturnsFalse_WhenPortNeverReady()
+    {
+        Directory.CreateDirectory(_backendDir);
+        var dummyFile = Path.Combine(_backendDir, "dummy_cmd.llamafile");
+        // We use ping so it closes itself
+        var systemCmd = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "ping.exe");
+        File.Copy(systemCmd, dummyFile, true);
+
+        // Make timeout fast and use a random test port
+        var type = typeof(LlamafileProcessService);
+        type.GetField("_maxPortRetries", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(_sut, 2);
+        type.GetField("_portRetryDelayMs", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(_sut, 10);
+        type.GetField("_port", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(_sut, 28081);
+
+        var outputs = new List<string>();
+        _sut.OutputReceived += msg => outputs.Add(msg);
+
+        try
+        {
+            var result = await _sut.StartAsync();
+
+            Assert.False(result);
+            Assert.Contains(outputs, o => o.Contains("did not start in time"));
+        }
+        finally
+        {
+            if (File.Exists(dummyFile))
+            {
+                try { File.Delete(dummyFile); } catch { }
+            }
+        }
+    }
+
+    [Fact]
+    public async Task StartAsync_ReturnsTrue_WhenProcessStartsAndPortOpens()
+    {
+        Directory.CreateDirectory(_backendDir);
+        var dummyFile = Path.Combine(_backendDir, "dummy_success.llamafile");
+        var systemExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "ping.exe");
+        File.Copy(systemExe, dummyFile, true);
+
+        var type = typeof(LlamafileProcessService);
+        type.GetField("_maxPortRetries", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(_sut, 10);
+        type.GetField("_portRetryDelayMs", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(_sut, 50);
+        type.GetField("_port", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(_sut, 28082);
+
+        var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 28082);
+        listener.Start();
+
+        try
+        {
+            var result = await _sut.StartAsync();
+            Assert.True(result);
+        }
+        finally
+        {
+            listener.Stop();
+            if (File.Exists(dummyFile))
+            {
+                try { File.Delete(dummyFile); } catch { }
+            }
         }
     }
 

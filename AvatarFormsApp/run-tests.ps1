@@ -12,6 +12,16 @@ foreach ($arch in @("arm64", "x64", "x86")) {
         Where-Object { $_.FullName -match "\\Microsoft\.WindowsAppRuntime\.\d+\.\d+_.*_${arch}__" } |
         Sort-Object FullName -Descending |
         Select-Object -First 1
+
+    if (-not $runtimeDll) {
+        # Fall back to checking the nuget cache since we found it there in searching
+        $runtimeDll = Get-ChildItem -Path "$env:USERPROFILE\.nuget\packages\microsoft.windowsappsdk.foundation" `
+            -Filter "Microsoft.WindowsAppRuntime.dll" -Recurse -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match "\\win-x64\\native\\" } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+    }
+
     if ($runtimeDll) {
         Write-Host "Found ($arch): $($runtimeDll.FullName)" -ForegroundColor DarkGray
         break
@@ -111,12 +121,9 @@ $exclude = @(
     "[AvatarFormsApp]AvatarFormsApp.Views.ShellPage",
     "[AvatarFormsApp]AvatarFormsApp.Views.MainWindow",
 
-    # Navigation / activation infrastructure
-    "[AvatarFormsApp]AvatarFormsApp.Services.NavigationService",
+    # Activation infrastructure
     "[AvatarFormsApp]AvatarFormsApp.Services.NavigationViewService",
-    "[AvatarFormsApp]AvatarFormsApp.Services.PageService",
-    "[AvatarFormsApp]AvatarFormsApp.Services.ThemeSelectorService",
-    "[AvatarFormsApp]AvatarFormsApp.Services.LocalSettingsService",
+    "[AvatarFormsApp]AvatarFormsApp.Services.NavigationService"
     "[AvatarFormsApp]AvatarFormsApp.Services.ActivationService",
     "[AvatarFormsApp]AvatarFormsApp.Activation.*",
     "[AvatarFormsApp]AvatarFormsApp.Behaviors.*",
@@ -144,6 +151,7 @@ $exclude = @(
 
 dotnet test AvatarFormsApp.Tests/AvatarFormsApp.Tests.csproj `
     -c Debug `
+    -a x64 `
     --results-directory $resultsRoot `
     --logger "trx;LogFileName=testresults.trx" `
     --collect:"XPlat Code Coverage" `

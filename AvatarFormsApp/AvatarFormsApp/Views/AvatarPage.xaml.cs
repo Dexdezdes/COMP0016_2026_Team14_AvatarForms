@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using AvatarFormsApp.Contracts.Services;
 using Microsoft.UI.Xaml;
@@ -27,6 +28,7 @@ public sealed partial class AvatarPage : Page
     private bool _autoSendEnabled = false;
     private string _selectedAvatar = "julia";
     private string _selectedVoice = "";
+    private Windows.Globalization.Language? _selectedLanguage;
 
     private DispatcherTimer? _speechSilenceTimer;
     private string _finalizedSpeech = "";
@@ -79,6 +81,30 @@ public sealed partial class AvatarPage : Page
 
     private async Task InitializeAsync()
     {
+        var languages = SpeechRecognizer.SupportedTopicLanguages;
+        if (LanguageComboBox != null)
+        {
+            LanguageComboBox.ItemsSource = languages;
+
+            var savedLang = await _localSettingsService.ReadSettingAsync<string>("SelectedSpeechLanguage");
+            if (!string.IsNullOrEmpty(savedLang))
+            {
+                var match = languages.FirstOrDefault(l => l.LanguageTag == savedLang);
+                if (match != null)
+                {
+                    LanguageComboBox.SelectedItem = match;
+                    _selectedLanguage = match;
+                }
+            }
+
+            if (LanguageComboBox.SelectedItem == null && languages.Count > 0)
+            {
+                var defaultLang = languages.FirstOrDefault(l => l.LanguageTag == SpeechRecognizer.SystemSpeechLanguage.LanguageTag) ?? languages[0];
+                LanguageComboBox.SelectedItem = defaultLang;
+                _selectedLanguage = defaultLang;
+            }
+        }
+
         var saved = await _localSettingsService.ReadSettingAsync<string>("SelectedAvatar");
         if (!string.IsNullOrEmpty(saved))
         {
@@ -146,16 +172,16 @@ public sealed partial class AvatarPage : Page
             _isAvatarInitialized = true;
             LogToConsole("[INIT] CoreWebView2 ready");
 
-            // Open Developer Tools
-            try
-            {
-                AvatarWebView.CoreWebView2.OpenDevToolsWindow();
-                LogToConsole("[INIT] DevTools opened");
-            }
-            catch (Exception ex)
-            {
-                LogToConsole($"[INIT] DevTools failed: {ex.Message}");
-            }
+            //// Open Developer Tools
+            //try
+            //{
+            //    AvatarWebView.CoreWebView2.OpenDevToolsWindow();
+            //    LogToConsole("[INIT] DevTools opened");
+            //}
+            //catch (Exception ex)
+            //{
+            //    LogToConsole($"[INIT] DevTools failed: {ex.Message}");
+            //}
 
             AvatarWebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = true;
             AvatarWebView.CoreWebView2.Settings.IsWebMessageEnabled = true;
@@ -353,6 +379,26 @@ public sealed partial class AvatarPage : Page
         }
     }
 
+    private void OnLanguageSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox cb && cb.SelectedItem is Windows.Globalization.Language lang)
+        {
+            _selectedLanguage = lang;
+            _ = _localSettingsService.SaveSettingAsync("SelectedSpeechLanguage", lang.LanguageTag);
+
+            if (_isMicEnabled)
+            {
+                _ = RestartVoiceInputAsync();
+            }
+        }
+    }
+
+    private async Task RestartVoiceInputAsync()
+    {
+        await StopVoiceInput();
+        await StartVoiceInput();
+    }
+
     private string GetHeadTTSUrl()
     {
         var (gpuName, gpuMem) = GetGpuInfo();
@@ -498,7 +544,15 @@ public sealed partial class AvatarPage : Page
                 _speechRecognizer = null;
             }
 
-            _speechRecognizer = new SpeechRecognizer();
+            if (_selectedLanguage != null)
+            {
+                _speechRecognizer = new SpeechRecognizer(_selectedLanguage);
+            }
+            else
+            {
+                _speechRecognizer = new SpeechRecognizer();
+            }
+
             _speechRecognizer.ContinuousRecognitionSession.AutoStopSilenceTimeout = TimeSpan.MaxValue;
 
             var dictationConstraint = new SpeechRecognitionTopicConstraint(SpeechRecognitionScenario.Dictation, "dictation");

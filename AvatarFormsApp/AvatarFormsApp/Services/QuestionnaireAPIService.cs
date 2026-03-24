@@ -9,6 +9,7 @@ public class QuestionnaireAPIService : IQuestionnaireAPIService
     private readonly IQuestionnaireService _questionnaireService;
     private readonly HttpClient _httpClient;
 
+<<<<<<< api-tests
     public QuestionnaireAPIService(IQuestionnaireService questionnaireService)
         : this(questionnaireService, new HttpClient { Timeout = TimeSpan.FromSeconds(30) })
     {
@@ -19,6 +20,15 @@ public class QuestionnaireAPIService : IQuestionnaireAPIService
     {
         _questionnaireService = questionnaireService;
         _httpClient = httpClient;
+=======
+    public QuestionnaireAPIService(IQuestionnaireService questionnaireService, HttpClient? httpClient = null)
+    {
+        _questionnaireService = questionnaireService;
+        _httpClient = httpClient ?? new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(30)
+        };
+>>>>>>> main
     }
 
     public async Task<bool> SendQuestionnaireAsync(string questionnaireId, int port = 8882)
