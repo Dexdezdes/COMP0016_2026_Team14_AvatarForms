@@ -24,14 +24,13 @@ Loaded="OnLoaded">
             IsBackButtonVisible="Collapsed"
             IsBackEnabled="{x:Bind ViewModel.IsBackEnabled, Mode=OneWay}"
             SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
+            IsPaneOpen="False"
             IsSettingsVisible="True"
             VerticalAlignment="Stretch" 
             HorizontalAlignment="Stretch"
             AlwaysShowHeader="False"
             IsTitleBarAutoPaddingEnabled="False"
-            ItemInvoked="OnItemInvoked"
-            Header="{x:Null}"
-            PaneDisplayMode="LeftCompact">
+            ItemInvoked="OnItemInvoked">
 
             <!-- Pane header (logo + app name) -->
             <NavigationView.PaneHeader>

@@ -48,7 +48,15 @@ public sealed partial class ShellPage : Page
 
     private void ShellNavigationService_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
     {
-        _ = InitializeSettingsAsync(); // Refresh settings state just in case it was changed
+        if (e.SourcePageType == typeof(AvatarPage))
+        {
+            NavigationViewControl.IsSettingsVisible = false;
+        }
+        else
+        {
+            NavigationViewControl.IsSettingsVisible = true;
+            _ = InitializeSettingsAsync(); // Refresh settings state just in case it was changed
+        }
     }
 
     private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
