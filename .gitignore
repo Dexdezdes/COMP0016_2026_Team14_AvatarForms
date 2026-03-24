@@ -69,10 +69,6 @@ venv/
 **/env/
 **/venv/
 
-# Ignore compiled python files
-**/__pycache__/
-*.py[cod]
-
 # LlamaFile
 *.llamafile
 
@@ -80,6 +76,9 @@ venv/
 !Backend/
 !Backend/**
 Backend/**/*.llamafile
+
+# Ignore pycache
+**/__pycache__/
 
 ################################################################################
 # macOS & Others
