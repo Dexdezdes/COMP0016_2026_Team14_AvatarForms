@@ -172,16 +172,16 @@ public sealed partial class AvatarPage : Page
             _isAvatarInitialized = true;
             LogToConsole("[INIT] CoreWebView2 ready");
 
-            // Open Developer Tools
-            try
-            {
-                AvatarWebView.CoreWebView2.OpenDevToolsWindow();
-                LogToConsole("[INIT] DevTools opened");
-            }
-            catch (Exception ex)
-            {
-                LogToConsole($"[INIT] DevTools failed: {ex.Message}");
-            }
+            //// Open Developer Tools
+            //try
+            //{
+            //    AvatarWebView.CoreWebView2.OpenDevToolsWindow();
+            //    LogToConsole("[INIT] DevTools opened");
+            //}
+            //catch (Exception ex)
+            //{
+            //    LogToConsole($"[INIT] DevTools failed: {ex.Message}");
+            //}
 
             AvatarWebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = true;
             AvatarWebView.CoreWebView2.Settings.IsWebMessageEnabled = true;
