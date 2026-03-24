@@ -24,14 +24,13 @@ Loaded="OnLoaded">
             IsBackButtonVisible="Collapsed"
             IsBackEnabled="{x:Bind ViewModel.IsBackEnabled, Mode=OneWay}"
             SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
-            IsSettingsVisible="False"
+            IsPaneOpen="False"
+            IsSettingsVisible="True"
             VerticalAlignment="Stretch" 
             HorizontalAlignment="Stretch"
             AlwaysShowHeader="False"
             IsTitleBarAutoPaddingEnabled="False"
-            ItemInvoked="OnItemInvoked"
-            Header="{x:Null}"
-            PaneDisplayMode="Left">
+            ItemInvoked="OnItemInvoked">
 
             <!-- Pane header (logo + app name) -->
             <NavigationView.PaneHeader>
@@ -63,5 +62,191 @@ Loaded="OnLoaded">
                     VerticalContentAlignment="Stretch" />
             </Grid>
         </NavigationView>
+
+        <!-- Settings Overlay -->
+        <Border x:Name="ShellSettingsOverlay"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Width="450"
+                MaxHeight="600"
+                Padding="0"
+                CornerRadius="8"
+                Background="#E61A1A1A"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                Visibility="Collapsed">
+            <Border.Shadow>
+                <ThemeShadow />
+            </Border.Shadow>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Border Grid.Row="0"
+                        Background="#E61A1A1A"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="0,0,0,1"
+                        Padding="20,16">
+                    <Grid>
+                        <TextBlock Text="Settings"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                        <Button Click="OnCloseShellSettingsClicked"
+                                HorizontalAlignment="Right"
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                Width="32"
+                                Height="32"
+                                Padding="0">
+                            <FontIcon Glyph="&#xE711;" FontSize="12"/>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- Settings Content -->
+                <ScrollViewer Grid.Row="1" 
+                              VerticalScrollBarVisibility="Auto"
+                              Padding="20,16">
+                    <StackPanel Spacing="20">
+
+                        <!-- Voice Input Section -->
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Voice Input"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                            <Border Background="#E61A1A1A"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="16,12">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <TextBlock Text="Auto-send message"
+                                                   FontSize="14"
+                                                   FontWeight="Medium"/>
+                                        <TextBlock Text="Automatically send message after voice input completes"
+                                                   FontSize="12"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                   TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <ToggleSwitch x:Name="AutoSendToggle"
+                                                  Grid.Column="1"
+                                                  MinWidth="0"
+                                                  Margin="12,0,0,0"
+                                                  VerticalAlignment="Center"
+                                                  IsOn="True"
+                                                  Toggled="OnAutoSendToggled"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Avatar Section -->
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Avatar"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                            <Border Background="#E61A1A1A"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="16,12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Select avatar"
+                                               FontSize="14"
+                                               FontWeight="Medium"/>
+                                    <TextBlock Text="Choose the avatar character used during interviews"
+                                               FontSize="12"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,8"/>
+                                    <ComboBox x:Name="AvatarComboBox"
+                                              SelectionChanged="OnAvatarSelectionChanged"
+                                              HorizontalAlignment="Stretch">
+                                        <ComboBoxItem Content="Julia" Tag="julia" />
+                                        <ComboBoxItem Content="David" Tag="david" />
+                                        <ComboBoxItem Content="Doozy" Tag="doozy" />
+                                        <ComboBoxItem Content="Sam" Tag="sam" />
+                                    </ComboBox>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Voice Section -->
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Voice"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                            <Border Background="#E61A1A1A"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="16,12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Select voice"
+                                               FontSize="14"
+                                               FontWeight="Medium"/>
+                                    <TextBlock Text="Choose the voice for the avatar"
+                                               FontSize="12"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,8"/>
+                                    <ComboBox x:Name="VoiceComboBox"
+                                              SelectionChanged="OnVoiceSelectionChanged"
+                                              HorizontalAlignment="Stretch">
+                                        <ComboBoxItem Content="Fenrir (American Male)" Tag="am_fenrir" />
+                                        <ComboBoxItem Content="Bella (American Female)" Tag="af_bella" />
+                                        <ComboBoxItem Content="Fable (British Male)" Tag="bm_fable" />
+                                    </ComboBox>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Speech Language Section -->
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Language"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                            <Border Background="#E61A1A1A"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="16,12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Select recognition language"
+                                               FontSize="14"
+                                               FontWeight="Medium"/>
+                                    <TextBlock Text="Choose the language for speech recognition"
+                                               FontSize="12"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,8"/>
+                                    <ComboBox x:Name="LanguageComboBox"
+                                              SelectionChanged="OnLanguageSelectionChanged"
+                                              HorizontalAlignment="Stretch"
+                                              DisplayMemberPath="DisplayName">
+                                    </ComboBox>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
     </Grid>
 </Page>

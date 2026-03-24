@@ -7,11 +7,19 @@ namespace AvatarFormsApp.Services;
 public class LlamafileProcessService : ILlamafileProcessService
 {
     private Process? _llamafileProcess;
-    private const int Port = 8081;
-    private const int MaxPortRetries = 30;
-    private const int PortRetryDelayMs = 1000;
+    private int _maxPortRetries = 30;
+    private int _portRetryDelayMs = 1000;
+    private int _port = 8081;
 
-    public bool IsRunning => _llamafileProcess is not null && !_llamafileProcess.HasExited;
+    public bool IsRunning
+    {
+        get 
+        {
+            if (_llamafileProcess is null) return false;
+            try { return !_llamafileProcess.HasExited; }
+            catch { return false; }
+        }
+    }
 
     public event Action<string>? OutputReceived;
 
@@ -67,7 +75,7 @@ public class LlamafileProcessService : ILlamafileProcessService
             var start = new ProcessStartInfo
             {
                 FileName = llamafilePath,
-                Arguments = $"--server --host 127.0.0.1 --port {Port} --ctx-size {contextArgs} -ngl {gpuArgs} --nobrowser",
+                Arguments = $"--server --host 127.0.0.1 --port {_port} --ctx-size {contextArgs} -ngl {gpuArgs} --nobrowser",
                 WorkingDirectory = Path.GetDirectoryName(llamafilePath),
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -93,10 +101,10 @@ public class LlamafileProcessService : ILlamafileProcessService
             _llamafileProcess.BeginOutputReadLine();
             _llamafileProcess.BeginErrorReadLine();
 
-            OutputReceived?.Invoke($"[LLAMAFILE] Server process started on port {Port}");
+            OutputReceived?.Invoke($"[LLAMAFILE] Server process started on port {_port}");
 
             // Wait for the port to become available
-            bool ready = await WaitForPortAsync(Port);
+            bool ready = await WaitForPortAsync(_port, _maxPortRetries, _portRetryDelayMs);
             if (!ready)
             {
                 OutputReceived?.Invoke("[ERROR] Llamafile server did not start in time");
@@ -116,9 +124,16 @@ public class LlamafileProcessService : ILlamafileProcessService
 
     public void Stop()
     {
-        if (_llamafileProcess is not null && !_llamafileProcess.HasExited)
+        if (_llamafileProcess is not null)
         {
-            try { _llamafileProcess.Kill(entireProcessTree: true); } catch { }
+            try 
+            { 
+                if (!_llamafileProcess.HasExited)
+                {
+                    _llamafileProcess.Kill(entireProcessTree: true); 
+                }
+            } 
+            catch { }
         }
         _llamafileProcess = null;
     }
@@ -161,9 +176,9 @@ public class LlamafileProcessService : ILlamafileProcessService
         return (gpuName, gpuMem);
     }
 
-    private static async Task<bool> WaitForPortAsync(int port)
+    private static async Task<bool> WaitForPortAsync(int port, int maxRetries, int delayMs)
     {
-        for (int i = 0; i < MaxPortRetries; i++)
+        for (int i = 0; i < maxRetries; i++)
         {
             try
             {
@@ -173,7 +188,7 @@ public class LlamafileProcessService : ILlamafileProcessService
             }
             catch
             {
-                await Task.Delay(PortRetryDelayMs);
+                await Task.Delay(delayMs);
             }
         }
         return false;

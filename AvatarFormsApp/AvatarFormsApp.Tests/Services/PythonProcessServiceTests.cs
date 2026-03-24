@@ -4,6 +4,7 @@ using Xunit;
 
 namespace AvatarFormsApp.Tests.Services;
 
+[Collection("ProcessServices")]
 public class PythonProcessServiceTests : IDisposable
 {
     private readonly PythonProcessService _sut = new();
@@ -21,7 +22,7 @@ public class PythonProcessServiceTests : IDisposable
             {
                 Directory.Delete(_backendDir, recursive: true);
             }
-            catch (IOException)
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
                 // If the folder is locked by another process, we ignore it 
                 // to prevent the test runner from crashing.

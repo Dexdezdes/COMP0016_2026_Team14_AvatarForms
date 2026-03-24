@@ -9,10 +9,10 @@ public class QuestionnaireAPIService : IQuestionnaireAPIService
     private readonly IQuestionnaireService _questionnaireService;
     private readonly HttpClient _httpClient;
 
-    public QuestionnaireAPIService(IQuestionnaireService questionnaireService)
+    public QuestionnaireAPIService(IQuestionnaireService questionnaireService, HttpClient? httpClient = null)
     {
         _questionnaireService = questionnaireService;
-        _httpClient = new HttpClient
+        _httpClient = httpClient ?? new HttpClient
         {
             Timeout = TimeSpan.FromSeconds(30)
         };
