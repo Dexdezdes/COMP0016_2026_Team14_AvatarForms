@@ -4,6 +4,7 @@ using AvatarFormsApp.Models;
 using AvatarFormsApp.Services;
 using Moq;
 using Moq.Protected;
+
 using Xunit;
 
 namespace AvatarFormsApp.Tests.Services;

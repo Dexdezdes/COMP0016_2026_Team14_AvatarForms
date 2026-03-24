@@ -210,6 +210,7 @@ Loaded="OnLoaded">
                                         <ComboBoxItem Content="Fenrir (American Male)" Tag="am_fenrir" />
                                         <ComboBoxItem Content="Bella (American Female)" Tag="af_bella" />
                                         <ComboBoxItem Content="Fable (British Male)" Tag="bm_fable" />
+                                        <ComboBoxItem Content="Isabella (British Female" Tag="bf_isabella" />
                                     </ComboBox>
                                 </StackPanel>
                             </Border>
