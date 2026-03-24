@@ -99,6 +99,12 @@
       <Content Remove="..\..\Backend\requirements.txt" />
     </ItemGroup>
 
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>AvatarFormsApp.Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
     <Target Name="GetTargetPathWithTargetPlatformMoniker" Returns="@(TargetPathWithTargetPlatformMoniker)" />
 
     </Project>

@@ -118,7 +118,6 @@ $exclude = @(
     "[AvatarFormsApp]AvatarFormsApp.Services.ThemeSelectorService",
     "[AvatarFormsApp]AvatarFormsApp.Services.LocalSettingsService",
     "[AvatarFormsApp]AvatarFormsApp.Services.ActivationService",
-    "[AvatarFormsApp]AvatarFormsApp.Services.QuestionnaireAPIService",
     "[AvatarFormsApp]AvatarFormsApp.Activation.*",
     "[AvatarFormsApp]AvatarFormsApp.Behaviors.*",
 

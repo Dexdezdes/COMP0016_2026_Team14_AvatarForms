@@ -10,12 +10,15 @@ public class QuestionnaireAPIService : IQuestionnaireAPIService
     private readonly HttpClient _httpClient;
 
     public QuestionnaireAPIService(IQuestionnaireService questionnaireService)
+        : this(questionnaireService, new HttpClient { Timeout = TimeSpan.FromSeconds(30) })
+    {
+    }
+
+    //NEW: This is what the Tests use. It lets us inject a "Fake" HttpClient.
+    internal QuestionnaireAPIService(IQuestionnaireService questionnaireService, HttpClient httpClient)
     {
         _questionnaireService = questionnaireService;
-        _httpClient = new HttpClient
-        {
-            Timeout = TimeSpan.FromSeconds(30)
-        };
+        _httpClient = httpClient;
     }
 
     public async Task<bool> SendQuestionnaireAsync(string questionnaireId, int port = 8882)
