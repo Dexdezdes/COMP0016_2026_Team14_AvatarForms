@@ -135,7 +135,7 @@ class AvatarFormsInterviewer:
             self.answers[self.questions_index-1] = self.collect_answer(self.questions_index-1)
 
         if evaluation["override_skip"]:
-            self.conversation_history.append({"role": "system", "content": f"Question '{question["text"]}' skipped by user preference. Moved on to question {self.questions[self.questions_index]}."})
+            self.conversation_history.append({"role": "system", "content": f"Question '{question['text']}' skipped by user preference. Moved on to question {self.questions[self.questions_index]}."})
 
         if self.questions_index < len(self.questions):
             question = format_question(self.questions[self.questions_index])
