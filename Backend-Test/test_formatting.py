@@ -8,7 +8,6 @@ from formatting import (
     outputToJSON, conversationToText, format_q_and_as, bcolors,
     format_question, match_mcq_option
 )
-from agents import Question
 
 class TestCleanScript:
     def test_clean_script_removes_tags_and_emojis(self):
@@ -147,17 +146,17 @@ class TestFormatQAndAs:
 class TestFormatQuestion:
     def test_format_question_open_ended(self):
         """Test formatting open-ended question"""
-        question = Question("What is your name?")
+        question = {"text": "What is your name?"}
         result = format_question(question)
         assert result == "What is your name?"
 
     def test_format_question_mcq(self):
         """Test formatting MCQ question"""
-        question = Question(
-            "What is your favorite color?",
-            "mcq",
-            ["Red", "Blue", "Green"]
-        )
+        question = {
+            "text": "What is your favorite color?",
+            "type": "mcq",
+            "options": ["Red", "Blue", "Green"]
+        }
         result = format_question(question)
         assert "What is your favorite color?" in result
         assert "Multiple Choice" in result
