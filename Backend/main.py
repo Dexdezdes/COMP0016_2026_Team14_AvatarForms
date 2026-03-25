@@ -17,7 +17,7 @@ load_dotenv()
 
 
 class AvatarFormsInterviewer:
-    def __init__(self, is_local=False, model_name=None, local_port=8081, cutoff=4):
+    def __init__(self, is_local: bool = False, model_name: str = None, local_port: int = 8081, cutoff: int = 4) -> None:
         self.cutoff = cutoff
 
         self.user_role = "user"
@@ -29,7 +29,7 @@ class AvatarFormsInterviewer:
         self.model_name = model_name
 
 
-    def build_interview(self, questions, interview_context):
+    def build_interview(self, questions: list[dict], interview_context: str) -> None:
         self.questions = questions  # List of dicts: {"text": str, "type": str, "options": list|None}
         self.interview_context = interview_context
 
@@ -55,18 +55,18 @@ class AvatarFormsInterviewer:
             model=self.model,
             interview_context=self.interview_context)
         
-    def reset_interview(self):
+    def reset_interview(self) -> None:
         self.questions_index = 0
         self.conversation_history.clear() # not resetting to empty list to preserve reference for agents
         self.question_labels.clear()
         self.last_evaluation = None
         self.answers = [""]*len(self.questions)
 
-    def build_from_json(self, json):
+    def build_from_json(self, json: dict) -> None:
         self.build_interview(json["questions"], json["description"])
 
     
-    def get_model(self):
+    def get_model(self) -> Model:
         params = {
             "max_tokens": 4096,
             "top_p": 1,
@@ -94,18 +94,18 @@ class AvatarFormsInterviewer:
             
         return Model(url=url, model=self.model_name, api_key=api_key, params=params)
         
-    def get_conversation_section(self, question_index):
+    def get_conversation_section(self, question_index: int) -> list[dict]:
         section = []
         for i, label in enumerate(self.question_labels):
             if label == question_index:
                 section.append(self.conversation_history[i])
         return section
 
-    def should_cutoff(self):
+    def should_cutoff(self) -> bool:
         # If we've been on current question for too long, cutoff and move on
         return len(self.get_conversation_section(self.questions_index)) >= self.cutoff*2 # Each question has 2 messages (question and answer)
 
-    def start_interview(self):
+    def start_interview(self) -> str:
         self.reset_interview()
 
         # Ask the first question
@@ -117,7 +117,7 @@ class AvatarFormsInterviewer:
 
         return question_speech
 
-    def respond(self, response):
+    def respond(self, response: str) -> tuple[str, bool]:
         question = self.questions[self.questions_index]
         question_str = format_question(question)
         self.conversation_history.append({"role": self.user_role, "content": response})
@@ -164,7 +164,7 @@ class AvatarFormsInterviewer:
 
             return closing_statement, False
     
-    def collect_answer(self, question_index):
+    def collect_answer(self, question_index: int) -> str:
         conversation_section = self.get_conversation_section(question_index)
 
         question = format_question(self.questions[question_index])
@@ -178,12 +178,12 @@ class AvatarFormsInterviewer:
 
         return answer
 
-    def collect_all_answers(self):
+    def collect_all_answers(self) -> dict[str, str]:
         question_list = [question["text"] for question in self.questions]
         final_answers = dict(zip(question_list, self.answers))
         return final_answers
 
-    def output_to_csv(self, filename, final_answers):
+    def output_to_csv(self, filename: str, final_answers: dict[str, str]) -> None:
         with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
             writer = csv.writer(csv_file)
             writer.writerow(["Question", "Answer"])
