@@ -4,7 +4,8 @@ import json
 
 sys.path.append("..\\Backend")  # Add Backend directory to sys.path to allow imports
 
-from agents import Question, Model, TalkerAgent, EvaluatorAgent, RAG_Agent
+from tracing import Tracer
+from agents import Model, TalkerAgent, EvaluatorAgent, RAG_Agent
 from formatting import conversationToText, format_question
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 
@@ -17,11 +18,11 @@ class EvaluatorTestCase(TestCase):
     """
     Test case for evaluating the EvaluatorAgent.
     """
-    def __init__(self, name: str, interview_context: str, conversation_history: list, question: Question, expected_answer: dict):
+    def __init__(self, name: str, interview_context: str, conversation_history: list, question: dict, expected_answer: dict):
         super().__init__(name)
         self.interview_context = interview_context
         self.conversation_history = conversation_history
-        self.question = question if isinstance(question, Question) else Question(text=question)
+        self.question = question if isinstance(question, dict) else {"text": question}
 
         self.expected_answer = expected_answer
 
@@ -35,18 +36,18 @@ Question:
 {format_question(self.question)}
 """
 
-    def run(self, model: Model, evaluator_agent: EvaluatorAgent) -> dict:
+    def run(self, model: Model, evaluator_agent: EvaluatorAgent, tracer: Tracer) -> dict:
         """Run the test case using the provided EvaluatorAgent."""
-        evaluator = evaluator_agent(model, interview_context=self.interview_context)
+        evaluator = evaluator_agent(model, interview_context=self.interview_context, tracer=tracer)
         return evaluator.evaluate(
             question=format_question(self.question), 
             conversation_history=self.conversation_history
         )
     
-    def deepeval_testcase(self, model: Model, evaluator_agent: EvaluatorAgent) -> LLMTestCase:
+    def deepeval_testcase(self, model: Model, evaluator_agent: EvaluatorAgent, tracer: Tracer) -> LLMTestCase:
         """Convert to DeepEval test case format."""
         timeit_start = timeit.default_timer()
-        output = self.run(model, evaluator_agent)
+        output = self.run(model, evaluator_agent, tracer)
         elapsed = timeit.default_timer() - timeit_start
         
         return LLMTestCase(
@@ -60,11 +61,11 @@ Question:
 
 
 class TalkerTestCase(TestCase):
-    def __init__(self, name: str, interview_context: str, conversation_history: list, question: Question, expected_answer: str, previous_q_and_a: dict = None, follow_up: bool = False, reasoning: str = None, expected_follow_up: str = None):
+    def __init__(self, name: str, interview_context: str, conversation_history: list, question: dict, expected_answer: str, previous_q_and_a: dict = None, follow_up: bool = False, reasoning: str = None, expected_follow_up: str = None):
         super().__init__(name)
         self.interview_context = interview_context
         self.conversation_history = conversation_history
-        self.question = question if isinstance(question, Question) else Question(text=question)
+        self.question = question if isinstance(question, dict) else {"text": question}
         self.expected_answer = expected_answer
         self.previous_q_and_a = previous_q_and_a
         self.follow_up = follow_up
@@ -76,9 +77,9 @@ class TalkerTestCase(TestCase):
 Conversation history: {conversationToText(self.conversation_history)}
 Question: {format_question(self.question)}"""
 
-    def run(self, model: Model, talker_agent: TalkerAgent) -> str:
+    def run(self, model: Model, talker_agent: TalkerAgent, tracer: Tracer) -> str:
         """Run the test case using the provided talker_agent."""
-        talker = talker_agent(model, interview_context=self.interview_context, conversation_history=self.conversation_history)
+        talker = talker_agent(model, interview_context=self.interview_context, conversation_history=self.conversation_history, tracer=tracer)
         if self.follow_up:
             return talker.ask_followup(
                 question=format_question(self.question),
@@ -93,9 +94,9 @@ Question: {format_question(self.question)}"""
                 previous_q_and_a=self.previous_q_and_a
             )
     
-    def deepeval_testcase(self, model: Model, talker_agent: TalkerAgent) -> LLMTestCase:
+    def deepeval_testcase(self, model: Model, talker_agent: TalkerAgent, tracer: Tracer) -> LLMTestCase:
         timeit_start = timeit.default_timer()
-        output = self.run(model, talker_agent)
+        output = self.run(model, talker_agent, tracer)
         elapsed = timeit.default_timer() - timeit_start
         return LLMTestCase(
             name=self.name,
@@ -108,11 +109,11 @@ Question: {format_question(self.question)}"""
 
 
 class SummariserTestCase(TestCase):
-    def __init__(self, name: str, interview_context: str, conversation_history: list, question: Question, expected_answer: str, question_type: str = "open_ended", options: list = None):
+    def __init__(self, name: str, interview_context: str, conversation_history: list, question: dict, expected_answer: str, question_type: str = "open_ended", options: list = None):
         super().__init__(name)
         self.interview_context = interview_context
         self.conversation_history = conversation_history
-        self.question = question if isinstance(question, Question) else Question(text=question)
+        self.question = question if isinstance(question, dict) else {"text": question}
         self.question_type = question_type
         self.options = options
         self.expected_answer = expected_answer
@@ -123,9 +124,9 @@ class SummariserTestCase(TestCase):
             options_str = "\n".join([f"{idx+1}. {option}" for idx, option in enumerate(self.options)])
             self.input_str += f"\nOptions:\n{options_str}"
 
-    def run(self, model: Model, summariser_agent: RAG_Agent) -> str:
+    def run(self, model: Model, summariser_agent: RAG_Agent, tracer: Tracer) -> str:
         """Run the test case using the provided summariser_agent."""
-        summariser = summariser_agent(model, interview_context=self.interview_context)
+        summariser = summariser_agent(model, interview_context=self.interview_context, tracer=tracer)
         return summariser.answer(
             question=self.question, 
             conversation_history=self.conversation_history, 
@@ -133,9 +134,9 @@ class SummariserTestCase(TestCase):
             options=self.options
         )
 
-    def deepeval_testcase(self, model: Model, summariser_agent: RAG_Agent) -> LLMTestCase:
+    def deepeval_testcase(self, model: Model, summariser_agent: RAG_Agent, tracer: Tracer) -> LLMTestCase:
         timeit_start = timeit.default_timer()
-        output = self.run(model, summariser_agent)
+        output = self.run(model, summariser_agent, tracer)
         elapsed = timeit.default_timer() - timeit_start
         return LLMTestCase(
             name=self.name,
