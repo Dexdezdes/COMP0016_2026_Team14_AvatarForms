@@ -118,11 +118,12 @@ class AvatarFormsInterviewer:
         return question_speech
 
     def respond(self, response):
-        question = format_question(self.questions[self.questions_index])
+        question = self.questions[self.questions_index]
+        question_str = format_question(question)
         self.conversation_history.append({"role": self.user_role, "content": response})
         self.question_labels.append(self.questions_index)
 
-        evaluation = self.evaluator.evaluate(question, self.get_conversation_section(self.questions_index))
+        evaluation = self.evaluator.evaluate(question_str, self.get_conversation_section(self.questions_index))
         self.last_evaluation = evaluation
 
         # print(self.question_labels)
@@ -134,21 +135,22 @@ class AvatarFormsInterviewer:
 
             self.answers[self.questions_index-1] = self.collect_answer(self.questions_index-1)
 
-        if evaluation["override_skip"]:
-            self.conversation_history.append({"role": "system", "content": f"Question '{question['text']}' skipped by user preference. Moved on to question {self.questions[self.questions_index]}."})
+            if evaluation["override_skip"]:
+                self.conversation_history.append({"role": "system", "content": f"Question '{question['text']}' skipped by user preference. Moved on to question {self.questions[self.questions_index]}."})
+                self.question_labels.append(self.questions_index-1)
 
         if self.questions_index < len(self.questions):
-            question = format_question(self.questions[self.questions_index])
+            question_str = format_question(self.questions[self.questions_index])
 
             q_and_as = self.collect_all_answers()
             if all(answer == "" for answer in q_and_as.values()):
                 q_and_as = None
 
             if not self.last_evaluation: # If no evaluation, this is a new question, so ask the main question. Otherwise, ask the follow-up question.
-                question_speech = self.talker.ask_question(question, previous_q_and_a=q_and_as)
+                question_speech = self.talker.ask_question(question_str, previous_q_and_a=q_and_as)
             else:
                 transcript = self.get_conversation_section(self.questions_index)
-                question_speech = self.talker.ask_followup(question, self.last_evaluation["reasoning"], transcript, previous_q_and_a=q_and_as, follow_up=self.last_evaluation.get("follow_up_question"))
+                question_speech = self.talker.ask_followup(question_str, self.last_evaluation["reasoning"], transcript, previous_q_and_a=q_and_as, follow_up=self.last_evaluation.get("follow_up_question"))
 
             self.conversation_history.append({"role": self.AI_role, "content": question_speech})
             self.question_labels.append(self.questions_index)
@@ -158,7 +160,7 @@ class AvatarFormsInterviewer:
         else:
             closing_statement = self.talker.closing_statement()
             self.conversation_history.append({"role": self.AI_role, "content": closing_statement})
-            self.question_labels.append(self.questions_index+1)
+            self.question_labels.append(self.questions_index)
 
             return closing_statement, False
     
@@ -188,65 +190,6 @@ class AvatarFormsInterviewer:
             for question, answer in final_answers.items():
                 writer.writerow([question, answer])
         
-    # Kind of obsolete, good for testing
-    # def run_interview_whole(self, verbose=True):
-    #     # If verbose, output of all agents will be printed, otherwise only the talker is printed.
-
-    #     # During interview
-    #     while self.questions_index < len(self.questions):
-
-    #         question = self.questions[self.questions_index]
-    #         if verbose:
-    #             print(f"\n{bcolors.HEADER}Question {self.questions_index + 1}: {question}{bcolors.ENDC}")
-            
-    #         # If a new question needs to be asked, ask the main question. Otherwise, ask the follow-up question.
-    #         if not self.last_evaluation:
-    #             question_speech = self.talker.ask_question(question, self.collect_all_answers())
-    #             print(f"{bcolors.OKBLUE}Talker: {question_speech}{bcolors.ENDC}")
-
-    #         else:
-    #             question_speech = self.talker.ask_followup(question, self.last_evaluation["reasoning"], self.last_evaluation.get("follow_up_question"))
-    #             print(f"{bcolors.OKBLUE}Talker (Follow-up): {question_speech}{bcolors.ENDC}")
-            
-    #         self.conversation_history.append({"role": self.AI_role, "content": question_speech})
-    #         self.question_labels.append(self.questions_index)
-
-    #         answer = input(f"User: ")
-    #         self.conversation_history.append({"role": self.user_role, "content": answer})
-    #         self.question_labels.append(self.questions_index)
-
-    #         evaluation = self.evaluator.evaluate(question, self.get_conversation_section(self.questions_index))
-    #         self.last_evaluation = evaluation
-
-    #         if verbose:
-    #             # print(f"{bcolors.WARNING}{Evaluator}: Satisfactory: {evaluation['satisfactory']}, Override Skip: {evaluation['override_skip']}, Reasoning: {evaluation['reasoning']}, Follow-up Question: {evaluation.get('follow_up_question', "None")}{bcolors.ENDC}")
-    #             print(f"{bcolors.WARNING}Evaluator: {evaluation}{bcolors.ENDC}")
-        
-    #         if self.should_cutoff() or evaluation["satisfactory"] or evaluation["override_skip"]:
-    #             self.questions_index += 1
-    #             self.last_evaluation = None
-
-    #             if verbose and self.should_cutoff():
-    #                 print(f"{bcolors.WARNING}Cutoff reached for question {self.questions_index + 1}. Moving to next question.{bcolors.ENDC}")
-    #                 # print(f"{bcolors.WARNING}Moving to question {self.questions_index + 1}.{bcolors.ENDC}")
-            
-    #             if evaluation["override_skip"]:
-    #                 self.conversation_history.append({"role": "system", "content": f"Question '{question}' skipped by user preference. Moved on to question {self.questions[self.questions_index]}."})
-
-    #     closing_statement = self.talker.closing_statement()
-    #     print(f"{bcolors.OKBLUE}Talker (Closing Statement): {closing_statement}{bcolors.ENDC}")
-    #     self.conversation_history.append({"role": self.AI_role, "content": closing_statement})
-    #     self.question_labels.append(self.questions_index+1)
-
-    #     # After interview, use RAG agent to collate
-    #     print(f"\n{bcolors.HEADER}Interview complete. Finalizing answers...{bcolors.ENDC}")
-    #     final_answers = self.collect_all_answers()
-    #     for question, answer in final_answers.items():
-    #         print(f"{bcolors.OKGREEN}Q: {question}{bcolors.ENDC}")
-    #         print(f"A: {answer}\n")
-
-    #     return final_answers
-
 async def main():
     parser = argparse.ArgumentParser(description="Run the AvatarForms interview backend server.")
     parser.add_argument("--local", action="store_true", help="Use local model (LLaMA_CPP) instead of Fireworks API")
