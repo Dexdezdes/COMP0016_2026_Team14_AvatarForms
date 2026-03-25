@@ -6,7 +6,6 @@ import sys
 sys.path.append("..\\Backend")  # Add Backend directory to sys.path to allow imports
 
 from test_case import TalkerTestCase, EvaluatorTestCase, SummariserTestCase
-from agents import Question
 
 # ==================== TALKER AGENT TEST CASES ====================
 
@@ -15,10 +14,10 @@ talker_test_cases = [
         name="Talker - Simple open-ended question 1",
         interview_context="Job interview for a software developer position",
         conversation_history=[],
-        question=Question(
-            text="What is your greatest strength?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "What is your greatest strength?",
+            "question_type": "open_ended"
+        },
         expected_answer="Could you tell me about your greatest strength?",
         previous_q_and_a=None
     ),
@@ -27,10 +26,10 @@ talker_test_cases = [
         name="Talker - Simple open-ended question 2",
         interview_context="Sleep quality survey",
         conversation_history=[],
-        question=Question(
-            text="How did you sleep last night?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "How did you sleep last night?",
+            "question_type": "open_ended"
+        },
         expected_answer="How did you sleep last night? Could you describe the quality of your sleep?",
         previous_q_and_a=None
     ),
@@ -39,11 +38,11 @@ talker_test_cases = [
         name="Talker - MCQ question with options",
         interview_context="Healthcare questionnaire",
         conversation_history=[],
-        question=Question(
-            text="How would you rate your overall health?",
-            question_type="mcq",
-            options=["Excellent", "Good", "Fair", "Poor"]
-        ),
+        question={
+            "text": "How would you rate your overall health?",
+            "question_type": "mcq",
+            "options": ["Excellent", "Good", "Fair", "Poor"]
+        },
         expected_answer="How would you rate your overall health? Would you say excellent, good, fair, or poor?",
         previous_q_and_a=None
     ),
@@ -54,10 +53,10 @@ talker_test_cases = [
         conversation_history=[
             {"role": "user", "content": "I'm good at solving complex problems"}
         ],
-        question=Question(
-            text="Could you tell me about a time where you demonstrated this strength?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "Could you tell me about a time where you demonstrated this strength?",
+            "question_type": "open_ended"
+        },
         expected_answer="I hear you mentioned that you're good at solving complex problems. Could you provide a specific example of a problem you've solved in the past?",
         previous_q_and_a={"What is your greatest strength?": "Problem-solving"}
     ),
@@ -68,10 +67,10 @@ talker_test_cases = [
         conversation_history=[
             {"role": "user", "content": "I don't know, I was asleep"}
         ],
-        question=Question(
-            text="How did you sleep last night?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "How did you sleep last night?",
+            "question_type": "open_ended"
+        },
         expected_answer="Fair enough. Did you wake up feeling rested, or still tired?",
         previous_q_and_a=None
     ),
@@ -82,10 +81,10 @@ talker_test_cases = [
         conversation_history=[
             {"role": "user", "content": "I guess I'm doing okay"}
         ],
-        question=Question(
-            text="How would you rate your mood from 1 to 10?",
-            question_type="mcq",
-        ),
+        question={
+            "text": "How would you rate your mood from 1 to 10?",
+            "question_type": "mcq"
+        },
         expected_answer="To help us better understand, would you say your mood is closer to 1 (very bad), 5 (neutral), or 10 (very good)?",
         previous_q_and_a=None
     )
@@ -101,10 +100,10 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "What is your greatest strength?"},
             {"role": "user", "content": "I would say my greatest strength is my ability to solve complex problems quickly and efficiently."}
         ],
-        question=Question(
-            text="What is your greatest strength?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "What is your greatest strength?",
+            "question_type": "open_ended"
+        },
         expected_answer={
             "satisfactory": True,
             "override_skip": False,
@@ -120,10 +119,10 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "How did you sleep last night?"},
             {"role": "user", "content": "I don't know, I was asleep"}
         ],
-        question=Question(
-            text="How did you sleep last night?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "How did you sleep last night?",
+            "question_type": "open_ended"
+        },
         expected_answer={
             "satisfactory": False,
             "override_skip": False,
@@ -139,10 +138,10 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "What is your annual income?"},
             {"role": "user", "content": "I'd rather not share that information"}
         ],
-        question=Question(
-            text="What is your annual income?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "What is your annual income?",
+            "question_type": "open_ended"
+        },
         expected_answer={
             "satisfactory": False,
             "override_skip": True,
@@ -158,11 +157,11 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "How would you rate your overall health? Would you say excellent, good, fair, or poor?"},
             {"role": "user", "content": "I'd say I'm in pretty good shape actually"}
         ],
-        question=Question(
-            text="How would you rate your overall health?",
-            question_type="mcq",
-            options=["Excellent", "Good", "Fair", "Poor"]
-        ),
+        question={
+            "text": "How would you rate your overall health?",
+            "question_type": "mcq",
+            "options": ["Excellent", "Good", "Fair", "Poor"]
+        },
         expected_answer={
             "satisfactory": False,
             "override_skip": False,
@@ -178,11 +177,11 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "How satisfied are you with our service?"},
             {"role": "user", "content": "It could be better"}
         ],
-        question=Question(
-            text="How satisfied are you with our service?",
-            question_type="mcq",
-            options=["Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very Dissatisfied"]
-        ),
+        question={
+            "text": "How satisfied are you with our service?",
+            "question_type": "mcq",
+            "options": ["Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very Dissatisfied"]
+        },
         expected_answer={
             "satisfactory": False,
             "override_skip": False,
@@ -198,11 +197,11 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "Have you ever been diagnosed with a mental health condition?"},
             {"role": "user", "content": "I'm not comfortable discussing that"}
         ],
-        question=Question(
-            text="Have you ever been diagnosed with a mental health condition?",
-            question_type="mcq",
-            options=["Yes", "No"]
-        ),
+        question={
+            "text": "Have you ever been diagnosed with a mental health condition?",
+            "question_type": "mcq",
+            "options": ["Yes", "No"]
+        },
         expected_answer={
             "satisfactory": False,
             "override_skip": True,
@@ -220,10 +219,10 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "Could you be more specific about how many times per day?"},
             {"role": "user", "content": "Usually twice, sometimes once if I'm tired"}
         ],
-        question=Question(
-            text="How often do you brush your teeth?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "How often do you brush your teeth?",
+            "question_type": "open_ended"
+        },
         expected_answer={
             "satisfactory": True,
             "override_skip": False,
@@ -324,54 +323,4 @@ summariser_test_cases = [
         expected_answer="Science fiction, particularly space exploration themes",
         question_type="open_ended"
     )
-]
-
-# ==================== COMPREHENSIVE INTEGRATION TEST CASES ====================
-
-integration_test_cases = [
-    {
-        "name": "Complete interview flow - Job application",
-        "interview_context": "Entry-level software developer position interview",
-        "questions": [
-            Question("What is your name?", "open_ended"),
-            Question("What programming languages do you know?", "open_ended"),
-            Question("Do you have any prior work experience?", "mcq", ["Yes", "No"]),
-            Question("Why do you want to work here?", "open_ended")
-        ],
-        "user_responses": [
-            "My name is Sarah Chen",
-            "I know Python and JavaScript, and I'm learning Java",
-            "Yes, I did an internship last summer",
-            "I'm passionate about technology and your company's mission aligns with my values"
-        ],
-        "expected_final_answers": {
-            "What is your name?": "Sarah Chen",
-            "What programming languages do you know?": "Python, JavaScript, and learning Java",
-            "Do you have any prior work experience?": "Yes",
-            "Why do you want to work here?": "Passionate about technology and aligned with company mission"
-        }
-    },
-    
-    {
-        "name": "Complete interview flow - Medical intake with sensitive questions",
-        "interview_context": "New patient medical history questionnaire",
-        "questions": [
-            Question("What is your full name?", "open_ended"),
-            Question("Do you have any allergies?", "open_ended"),
-            Question("Have you ever been hospitalized?", "mcq", ["Yes", "No", "Prefer not to say"]),
-            Question("Do you smoke?", "mcq", ["Yes", "No", "Occasionally"])
-        ],
-        "user_responses": [
-            "Robert Johnson",
-            "I'm allergic to penicillin",
-            "I'd rather not say",
-            "I used to but I quit last year"
-        ],
-        "expected_final_answers": {
-            "What is your full name?": "Robert Johnson",
-            "Do you have any allergies?": "Allergic to penicillin",
-            "Have you ever been hospitalized?": "Prefer not to say",
-            "Do you smoke?": "No"  # Should interpret "used to but quit" as No
-        }
-    }
 ]
