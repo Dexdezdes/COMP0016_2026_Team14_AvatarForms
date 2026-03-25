@@ -1,6 +1,7 @@
 import sys
 sys.path.append("..\\Backend")  # Add Backend directory to sys.path to allow imports
 
+from tracing import Tracer
 import pytest
 from unittest.mock import Mock, patch
 import json
@@ -38,7 +39,7 @@ class TestModel:
         
         result = model.generate(messages, temperature=0.3)
         
-        assert result == {"choices": [{"message": {"content": "Test response"}}]}
+        assert result.json() == mock_response.json()
         mock_request.assert_called_once()
 
     @patch('requests.request')
@@ -82,28 +83,32 @@ class TestAgent:
         assert agent.model == mock_model
 
     @patch.object(Model, 'generate')
-    def test_agent_run(self, mock_generate):
+    @patch.object(Tracer, 'log')
+    def test_agent_run(self, mock_generate, mock_tracer):
         """Test Agent run method"""
-        mock_generate.return_value = {
-            "choices": [{"message": {"content": "Test output"}}]
-        }
-        
+        mock_response = Mock(json=lambda: {"choices": [{"message": {"content": "Test output"}}]}, elapsed=Mock(total_seconds=lambda: 2.5))
+        mock_generate.return_value = mock_response
+
         mock_model = Mock(spec=Model)
         mock_model.generate = mock_generate
-        agent = Agent(mock_model)
+        agent = Agent(mock_model, tracer=mock_tracer)
         
         messages = [{"role": "user", "content": "Hello"}]
         result = agent.run(messages)
         
         assert result == "Test output"
+
         mock_generate.assert_called_once_with(messages, temperature=None)
+        mock_tracer.log.assert_called_once()
+
 
 class TestTalkerAgent:
     def setup_method(self):
         self.mock_model = Mock(spec=Model)
+        self.mock_tracer = Mock(spec=Tracer)
         self.conversation_history = []
         self.interview_context = "Test interview context"
-        self.talker = TalkerAgent(self.mock_model, self.conversation_history, self.interview_context)
+        self.talker = TalkerAgent(self.mock_model, self.conversation_history, self.interview_context, tracer=self.mock_tracer)
 
     @patch.object(Agent, 'run')
     def test_ask_question(self, mock_run):
@@ -161,8 +166,9 @@ class TestTalkerAgent:
 class TestEvaluatorAgent:
     def setup_method(self):
         self.mock_model = Mock(spec=Model)
+        self.mock_tracer = Mock(spec=Tracer)
         self.interview_context = "Test context"
-        self.evaluator = EvaluatorAgent(self.mock_model, self.interview_context)
+        self.evaluator = EvaluatorAgent(self.mock_model, self.interview_context, tracer=self.mock_tracer)
 
     @patch.object(Agent, 'run')
     def test_evaluate_satisfactory(self, mock_run):
@@ -205,7 +211,8 @@ class TestRAGAgent:
     def setup_method(self):
         self.mock_model = Mock(spec=Model)
         self.interview_context = "Test context"
-        self.rag_agent = RAG_Agent(self.mock_model, self.interview_context)
+        self.mock_tracer = Mock(spec=Tracer)
+        self.rag_agent = RAG_Agent(self.mock_model, self.interview_context, tracer=self.mock_tracer)
 
     @patch.object(Agent, 'run')
     def test_answer_open_ended(self, mock_run):

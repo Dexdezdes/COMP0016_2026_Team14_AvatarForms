@@ -20,6 +20,8 @@ class TestAvatarFormsInterviewer:
         assert self.interviewer.user_role == "user"
         assert self.interviewer.AI_role == "assistant"
 
+        assert self.interviewer.tracer is None
+
     @patch('agents.Model')
     def test_get_model_local(self, mock_model):
         """Test getting local model"""

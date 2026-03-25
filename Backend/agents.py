@@ -2,6 +2,7 @@
 import requests
 import json
 
+from tracing import Tracer
 from formatting import clean_script, format_q_and_as, outputToJSON, conversationToText, LLM_strip
 from prompts import RAG_collate_answer, Talker_system_prompt, Talker_ask_question_prompt, Talker_follow_up_question_prompt, Talker_closing_statement_prompt,Evaluator_system_prompt, RAG_system_prompt
 
@@ -39,25 +40,36 @@ class Model:
             headers["Authorization"] = f"Bearer {self.api_key}"
         response = requests.request("POST", self.url, headers=headers, data=json.dumps(payload))
         if response.status_code == 200:
-            return response.json()
+            return response
         else:
             raise Exception(f"API call failed with status code {response.status_code}: {response.text}")
         
 
 
 class Agent:
-    def __init__(self, model: Model) -> None:
+    def __init__(self, model: Model, tracer: Tracer = None) -> None:
+        self.agent = self.__class__.__name__
         self.model = model
+        self.tracer = tracer
 
     def run(self, messages: list, temperature: float = None) -> str:
         response = self.model.generate(messages, temperature=temperature)
-        return response["choices"][0]["message"]["content"]
+        output = response.json()["choices"][0]["message"]["content"]
+        if self.tracer:
+            self.tracer.log(
+                agent_name=self.agent,
+                prompt=messages,
+                output=output,
+                temperature=temperature,
+                response_time=response.elapsed.total_seconds()
+            )
+        return output
         
     
 
 class TalkerAgent(Agent):
-    def __init__(self, model: Model, conversation_history: list, interview_context: str) -> None:
-        super().__init__(model)
+    def __init__(self, model: Model, conversation_history: list, interview_context: str, tracer: Tracer = None) -> None:
+        super().__init__(model, tracer=tracer)
         self.conversation_history = conversation_history
         self.interview_context = interview_context
 
@@ -100,8 +112,8 @@ class TalkerAgent(Agent):
         return clean_script(output)
 
 class EvaluatorAgent(Agent):
-    def __init__(self, model: Model, interview_context: str) -> None:
-        super().__init__(model)
+    def __init__(self, model: Model, interview_context: str, tracer: Tracer = None) -> None:
+        super().__init__(model, tracer=tracer)
         self.prompt = Evaluator_system_prompt
         self.interview_context = interview_context
 
@@ -114,8 +126,8 @@ class EvaluatorAgent(Agent):
         
     
 class RAG_Agent(Agent):
-    def __init__(self, model: Model, interview_context: str) -> None:
-        super().__init__(model)
+    def __init__(self, model: Model, interview_context: str, tracer: Tracer = None) -> None:
+        super().__init__(model, tracer=tracer)
         self.system_prompt = RAG_system_prompt(interview_context)
         self.interview_context = interview_context
 
