@@ -276,7 +276,7 @@ async def main():
 ### Example usage ###
 if __name__ == "__main__":
     # Run async main with WebSocket support
-    # asyncio.run(main())
+    asyncio.run(main())
 
     # # OR use synchronous version (comment out asyncio.run(main()) above):
     # questions = [
@@ -285,34 +285,34 @@ if __name__ == "__main__":
     #     "Describe a challenging situation you have faced and how you handled it.",
     #     "What are your hobbies and interests?",
     # ]
-    questions = [
-        {"text": "What is your full name?", "type": "open_ended"},
-        {"text": "How did you sleep last night?", "type": "open_ended"},
-        {"text": "Do you generally sleep well?", "type": "open_ended"},
-        {"text": "How are you feeling today?", "type": "open_ended"},
-        {"text": "What is your favourite movie?", "type": "open_ended"}
-    ]
+    # questions = [
+    #     {"text": "What is your full name?", "type": "open_ended"},
+    #     {"text": "How did you sleep last night?", "type": "open_ended"},
+    #     {"text": "Do you generally sleep well?", "type": "open_ended"},
+    #     {"text": "How are you feeling today?", "type": "open_ended"},
+    #     {"text": "What is your favourite movie?", "type": "open_ended"}
+    # ]
 
-    interview_context = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know them."
+    # interview_context = "This questionnaire is designed to get complete information about the user in a friendly manner and get to know them."
 
-    interviewer = AvatarFormsInterviewer(is_local=True, cutoff=4, local_port=8080, log_dir="logs", print_logs=False)
-    interviewer.build_interview(questions, interview_context)
+    # interviewer = AvatarFormsInterviewer(is_local=True, cutoff=4, local_port=8080, log_dir="logs", print_logs=False)
+    # interviewer.build_interview(questions, interview_context)
 
-    # Start interview
-    first_question = interviewer.start_interview()
-    print(f"Talker: {first_question}")
-    while True:
-        response = input("User: ") # Replace with actual user input in production
-        # print(interviewer.conversation_history)
-        speech_line, continue_interview = interviewer.respond(response)
-        print(f"Talker: {speech_line}") # Output to UI in production
+    # # Start interview
+    # first_question = interviewer.start_interview()
+    # print(f"Talker: {first_question}")
+    # while True:
+    #     response = input("User: ") # Replace with actual user input in production
+    #     # print(interviewer.conversation_history)
+    #     speech_line, continue_interview = interviewer.respond(response)
+    #     print(f"Talker: {speech_line}") # Output to UI in production
 
-        if not continue_interview:
-            print("Interview complete.")
-            final_answers = interviewer.collect_all_answers()
-            # Dict of questions and answers
-            print(interviewer.answers)
-            for question, answer in final_answers.items():
-                print(f"{bcolors.OKGREEN}Q: {question}{bcolors.ENDC}")
-                print(f"A: {answer}\n")
-            break 
+    #     if not continue_interview:
+    #         print("Interview complete.")
+    #         final_answers = interviewer.collect_all_answers()
+    #         # Dict of questions and answers
+    #         print(interviewer.answers)
+    #         for question, answer in final_answers.items():
+    #             print(f"{bcolors.OKGREEN}Q: {question}{bcolors.ENDC}")
+    #             print(f"A: {answer}\n")
+    #         break
