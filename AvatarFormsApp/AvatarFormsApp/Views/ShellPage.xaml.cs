@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Media;
 
 using Windows.System;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Media.SpeechRecognition;
@@ -167,6 +168,9 @@ public sealed partial class ShellPage : Page
             }
         }
 
+        // Initialize Avatar ComboBox
+        InitializeAvatarComboBox();
+
         var savedAvatar = await _localSettingsService.ReadSettingAsync<string>("SelectedAvatar");
         if (!string.IsNullOrEmpty(savedAvatar))
         {
@@ -174,7 +178,7 @@ public sealed partial class ShellPage : Page
             {
                 foreach (ComboBoxItem item in AvatarComboBox.Items)
                 {
-                    if (item.Tag is string tag && tag == savedAvatar)
+                    if (item.Tag is string tag && tag.Equals(savedAvatar, System.StringComparison.OrdinalIgnoreCase))
                     {
                         AvatarComboBox.SelectedItem = item;
                         break;
@@ -182,7 +186,7 @@ public sealed partial class ShellPage : Page
                 }
             }
         }
-        else if (AvatarComboBox != null)
+        else if (AvatarComboBox != null && AvatarComboBox.Items.Count > 0)
         {
             AvatarComboBox.SelectedIndex = 0;
         }
@@ -214,6 +218,40 @@ public sealed partial class ShellPage : Page
         }
     }
 
+    private void InitializeAvatarComboBox()
+    {
+        if (AvatarComboBox == null) return;
+
+        AvatarComboBox.Items.Clear();
+
+        try
+        {
+            string avatarsDir = Path.Combine(System.AppContext.BaseDirectory, "HeadTTS", "avatars");
+            if (Directory.Exists(avatarsDir))
+            {
+                var glbFiles = Directory.GetFiles(avatarsDir, "*.glb");
+                foreach (var file in glbFiles)
+                {
+                    string avatarName = Path.GetFileNameWithoutExtension(file);
+
+                    // Capitalize the first letter for display
+                    string displayName = char.ToUpper(avatarName[0]) + avatarName.Substring(1);
+
+                    var item = new ComboBoxItem
+                    {
+                        Content = displayName,
+                        Tag = avatarName
+                    };
+                    AvatarComboBox.Items.Add(item);
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to load avatars: {ex.Message}");
+        }
+    }
+
     private void OnCloseShellSettingsClicked(object sender, RoutedEventArgs e)
     {
         if (ShellSettingsOverlay != null)
@@ -227,6 +265,65 @@ public sealed partial class ShellPage : Page
         if (AutoSendToggle != null)
         {
             _ = _localSettingsService?.SaveSettingAsync("AutoSendEnabled", AutoSendToggle.IsOn);
+        }
+    }
+
+    private async void OnBrowseAvatarClicked(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+
+            // Get the current window's HWND 
+            var window = App.MainWindow;
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.ComputerFolder;
+            picker.FileTypeFilter.Add(".glb");
+
+            var file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                string targetDir = Path.Combine(System.AppContext.BaseDirectory, "HeadTTS", "avatars");
+                Directory.CreateDirectory(targetDir);
+
+                string fileName = file.Name;
+                string targetPath = Path.Combine(targetDir, fileName);
+
+                using (var stream = await file.OpenStreamForReadAsync())
+                using (var targetStream = File.Create(targetPath))
+                {
+                    await stream.CopyToAsync(targetStream);
+                }
+
+                string avatarName = Path.GetFileNameWithoutExtension(fileName);
+
+                var existingItem = AvatarComboBox.Items
+                    .OfType<ComboBoxItem>()
+                    .FirstOrDefault(i => i.Tag?.ToString() == avatarName);
+
+                if (existingItem != null)
+                {
+                    AvatarComboBox.SelectedItem = existingItem;
+                }
+                else
+                {
+                    string displayName = char.ToUpper(avatarName[0]) + avatarName.Substring(1);
+                    var newItem = new ComboBoxItem 
+                    { 
+                        Content = displayName, 
+                        Tag = avatarName 
+                    };
+                    AvatarComboBox.Items.Add(newItem);
+                    AvatarComboBox.SelectedItem = newItem;
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to import avatar: {ex.Message}");
         }
     }
 
