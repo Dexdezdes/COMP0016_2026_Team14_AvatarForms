@@ -18,8 +18,9 @@ load_dotenv()
 
 
 class AvatarFormsInterviewer:
-    def __init__(self, is_local: bool = False, model_name: str = None, local_port: int = 8081, cutoff: int = 4, log_dir: str = None, print_logs: bool = False) -> None:
+    def __init__(self, is_local: bool = False, model_name: str = None, local_port: int = 8081, cutoff: int = 4, log_dir: str = None, print_logs: bool = False, language: str = "en-US") -> None:
         self.cutoff = cutoff
+        self.language = language
 
         self.user_role = "user"
         self.AI_role = "assistant"
@@ -52,19 +53,22 @@ class AvatarFormsInterviewer:
             model=self.model,
             conversation_history=self.conversation_history,
             interview_context=self.interview_context,
-            tracer=self.tracer
+            tracer=self.tracer,
+            language=self.language
         )
-        
+
         self.evaluator = EvaluatorAgent(
             model=self.model,
             interview_context=self.interview_context,
-            tracer=self.tracer
+            tracer=self.tracer,
+            language=self.language
         )
-        
+
         self.rag_agent = RAG_Agent(
             model=self.model,
             interview_context=self.interview_context,
-            tracer=self.tracer
+            tracer=self.tracer,
+            language=self.language
         )
         
     def reset_interview(self) -> None:
@@ -209,6 +213,7 @@ async def main():
     parser.add_argument("-p", "--port", type=int, default=8883, help="Port for the WebSocket server (default: 8883)")
     parser.add_argument("--http_port", type=int, default=8882, help="Port for the HTTP API server (default: 8882)")
     parser.add_argument("--response_port", type=int, default=5000, help="Port for the Response API service (default: 5000)")
+    parser.add_argument("--language", type=str, default="en-US", help="Language of the user input (default: en-US)")
     args = parser.parse_args()
 
     #Start HTTP Server
@@ -222,7 +227,7 @@ async def main():
     await wait_for_browser_connection()
 
     # Setup interview after browser is connected
-    interviewer = AvatarFormsInterviewer(is_local=args.local, local_port=args.llama_port, cutoff=4)
+    interviewer = AvatarFormsInterviewer(is_local=args.local, local_port=args.llama_port, cutoff=4, language=args.language)
     interviewer.build_from_json(questionnaire_data)
 
     # Start interview
