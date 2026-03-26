@@ -13,52 +13,6 @@ from deepeval.metrics import AnswerRelevancyMetric, FaithfulnessMetric, GEval
 from deepeval import evaluate
 from deepeval.models import GPTModel
 
-# import json
-# from deepeval.metrics import BaseMetric
-
-# class BaseJSONMetric(BaseMetric):
-#     target_key = None 
-
-#     def _init_(self, threshold: float = 1.0):
-#         self.threshold = threshold
-
-#     def measure(self, test_case: LLMTestCase):
-#         try:
-#             actual = json.loads(test_case.actual_output) if isinstance(test_case.actual_output, str) else test_case.actual_output
-#             expected = json.loads(test_case.expected_output) if isinstance(test_case.expected_output, str) else test_case.expected_output
-            
-#             actual_val = actual.get(self.target_key)
-#             expected_val = expected.get(self.target_key)
-            
-#             self.score = 1.0 if actual_val == expected_val else 0.0
-#             self.reason = f"Key '{self.target_key}': Actual={actual_val}, Expected={expected_val}"
-            
-#         except (json.JSONDecodeError, AttributeError, TypeError):
-#             self.score = 0.0
-#             self.reason = "Invalid JSON format or missing expected keys"
-            
-#         self.success = self.score >= self.threshold
-#         return self.score
-
-#     async def a_measure(self, test_case: LLMTestCase):
-#         return self.measure(test_case)
-
-#     def is_successful(self):
-#         return self.success
-
-# class SatisfactoryJudgmentMetric(BaseJSONMetric):
-#     target_key = "is_satisfactory"
-
-#     @property
-#     def _name_(self):
-#         return "Satisfactory Judgment Accuracy"
-
-# class SkipDecisionMetric(BaseJSONMetric):
-#     target_key = "override_skip"
-
-#     @property
-#     def _name_(self):
-#         return "Skip Decision Accuracy"
 
 class AgentEvaluation:
     def __init__(self, judge_model: str, agent_model: Model, talker_agent: Agent, evaluator_agent: Agent, summariser_agent: Agent, tracer: Tracer = None) -> None:
@@ -124,7 +78,19 @@ class AgentEvaluation:
 
 if __name__ == "__main__":
 
-    interviewer = AvatarFormsInterviewer(is_local=True, cutoff=4, local_port=8081)
+    parser = argparse.ArgumentParser(description="Run DeepEval evals for the AvatarForms agent.")
+    parser.add_argument("--port", type=int, default=8081, help="Port for local model server if --local is set (default: 8081)")
+
+    parser.add_argument("--talker", action="store_true", help="Run tests for the talker agent")
+    parser.add_argument("--evaluator", action="store_true", help="Run tests for the evaluator agent")
+    parser.add_argument("--summariser", action="store_true", help="Run tests for the summariser agent")
+
+
+    args = parser.parse_args()
+
+
+
+    interviewer = AvatarFormsInterviewer(is_local=True, local_port=args.port)
     model = interviewer.get_model()
     agent_evaluation = AgentEvaluation(
         judge_model="gpt-5-mini",
@@ -137,6 +103,12 @@ if __name__ == "__main__":
 
     # Run evaluations
     # Results save to folder specified in .env file (DEEPEVAL_RESULTS_FOLDER)
-    agent_evaluation.run_summariser_tests(summariser_test_cases)
-    # agent_evaluation.run_evaluator_tests(evaluator_test_cases)
-    # agent_evaluation.run_talker_tests(talker_test_cases)
+    if not (args.talker or args.evaluator or args.summariser):
+        args.talker = args.evaluator = args.summariser = True
+    
+    if args.summariser:
+        agent_evaluation.run_summariser_tests(summariser_test_cases)
+    if args.evaluator:
+        agent_evaluation.run_evaluator_tests(evaluator_test_cases)
+    if args.talker:
+        agent_evaluation.run_talker_tests(talker_test_cases)
