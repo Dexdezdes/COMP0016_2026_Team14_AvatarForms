@@ -2,6 +2,7 @@ import json
 import math
 from typing import Optional, Dict, Any
 from collections import defaultdict
+import argparse
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -49,8 +50,14 @@ def display_deepeval_results(
     
     if test_cases:
         # Count successes and failures
-        successes = sum(tc.get('success', False) for tc in test_cases)
-        failures = len(test_cases) - successes
+        successes = 0
+        failures = 0
+        for tc in test_cases:
+            for metric in tc.get('metricsData', []):
+                if metric.get('success', False):
+                    successes += 1
+                else:
+                    failures += 1
         
         # Create pie chart
         colors = ['#2ecc71', '#e74c3c']
@@ -63,7 +70,7 @@ def display_deepeval_results(
             explode=(0.05, 0.05),
             textprops={'fontsize': 10, 'fontweight': 'bold'}
         )
-        ax1.set_title(f'Test Case Results (Total: {len(test_cases)})', 
+        ax1.set_title(f'Test Case Results (Total: {successes + failures})', 
                      fontsize=12, fontweight='bold')
     
     # ============= 2. Completion time Distribution (Top-right) =============
@@ -145,5 +152,7 @@ def display_deepeval_results(
 
 # Example usage:
 if __name__ == "__main__":
-    path = "results\\20260326_105522"
-    results = display_deepeval_results(json_path=path, save_path=None)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("path", type=str, help="Path to the DeepEval results JSON file")
+    args = parser.parse_args()
+    results = display_deepeval_results(json_path=args.path, save_path=None)
