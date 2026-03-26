@@ -85,7 +85,8 @@ Backend/**/*.llamafile
 **/__pycache__/
 
 # Ignore logs
-Evaluations/agent_evaluation_logs/
+**/agent_evaluation_logs/
+**/.deepeval/
 
 ################################################################################
 # macOS & Others
