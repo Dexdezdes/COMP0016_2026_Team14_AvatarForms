@@ -1,0 +1,959 @@
+{
+    "testCases": [
+        {
+            "name": "Evaluator - MCQ exact lowercase match",
+            "input": "Interview context:\nHealth survey\nConversation history:\nAssistant: Do you smoke? Yes or No\nUser: no\nQuestion:\nDo you smoke?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Yes\n  2. No\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user clearly answered 'no', which directly corresponds to option 2 of the provided multiple-choice question. The response is complete, relevant, and unambiguous.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The answer matches one of the provided options.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Health survey"
+            ],
+            "completionTime": 6.516223999999056,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs mark satisfactory:true, override_skip:false, and follow_up_question:null, and the Actual Output\u2019s reasoning correctly affirms the answer corresponds to an offered option (content equivalence and completeness per steps 1\u20133). The Actual Output adds a clearer justification (\u2018user answered \u201cno\u201d \u2192 option 2\u2019) but makes no incorrect factual claims; the evaluator\u2019s satisfactory judgment is therefore correct (step 4).",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00153,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output for content equivalence: verify the response addresses the same question, facts, and intended outcome.\",\n    \"Check correctness and completeness: confirm all required points in the Expected Output are present in the Actual Output and any factual claims are accurate.\",\n    \"Assess relevance and quality: evaluate whether the Actual Output is coherent, on-topic, and at the appropriate level of detail relative to the Expected Output.\",\n    \"Decide if the evaluator was correct: confirm the evaluator\u2019s satisfactory/unsatisfactory judgment matches the comparison findings; note any partial matches or errors and the reason for disagreement.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Correct \u2014 Actual and Expected both indicate no skip (override_skip false) and satisfactory true. Both rationales convey the same conclusion that the user\u2019s answer matches a provided option (Actual specifies it corresponds to option 2; Expected states it matches one of the options). follow_up_question is null in both, so no fields differ.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00217475,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Compare the Expected Output skip decision to the Actual Output decision: if Expected indicates skip and Actual also indicates skip, mark agreement; otherwise proceed to step 2.\",\n    \"If Expected indicates skip but Actual does not (or vice versa), mark as incorrect and note the decision mismatch between Actual and Expected.\",\n    \"When both Actual and Expected agree on skipping, compare the provided rationale/condition in Actual against Expected; if the rationale matches, mark correct; if rationale differs, mark partial and document the discrepancy.\",\n    \"Record the final judgment as Correct/Incorrect/Partial and include which field(s) differed (decision flag, rationale, or both) along with a concise example of the mismatch.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 17.514538400002493,
+            "evaluationCost": 0.0037047499999999997,
+            "order": 14
+        },
+        {
+            "name": "Evaluator - Partial but sufficient open-ended",
+            "input": "Interview context:\nTravel survey\nConversation history:\nAssistant: Where did you travel last year?\nUser: I went to Spain\nQuestion:\nWhere did you travel last year?\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user clearly answered the question by specifying 'Spain' as the destination, which directly addresses the query about where they traveled last year. The response is complete, relevant, and unambiguous.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user provided a clear destination.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Travel survey"
+            ],
+            "completionTime": 6.695673700000043,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "All elements match the Expected Output: satisfactory is true, override_skip is false, and follow_up_question is null. The Actual Output\u2019s reasoning is more detailed but consistent with the Expected reasoning (both state the user provided a clear destination \u2014 Actual explicitly names 'Spain'). No required elements are missing or incorrect, formatting is valid JSON, and the evaluator\u2019s satisfactory label matches this assessment.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0018045000000000001,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output element-by-element: verify required facts, claims, calculations, and the presence/absence of each expected element.\",\n    \"Assess correctness and completeness: mark content as correct, partially correct (missing or incorrect parts), or incorrect, and note formatting/clarity issues that affect satisfaction.\",\n    \"Decide satisfaction: based on the comparison and completeness, determine whether the Actual Output meets the threshold for 'satisfactory' relative to the Expected Output.\",\n    \"Verify the evaluator's label: check if their satisfactory/unsatisfactory judgment matches your decision; if not, record that the evaluator misidentified the outcome and list the specific discrepancies supporting that conclusion.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Actual and Expected outputs set override_skip to false (i.e., NOT SKIP), so the skip-identification matches per step 3. Both also mark satisfactory true and include equivalent reasoning about a clear destination (Spain), with null follow_up_question, confirming consistency. Therefore the skip decision was correctly identified.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0018279999999999998,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Identify skip decision in Expected Output (e.g., explicit SKIP flag or instruction to skip)\",\n    \"Identify skip decision in Actual Output (explicit SKIP flag or provided answer)\",\n    \"Compare the two decisions: if Expected and Actual both indicate SKIP or both indicate NOT SKIP, mark skip-identification as correct; otherwise mark it incorrect\",\n    \"If decisions match and are NOT SKIP, note that skip-identification is correct (answer correctness is out of scope for this evaluation)\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 18.154826400001184,
+            "evaluationCost": 0.0036325,
+            "order": 12
+        },
+        {
+            "name": "Evaluator - Multiple follow-ups needed",
+            "input": "Interview context:\nDental intake form\nConversation history:\nAssistant: How often do you brush your teeth?\nUser: Regularly\nAssistant: Could you be more specific about how many times per day?\nUser: Usually twice, sometimes once if I'm tired\nQuestion:\nHow often do you brush your teeth?\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user provided a specific answer (twice daily, sometimes once) after being asked for more details, directly addressing the question about brushing frequency. The response is clear, relevant, and complete.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"After follow-up, the user provided a specific answer about brushing frequency.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Dental intake form"
+            ],
+            "completionTime": 8.500375400002667,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The evaluator correctly marked satisfactory=true, matching the expected output. Line-by-line: both outputs set satisfactory=true, override_skip=false, and follow_up_question=null. The evaluator\u2019s reasoning cites the user\u2019s specific answer about brushing frequency (\"twice daily, sometimes once\"), which supports the satisfactory label; the wording difference from the expected reasoning is minor and non-substantive. No factual or format errors detected.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00180875,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output line-by-line and verify required content, facts, format, and key elements are present and correct.\",\n    \"Determine if differences are substantive: classify mismatches as incorrect facts, missing required elements, formatting errors, or minor/acceptable variations.\",\n    \"Assess whether the evaluator labeled the answer satisfactory or unsatisfactory in accordance with the comparison (matching outputs and correct content => satisfactory; substantive mismatches => unsatisfactory).\",\n    \"Verify the evaluator's justification by checking cited examples or discrepancies; conclude the evaluator's judgement is Correct if reasoning supports the label, otherwise Incorrect, and record specific supporting or contradicting evidence.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs indicate no skip (override_skip false, satisfactory true) and the Actual\u2019s justification matches the Expected: both state the user provided a specific answer about brushing frequency after follow-up. Follow-up question fields are null in both. Per the evaluation steps, this is a Correct No-Skip with no discrepancy.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00213975,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Compare the Expected Output's skip decision to the Actual Output's skip decision; if they match, proceed, if they differ classify as a mismatch (false positive if Actual skipped but Expected did not, false negative if Actual did not skip but Expected did).\",\n    \"If both Expected and Actual indicate a skip, compare the reasons/justifications: confirm Actual's justification aligns with the Expected reason or the evaluation policy; if it does, mark as correct skip, otherwise mark as incorrect justification.\",\n    \"If both Expected and Actual indicate not to skip, verify Actual provided a valid attempt or answer consistent with the Expected Output; if it instead skipped or provided an irrelevant response, mark as incorrect.\",\n    \"Record the final judgement as one of: Correct Skip, Incorrect Justification, False Positive Skip, False Negative Skip, or Correct No-Skip; include a concise note linking the Actual vs Expected discrepancy.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 19.14251829999921,
+            "evaluationCost": 0.003948500000000001,
+            "order": 6
+        },
+        {
+            "name": "Evaluator - Open-ended non-answer",
+            "input": "Interview context:\nFeedback form\nConversation history:\nAssistant: What did you like about the product?\nUser: Nothing\nQuestion:\nWhat did you like about the product?\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user provided a direct and clear response to the question, stating they liked nothing about the product. This addresses the question explicitly, even if it indicates no positive aspects. The answer is relevant, clear, and does not require further clarification.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The user did not clearly indicate if they actually don't find a thing they like about the product.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Feedback form"
+            ],
+            "completionTime": 20.154768899999908,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": false,
+                    "score": 0.2,
+                    "reason": "The evaluator marked satisfactory true while the Expected Output set it to false\u2014this is the primary incorrect judgment. They correctly matched override_skip (false) and follow_up_question (null), but their justification claims the user gave a clear statement of liking nothing, which contradicts the Expected Output\u2019s note that the user did not clearly indicate they disliked the product. The reasoning therefore fails to reference the specific discrepancy in the satisfactory field and does not support the declared judgment. Due to the critical mismatch on the key satisfactory flag and unsupported justification, the evaluation is largely incorrect.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0021025,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output for factual correctness, completeness, and required elements; list any missing, incorrect, or extra content.\",\n    \"Assess whether the Actual Output meets the acceptance criteria (correctness, completeness, formatting) and determine the correct judgment: satisfactory or unsatisfactory.\",\n    \"Compare the evaluator's declared judgment to the correct judgment from step 2; mark the evaluator as correct if judgments match, incorrect if they differ.\",\n    \"Verify the evaluator's justification points to specific differences or matches between Actual and Expected Outputs (with examples or references); ensure the reasoning supports their judgment.\"\n] \n \nRubric:\nNone \n \nScore: 0.2"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": false,
+                    "score": 0.0,
+                    "reason": "The evaluator steps require comparing 'satisfactory' and any reasons. Here 'satisfactory' differs (Expected false vs Actual true), so the primary status is incorrect per step 3. override_skip and follow_up_question match (both false/null), but the provided reasons conflict: Expected says the user did not clearly indicate dislike, Actual claims a clear statement of liking nothing. Because the core status and reasoning disagree, the output fails the expected alignment.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002105,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"For each question, read the Expected Output to determine the expected skip status (e.g., marked as 'SKIP' or answered) and any expected skip reason.\",\n    \"For the same question, read the Actual Output to determine the actual skip status and any provided skip reason.\",\n    \"Compare statuses: if Expected and Actual are both 'skipped' or both 'answered', mark as correct; if they differ (Expected skipped but Actual answered, or vice versa), mark as incorrect.\",\n    \"If reasons are provided, verify the Actual reason matches the Expected reason; record per-question results and summarize overall accuracy and any mismatches with question identifiers.\"\n] \n \nRubric:\nNone \n \nScore: 0.0"
+                }
+            ],
+            "runDuration": 18.327025700000377,
+            "evaluationCost": 0.0042075,
+            "order": 17
+        },
+        {
+            "name": "Evaluator - MCQ correct match",
+            "input": "Interview context:\nHealthcare survey\nConversation history:\nAssistant: How would you rate your overall health? Would you say excellent, good, fair, or poor?\nUser: I'd say I'm in pretty good shape actually\nQuestion:\nHow would you rate your overall health?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Excellent\n  2. Good\n  3. Fair\n  4. Poor\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user's response 'I'd say I'm in pretty good shape actually' clearly aligns with option 2 'Good' for overall health rating. The answer is complete, relevant, clear, and matches the provided options.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user response clearly match the 'good' option from the multiple choices.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Healthcare survey"
+            ],
+            "completionTime": 7.995911800000613,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "All required elements match: both Actual and Expected mark satisfactory true, override_skip false, and follow_up_question null. The Actual reasoning correctly identifies the user phrase as mapping to the 'Good' option and provides equivalent justification to the Expected. Coverage is complete (no missing or extra components), reasoning aligns with the Expected rationale, and the evaluator's satisfactory judgment matches this outcome. Therefore the evaluator's decision is correct.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00187375,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output for content match: list required facts/points from Expected and verify they are present and accurate in Actual; if all match, consider satisfactory, otherwise note discrepancies.\",\n    \"Check completeness/coverage: ensure Actual contains every component/item specified in Expected; any missing required elements or presence of incorrect extras makes Actual unsatisfactory.\",\n    \"Evaluate reasoning and format alignment: confirm Actual's explanations, logic, and format align with the rationale and structure in Expected; contradictions or flawed reasoning render Actual unsatisfactory.\",\n    \"Judge the evaluator's decision against the above assessment: if Actual meets content, completeness, and reasoning criteria, the evaluator should have labeled it satisfactory; if not, they should have labeled it unsatisfactory \u2014 mark the evaluator as correct only if their judgment matches this outcome.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Actual and Expected both indicate no skip (override_skip false), both mark satisfactory true, and follow_up_question is null in both. The reasoning statements align\u2014both identify the user response as matching the 'good' option\u2014so skip decisions and explanations match; pass.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0017434999999999998,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"For each question, compare the Actual Output\u2019s skip decision to the Expected Output\u2019s skip decision (both should either indicate skip or indicate an answer).\",\n    \"If Actual indicates skip but Expected does not, record a false positive skip; if Actual does not indicate skip but Expected does, record a false negative skip.\",\n    \"If the Expected Output includes a skip reason, verify the Actual Output\u2019s skip reason matches the Expected reason; any mismatch is incorrect.\",\n    \"If all questions have matching skip decisions (and matching reasons where provided) mark the evaluation as pass; otherwise mark as fail and list each question with Actual vs Expected differences.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 19.633116699998936,
+            "evaluationCost": 0.00361725,
+            "order": 3
+        },
+        {
+            "name": "Evaluator - MCQ unclear answer",
+            "input": "Interview context:\nCustomer feedback\nConversation history:\nAssistant: How satisfied are you with our service?\nUser: It could be better\nQuestion:\nHow satisfied are you with our service?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Very Satisfied\n  2. Satisfied\n  3. Neutral\n  4. Dissatisfied\n  5. Very Dissatisfied\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The response 'It could be better' is vague and does not directly correspond to any of the provided options (1-5). While it implies dissatisfaction, it does not explicitly select an option, making it unclear how to map the answer to the required choices.\", \"follow_up_question\": \"Could you please select one of the options (Very Satisfied, Satisfied, Neutral, Dissatisfied, Very Dissatisfied) that best reflects your experience?\"}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The response 'could be better' is ambiguous and doesn't clearly match any of the MCQ options.\", \"follow_up_question\": \"To help us better understand, would you say you're satisfied, neutral, or dissatisfied with our service?\"}",
+            "retrievalContext": [
+                "Customer feedback"
+            ],
+            "completionTime": 10.357049799997185,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output aligns closely with the Expected Output: both set satisfactory and override_skip to false and justify that the response 'could be better' is ambiguous and does not map clearly to the MCQ options. The evaluator\u2019s label (unsatisfactory) matches the ground-truth classification, and the justification cites the specific mismatch (failure to select one of the provided options). The only minor difference is the wording of the follow-up (Actual lists all five options explicitly; Expected groups them), which does not contradict the judgment or key reasoning.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0023482499999999996,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output for correctness, completeness, and presence of errors or extraneous information.\",\n    \"Decide the ground-truth satisfaction: classify the Actual Output as satisfactory if it meets all key expectations, otherwise unsatisfactory.\",\n    \"Check whether the evaluator\u2019s stated judgment (satisfactory/unsatisfactory) matches the ground-truth classification from the comparison.\",\n    \"Assess the evaluator\u2019s justification: confirm they cite specific matches/mismatches between Actual and Expected; if the justification contradicts the label, mark the evaluator\u2019s identification as incorrect.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Evaluation steps 1\u20134 applied: both Expected and Actual set override_skip false (no-skip) and provide substantive reasoning and a follow-up question. The Actual\u2019s wording (\u201cIt could be better\u201d) and follow-up map semantically to the Expected\u2019s ambiguity and request for a clearer choice, so the skip/no-skip decisions match and there are only minor wording differences.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00214075,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Compare the Expected Output and Actual Output for a skip indicator (e.g., explicit skip flag or absence of an answer).\",\n    \"If Expected indicates skip: confirm Actual also skipped and contains no substantive answer; any provided answer -> mark as incorrect.\",\n    \"If Expected indicates no skip: confirm Actual provided a relevant answer; if Actual skipped despite Expected not skipping -> mark as incorrect.\",\n    \"Report PASS only if skip/no-skip decisions match for the item; otherwise report FAIL and list the mismatches between Actual and Expected.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 20.844340199997532,
+            "evaluationCost": 0.004489,
+            "order": 4
+        },
+        {
+            "name": "Evaluator - Clear open-ended factual answer",
+            "input": "Interview context:\nGeneral survey\nConversation history:\nAssistant: What is your favorite color?\nUser: Blue\nQuestion:\nWhat is your favorite color?\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user provided a direct and clear answer to the question about their favorite color. The response is relevant, complete, and does not require further clarification.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user provided a clear and direct answer.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "General survey"
+            ],
+            "completionTime": 7.1396246000003885,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "All required fields match: both outputs set satisfactory true, override_skip false, and follow_up_question null. The Actual\u2019s reasoning is more detailed (mentions \"favorite color\") but is a harmless stylistic expansion of the Expected\u2019s brief statement and contains no factual errors or contradictions. The evaluator\u2019s satisfactory label is therefore correct and complete.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002005,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output line-by-line to identify matches, omissions, contradictions, and missing required elements.\",\n    \"Assess correctness and completeness: deem the Actual satisfactory only if it contains all required elements from the Expected with accurate facts and logically correct reasoning.\",\n    \"Apply severity rules: treat minor stylistic or formatting differences as acceptable, but treat factual errors, missing steps, or incorrect results as unsatisfactory.\",\n    \"Verify the evaluator's conclusion: confirm their satisfactory/unsatisfactory label matches your assessment; if it does not, record the discrepancy and cite specific differences between Actual and Expected.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Actual and Expected indicate an answered response (override_skip false, not skipped) and mark satisfactory true. The Actual output\u2019s reasoning aligns with and slightly expands the Expected reasoning (mentions 'favorite color') and both have null follow_up_question, so the evaluator\u2019s judgment matches the Expected outcome.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0016635,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Check the Expected Output to see whether the correct action for the question is to skip or to answer (explicit skip marker or stated requirement).\",\n    \"Check the Actual Output to see whether the evaluator skipped the question (explicit skip marker or no answer) or provided an answer.\",\n    \"Compare Actual vs Expected: if Expected indicates skip and Actual skipped, mark as correct; if Expected indicates skip but Actual answered, mark as incorrect; if Expected indicates answer but Actual skipped, mark as incorrect.\",\n    \"If both Actual and Expected skipped, verify any required justification or reason in the Expected Output is present and consistent in the Actual Output; if justification is missing or contradicts the Expected reason, mark as incorrect or partially correct accordingly.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 21.119112999997014,
+            "evaluationCost": 0.0036685,
+            "order": 7
+        },
+        {
+            "name": "Evaluator - Vague open-ended answer",
+            "input": "Interview context:\nLifestyle survey\nConversation history:\nAssistant: How often do you exercise?\nUser: Sometimes\nQuestion:\nHow often do you exercise?\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The response 'Sometimes' directly addresses the question about exercise frequency, is relevant, clear, and provides sufficient information without needing further clarification.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The response is vague and lacks specific frequency details.\", \"follow_up_question\": \"Could you specify how many times per week you exercise?\"}",
+            "retrievalContext": [
+                "Lifestyle survey"
+            ],
+            "completionTime": 6.729055799998605,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": false,
+                    "score": 0.2,
+                    "reason": "Incorrect. Line-by-line comparison shows a clear mismatch: 'satisfactory' is true in the Actual Output but false in the Expected Output (contradiction). 'override_skip' matches (both false). The Actual reasoning defends the short answer \"Sometimes\" as sufficient, while the Expected reasoning explicitly calls it vague and requests a follow-up question asking for times per week; the Actual Output omits that follow-up (null). Because the evaluator accepted a vague reply and failed to request the specified clarification, the evaluator's verdict does not align with the Expected Output\u2014evidence: satisfactory flag flip and missing follow_up_question\u2014so the evaluator is incorrect.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00215125,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output line-by-line or element-by-element to identify matches, mismatches, omissions, and additions.\",\n    \"Evaluate correctness: verify factual accuracy, required content coverage, and whether the Actual Output fulfills the Expected Output\u2019s instructions and constraints.\",\n    \"Assess whether the evaluator\u2019s verdict (satisfactory/unsatisfactory) aligns with the comparison findings; if not, list specific discrepancies and examples showing why the verdict is incorrect.\",\n    \"Deliver a final determination: label the evaluator as 'correct' or 'incorrect' and provide concise evidence (specific mismatches or confirmations) from the Actual vs Expected comparison.\"\n] \n \nRubric:\nNone \n \nScore: 0.2"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Expected and Actual outputs do not signal a skip (no explicit SKIP/N/A token, override_skip is false, and each provides an answer rather than being blank). Per the evaluation steps, matching non-skip vs non-skip is correct. Note: content differs (Expected requests a follow-up and flags the answer as unsatisfactory while Actual marks it satisfactory), but the stepwise check only required matching skip/not-skip.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002009,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Inspect the Expected Output and record whether it signals a skip (explicit token like 'SKIP', 'N/A', or instruction to skip) or expects an answer.\",\n    \"Inspect the Actual Output and record whether it signals a skip using the same criteria (explicit skip token, blank/no answer, or skip instruction) or provides an answer.\",\n    \"Compare the two records: if Expected=skip and Actual=skip, mark as correct; if Expected=not-skip and Actual=not-skip, mark as correct; otherwise mark as incorrect.\",\n    \"If incorrect, classify the error as false positive skip (Actual skipped but Expected did not) or false negative skip (Expected skipped but Actual did not) and flag the item for review.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 21.348870000001625,
+            "evaluationCost": 0.00416025,
+            "order": 8
+        },
+        {
+            "name": "Evaluator - User refusal general",
+            "input": "Interview context:\nProfile form\nConversation history:\nAssistant: What is your phone number?\nUser: I'd rather not say\nQuestion:\nWhat is your phone number?\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": true, \"reasoning\": \"The user explicitly stated they prefer not to share their phone number, indicating discomfort or a preference to move on. According to the guidelines, such responses should result in skipping the question.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": true, \"reasoning\": \"The user refused to provide the information.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Profile form"
+            ],
+            "completionTime": 7.329476999999315,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output matches the Expected Output on all required keys: satisfactory is false, override_skip is true, and follow_up_question is null. The reasoning field, while more detailed in the Actual Output, conveys the same refusal rationale as the Expected Output. Per the evaluation steps, facts and required components are present, relevant, and contain no harmful or contradictory content, and the evaluator\u2019s label (unsatisfactory/skip) correctly aligns with the expected judgment.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0019805,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output directly to the Expected Output: verify the key facts, claims, and requested items in the Expected Output are present and match in the Actual Output.\",\n    \"Assess completeness and relevance: ensure the Actual Output includes all required components from the Expected Output and does not add irrelevant or missing essential elements.\",\n    \"Evaluate correctness and harms: check the Actual Output for factual errors, contradictions, or harmful/misleading content relative to the Expected Output; any such issues indicate unsatisfactory.\",\n    \"Decide if the evaluator's judgement is correct by checking whether their label (satisfactory/unsatisfactory) matches the result from the above checks; mark the evaluator as correct if it aligns, incorrect if it does not.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs indicate a skip (override_skip true). Actual\u2019s reasoning is an acceptable equivalent to Expected\u2019s (\u201cprefer not to share phone number\u201d vs \u201crefused to provide the information\u201d), and both have follow_up_question null with no substantive answer content. Final judgment: correctly skipped.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0022515,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Check Expected Output for a skip indicator (e.g., \u201cskip\u201d, \u201cN/A\u201d, or explicit instruction). Compare to Actual Output: if Expected indicates skip, verify Actual also skips the question.\",\n    \"If Expected does not indicate a skip, verify Actual provides an answer. If Actual skipped while Expected did not, label this an incorrect skip; if Actual answered while Expected skipped, label this a missed skip.\",\n    \"When both Expected and Actual indicate a skip, compare any provided skip reason or justification. If Actual\u2019s reason matches or is an acceptable equivalent of Expected\u2019s reason, mark as correct; otherwise mark as incorrect justification.\",\n    \"Confirm that skipped outputs contain no substantive answer content and that any follow-up behavior (prompts, next-step actions) in Actual aligns with Expected. Record the final judgment as: Correctly skipped, Incorrectly skipped, Missed skip, or Incorrect justification.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 21.314456800002517,
+            "evaluationCost": 0.004232,
+            "order": 11
+        },
+        {
+            "name": "Evaluator - Detailed open-ended answer",
+            "input": "Interview context:\nEducation survey\nConversation history:\nAssistant: What did you study?\nUser: Computer Science with a focus on AI\nQuestion:\nWhat did you study?\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user clearly and directly answered the question by specifying 'Computer Science with a focus on AI', which fully addresses the inquiry about their studies. The response is relevant, complete, and unambiguous.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user provided a clear and detailed answer.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Education survey"
+            ],
+            "completionTime": 6.610294400001294,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Full match: both Actual and Expected set satisfactory=true, override_skip=false, and follow_up_question=null. The Actual reasoning conveys the same conclusion as the Expected (clear, complete answer) and adds a harmless specific example ('Computer Science with a focus on AI'), so the evaluator\u2019s judgment aligns with the classification. No discrepancies found.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0019222499999999997,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output directly to the Expected Output for factual accuracy, completeness, and adherence to required format or constraints.\",\n    \"Classify the match as: full match (meets all expected elements), partial match (misses or errors in some elements), or no match (fails to meet expectations).\",\n    \"Check the evaluator's judgment (satisfactory/unsatisfactory) against the classified match: satisfactory should correspond to a full match; unsatisfactory should correspond to partial or no match per the rubric.\",\n    \"If the evaluator's judgment aligns with the classification, mark the evaluator correct; if it does not align, mark them incorrect and note the specific elements where Actual and Expected differ.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Expected and Actual indicate the question was not skipped: both have \"override_skip\": false and \"satisfactory\": true. Each includes a non-null reasoning stating the user answered the question (Actual: specifies 'Computer Science with a focus on AI'; Expected: notes a clear detailed answer). Statuses match, so there is no false positive or false negative.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0021874999999999998,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Determine from the Expected Output whether the question should be skipped (presence of an explicit skip flag/indicator vs a normal answer).\",\n    \"Determine from the Actual Output whether the evaluator skipped the question (presence of the same skip flag/indicator, an explicit \"skip\" response, or no answer).\",\n    \"Compare the two statuses: if both Expected and Actual indicate skip, mark as correct; if both indicate not-skip (normal answer), mark as correct; any mismatch is incorrect.\",\n    \"If incorrect, classify the error as a false positive (Actual skipped but Expected did not) or a false negative (Actual answered but Expected indicated skip) and record the discrepancy.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 21.661299299998063,
+            "evaluationCost": 0.00410975,
+            "order": 16
+        },
+        {
+            "name": "Evaluator - User uncomfortable",
+            "input": "Interview context:\nMedical history\nConversation history:\nAssistant: Have you ever been diagnosed with a mental health condition?\nUser: I'm not comfortable discussing that\nQuestion:\nHave you ever been diagnosed with a mental health condition?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Yes\n  2. No\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": true, \"reasoning\": \"The user declined to answer the question, indicating discomfort. According to guidelines, if the user is uncomfortable or refuses to answer, the question should be skipped regardless of answer quality.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": true, \"reasoning\": \"The user expressed discomfort with the question, so we should respect their feelings and skip the question.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Medical history"
+            ],
+            "completionTime": 11.053088300002855,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Actual and Expected set satisfactory:false, override_skip:true, and follow_up_question:null, with equivalent reasoning that the user expressed discomfort and the question should be skipped. The evaluator\u2019s judgment matches the expected label; differences are only minor wording choices and no factual discrepancy, so the evaluator identified correctly.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0023085,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output: verify the Actual contains the required facts, fulfils the prompt intent, and matches expected format and scope without introducing incorrect information.\",\n    \"Decide whether the Actual Output is satisfactory based on correctness, completeness, relevance, and formatting; label it 'satisfactory' or 'unsatisfactory'.\",\n    \"Compare your satisfaction label to the evaluator's judgment: if they match, the evaluator identified correctly; if they differ, enumerate specific mismatches with concrete examples from both outputs.\",\n    \"Produce a final verdict on the evaluator's identification (Correct/Incorrect) with a concise justification and severity rating (minor/major) for any discrepancies.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Expected and Actual indicate a skip decision: override_skip is true and satisfactory is false in both. The reasoning texts both cite the user\u2019s discomfort/refusal to answer, so the actual behavior matches the expected behavior exactly; no mismatch or missing information.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0021859999999999996,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Extract the expected decision from the Expected Output: identify whether it indicates 'skip' or 'answer' and capture any skip reason given.\",\n    \"Extract the actual decision from the Actual Output: identify whether it indicates 'skip' or 'answer' and capture any skip reason or answer text.\",\n    \"Compare the two decisions: if both are 'skip' => Correct; if both are 'answer' => Correct; if Expected='skip' and Actual='answer' => Incorrect (failed to skip); if Expected='answer' and Actual='skip' => Incorrect (incorrectly skipped).\",\n    \"For any Incorrect result, note the mismatch type and compare provided reasons/answers to determine if the error was due to misinterpretation, missing information, or an unjustified skip.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 22.761218999999983,
+            "evaluationCost": 0.004494499999999999,
+            "order": 5
+        },
+        {
+            "name": "Evaluator - Exact MCQ match",
+            "input": "Interview context:\nFood survey\nConversation history:\nAssistant: Do you prefer tea or coffee?\nUser: Tea\nQuestion:\nDo you prefer tea or coffee?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Tea\n  2. Coffee\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user clearly answered 'Tea', which directly corresponds to option 1 of the provided multiple-choice question. The response is complete, relevant, clear, and matches the required format.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user selected one of the provided options.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Food survey"
+            ],
+            "completionTime": 5.487239899997803,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Correct. Both Actual Output and Expected Output labels are 'satisfactory': true and override_skip: false, so the evaluator correctly matched the labels. The Actual Output reasoning explicitly says the user answered 'Tea' which corresponds to option 1 and meets the required format; the Expected Output reasoning likewise notes the user selected one of the provided options. Evidence: Actual Output 'satisfactory': true and reasoning confirming a provided-option selection, Expected Output 'satisfactory': true and matching rationale.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0017004999999999998,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Extract the Expected Output label (satisfactory/unsatisfactory) and the Actual Output label provided by the evaluator.\",\n    \"Directly compare the Actual Output label to the Expected Output label: if they match, mark the evaluator as correct; if they differ, mark the evaluator as incorrect.\",\n    \"When labels differ, review the answer content and the evaluator\u2019s justification to identify why the evaluator misjudged (missing requirements, factual errors, misinterpretation, or insufficient evidence).\",\n    \"Record the final determination (Correct or Incorrect) and cite specific evidence from the Actual Output, Expected Output, and the answer that supports the determination.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Expected decisions: answered = [Q1] (should not be skipped). Actual decisions: answered = [Q1] (not skipped). Comparison: Q1 is a True Negative (answered when expected). No False Positives or False Negatives. Mismatch count 0; matching entries: Q1 (True Negative). Fields override_skip:false and follow_up_question:null also match between Actual and Expected, confirming correctness.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0020872499999999997,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"From the Expected Output, list each question that should be skipped and each that should be answered (expected skip decisions).\",\n    \"From the Actual Output, list each question that the evaluator skipped and each that the evaluator answered (actual skip decisions).\",\n    \"Compare Actual vs Expected for each question and classify outcomes as: True Positive (skipped when expected), True Negative (answered when expected), False Positive (skipped but should not), or False Negative (answered but should have been skipped).\",\n    \"Judge overall correctness: if any False Positive or False Negative exist mark the evaluator as incorrect; otherwise mark as correct. Provide the count and IDs of mismatches and the matching entries as evidence.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 22.459251200001745,
+            "evaluationCost": 0.0037877499999999995,
+            "order": 9
+        },
+        {
+            "name": "Evaluator - Open-ended unclear intent",
+            "input": "Interview context:\nWork survey\nConversation history:\nAssistant: What do you do for work?\nUser: Things\nQuestion:\nWhat do you do for work?\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The response 'Things' is overly vague and does not provide specific information about the user's job. It lacks completeness and clarity required to answer the question adequately.\", \"follow_up_question\": \"Could you elaborate on what your job involves specifically?\"}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The answer is too vague to understand the user's occupation.\", \"follow_up_question\": \"Could you describe your job role in more detail?\"}",
+            "retrievalContext": [
+                "Work survey"
+            ],
+            "completionTime": 10.284661300000153,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The actual output aligns closely with the expected output across the key evaluation steps: both set satisfactory to false and override_skip to false (Step 1), and both justify that the original reply was too vague (Actual: \"Things\"; Expected: \"too vague to understand the user's occupation\") and propose a similar follow-up asking for more job detail. The evaluator's judgment (unsatisfactory) matches the correct determination (Step 2\u20133). Minor differences are only in wording of the reasoning and follow-up question, not in substance. Therefore the evaluator correctly identified the answer as unsatisfactory and provided appropriate evidence and follow-up (Step 4).",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00237725,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output: check for matching content, required elements, factual accuracy, and relevance to the prompt.\",\n    \"Determine whether Actual Output is satisfactory: based on acceptance criteria (complete, correct, and addresses the prompt), label it satisfactory or unsatisfactory.\",\n    \"Compare evaluator's judgment to your determination: verify if the evaluator marked the answer as satisfactory when it was, or unsatisfactory when it was not.\",\n    \"Document evidence and final assessment: list key matches/mismatches and conclude whether the evaluator correctly identified the answer's satisfactory status.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs indicate not-skip (override_skip: false and satisfactory: false), so the skip decision matches. The Actual Output's reasoning appropriately explains the vagueness of the reply ('Things') and the follow-up question aligns in intent with the Expected Output, so no missing or contradictory skip justification is present.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0018207499999999999,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Identify the skip decision in the Expected Output (e.g., explicit 'skip' flag, instruction to skip, or a skip rationale) and the skip decision in the Actual Output.\",\n    \"Compare the two decisions: if Expected indicates skip and Actual indicates skip, treat as a match; if Expected indicates not-skip and Actual indicates not-skip, treat as a match.\",\n    \"If the decisions mismatch (Expected skip vs Actual not-skip, or Expected not-skip vs Actual skip), mark the evaluator as having incorrectly identified whether to skip the question.\",\n    \"If the Expected Output requires a skip justification, verify the Actual Output includes an appropriate rationale when skipping; if the rationale is missing or contradicts Expected, mark the evaluation as incorrect.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 22.435172099998454,
+            "evaluationCost": 0.004198,
+            "order": 13
+        },
+        {
+            "name": "Evaluator - MCQ unclear phrasing",
+            "input": "Interview context:\nFitness survey\nConversation history:\nAssistant: Do you exercise regularly? Yes or No\nUser: Kind of\nQuestion:\nDo you exercise regularly?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Yes\n  2. No\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The response 'Kind of' does not clearly align with the provided options (Yes/No) and lacks clarity. It does not directly answer the question in a way that matches the required choices.\", \"follow_up_question\": \"Did you exercise regularly? Please respond with 'Yes' or 'No'.\"}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The response does not clearly match the available options.\", \"follow_up_question\": \"Would you say yes or no?\"}",
+            "retrievalContext": [
+                "Fitness survey"
+            ],
+            "completionTime": 8.001844800000981,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 0.9,
+                    "reason": "Strong alignment: both Actual and Expected set \"satisfactory\": false and \"override_skip\": false, and both reasoning fields state the response did not match the available yes/no options. The only notable difference is the follow_up_question wording (Actual asks a specific \"Did you exercise regularly? Please respond with 'Yes' or 'No'.\" vs Expected's \"Would you say yes or no?\"), which is a minor phrasing discrepancy that does not change the functional judgment. Therefore the evaluator\u2019s unsatisfactory label is correct.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002812,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output line-by-line and against any stated success criteria to determine if the Actual Output fulfills the Expected Output\u2019s functional, factual, and formatting requirements.\",\n    \"Classify the Actual Output as satisfactory if it fully meets the Expected Output (correctness, completeness, and constraints); classify as unsatisfactory if it omits required elements, is incorrect, or violates constraints.\",\n    \"Check the evaluator\u2019s judgment (their satisfactory/unsatisfactory label) against your classification; mark the evaluator as correct if labels match and incorrect if they do not.\",\n    \"If there is a mismatch, list the specific differences between Actual and Expected, rate the discrepancy severity (minor vs major), and state the final determination of whether the evaluator\u2019s assessment was accurate.\"\n] \n \nRubric:\nNone \n \nScore: 0.9"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 0.9,
+                    "reason": "Both outputs indicate no skip (override_skip false) and match on the key judgement (satisfactory: false). The reasoning fields convey the same fault (response not aligning with Yes/No), with Actual even more explicit by naming the reply 'Kind of'\u2014so the substantive assessment matches Expected. The follow_up_question wording differs (Expected: \"Would you say yes or no?\" vs Actual: \"Did you exercise regularly? Please respond with 'Yes' or 'No'.\"), but the intent (requesting a Yes/No response) is equivalent. No skip/false-answer issues were found; only a minor phrasing difference, so the outputs largely match.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0026074999999999996,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Extract the skip expectation from the Expected Output (skipped vs answer required) and the skip indication from the Actual Output (explicit skip token or absence/presence of an answer).\",\n    \"If Expected indicates skip: verify Actual shows a skip (explicit 'SKIP' or no substantive answer). If Actual provides an answer when Expected skipped, mark as incorrect and note the discrepancy.\",\n    \"If Expected requires an answer: verify Actual contains a substantive, non-placeholder response. If Actual is skipped or contains only a placeholder, mark as incorrect and note the discrepancy.\",\n    \"Produce a final judgment comparing Actual to Expected (match vs mismatch), and record the reason and severity for any mismatch (e.g., false-skip, false-answer, missing justification).\"\n] \n \nRubric:\nNone \n \nScore: 0.9"
+                }
+            ],
+            "runDuration": 22.973252599997068,
+            "evaluationCost": 0.005419499999999999,
+            "order": 15
+        },
+        {
+            "name": "Evaluator - Ambiguous opinion",
+            "input": "Interview context:\nService feedback\nConversation history:\nAssistant: How was the service?\nUser: Okay\nQuestion:\nHow was the service?\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The response 'Okay' is too vague and does not provide sufficient detail to assess the service quality. The user did not elaborate on their experience, making it unclear whether the service was good, bad, or neutral.\", \"follow_up_question\": \"Can you elaborate on your experience with the service?\"}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The response is vague and lacks detail.\", \"follow_up_question\": \"Could you describe what made it okay?\"}",
+            "retrievalContext": [
+                "Service feedback"
+            ],
+            "completionTime": 9.436914400001115,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Actual and Expected mark satisfactory and override_skip as false, and both reasonings identify the response as vague/lacking detail. The follow-up questions differ in wording but have the same intent (ask for elaboration). There are no missing or conflicting required elements, so the evaluator\u2019s judgment matches the determination.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0019914999999999998,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output for factual and functional correctness, noting any mismatches in content, facts, or required elements.\",\n    \"Check completeness and relevance: confirm Actual includes all expected parts and contains no significant extraneous or missing content relative to Expected.\",\n    \"Determine whether the Actual Output meets the satisfaction threshold (i.e., fulfills the Expected Output's requirements and intent).\",\n    \"Compare this determination to the evaluator's judgment; mark the evaluator correct if their label (satisfactory/unsatisfactory) matches your determination, otherwise mark them incorrect and record the specific discrepancies.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Actual and Expected indicate the same skip/answer decision (neither skipped/override_skip false) \u2014 match. The justification aligns: Actual states the reply is vague/lacks detail, matching the Expected reasoning. Follow-up questions differ in wording but share the same intent to elicit clarification. Aggregation: total questions 1, correctly matched decisions 1 (100%), no mismatched items.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0022429999999999998,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"For each question, compare Actual Output's skip decision (skipped vs answered) to Expected Output's decision; if they match, mark as correct, otherwise mark as incorrect.\",\n    \"When both Actual and Expected indicate a skip, verify Actual Output's provided reason or justification aligns with the Expected reason or the skip policy; if no reason is required, treat the matched skip as correct.\",\n    \"If Actual skipped but Expected answered or vice versa, classify as incorrect and note whether the Actual skip cites an allowable policy-based reason (safety, unknown info) or appears erroneous.\",\n    \"Aggregate results: report total questions, count and percentage of correctly identified skips, and list mismatched items with question ID and a short summary of the difference between Actual and Expected.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 22.74818740000046,
+            "evaluationCost": 0.0042344999999999995,
+            "order": 18
+        },
+        {
+            "name": "Evaluator - MCQ ambiguous synonym",
+            "input": "Interview context:\nFood survey\nConversation history:\nAssistant: Do you prefer tea or coffee?\nUser: I like both\nQuestion:\nDo you prefer tea or coffee?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Tea\n  2. Coffee\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The user's answer 'I like both' does not select either of the provided options (Tea or Coffee), making it incompatible with the multiple-choice format. The response is relevant but incomplete as it fails to align with the required options.\", \"follow_up_question\": \"Would you like to choose between Tea or Coffee?\"}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The response does not clearly select one of the provided options.\", \"follow_up_question\": \"Which do you prefer more, tea or coffee?\"}",
+            "retrievalContext": [
+                "Food survey"
+            ],
+            "completionTime": 7.9635486000006495,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Strong alignment: both Actual and Expected mark satisfactory:false and override_skip:false. The evaluator's reasoning specifically identifies the key discrepancy \u2014 the user answer 'I like both' fails to select Tea or Coffee \u2014 which matches the Expected rationale that no clear selection was made. The evaluator correctly labeled the response unsatisfactory and offered a follow-up; the follow_up_question wording differs slightly from the Expected but does not undermine the correct assessment.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00287075,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output: identify matching facts, required elements, and differences in content, tone, and format.\",\n    \"Judge correctness and completeness: consider an output satisfactory only if it accurately answers and includes all essential parts of the Expected Output; mark unsatisfactory if it omits, contradicts, or adds incorrect information.\",\n    \"Confirm evaluator's label: verify the evaluator marked the answer satisfactory only when Actual meets Expected; if the Actual does not meet Expected but was labeled satisfactory (or vice versa), the evaluator's identification is incorrect.\",\n    \"Evaluate evaluator justification: check that the evaluator cites specific discrepancies or confirmations between Actual and Expected; if justification is missing or inconsistent, flag the evaluation as unsupported.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs indicate no skip (override_skip: false) and mark the response unsatisfactory (satisfactory: false). The evaluator correctly identified that the user failed to select one of the provided options (reasoning fields align) and both follow_up_question entries ask the user to choose between tea and coffee (different wording but same intent). Therefore the evaluator\u2019s determination matches the Expected Output.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0016749999999999998,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Identify skip indicator in Expected Output (e.g., explicit \"SKIP\" token, skip flag, or clear skip message) and in Actual Output.\",\n    \"If Expected indicates skip, verify Actual Output also contains the skip indicator; if not, label as incorrect (false negative).\",\n    \"If Expected does not indicate skip, verify Actual Output also does not contain a skip indicator; if Actual skipped, label as incorrect (false positive).\",\n    \"If both Expected and Actual agree (both skip or both not skip), mark the evaluator as correct; if available, record the type of mismatch (false positive/false negative) for remediation.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 24.263200400000642,
+            "evaluationCost": 0.0045457499999999994,
+            "order": 10
+        },
+        {
+            "name": "Evaluator - Unclear answer that needs follow-up",
+            "input": "Interview context:\nSleep quality survey\nConversation history:\nAssistant: How did you sleep last night?\nUser: I don't know, I was asleep\nQuestion:\nHow did you sleep last night?\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The response 'I was asleep' is overly vague and does not address the question about sleep quality. It lacks details about the user's experience, such as whether they felt rested, had disturbances, or felt any specific emotions during sleep.\", \"follow_up_question\": \"Can you describe how you felt during your sleep last night?\"}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The user's answer is vague and doesn't provide any information about the quality of their sleep.\", \"follow_up_question\": \"Did you wake up feeling rested, or still tired?\"}",
+            "retrievalContext": [
+                "Sleep quality survey"
+            ],
+            "completionTime": 9.695971799999825,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 0.9,
+                    "reason": "The Actual Output matches the Expected Output on the key judgment: both mark the response unsatisfactory and set override_skip to false, so the evaluator\u2019s label is correct. The Actual reasoning correctly identifies vagueness about sleep quality and even cites missing details (restedness, disturbances, emotions), which expands on the Expected reasoning but remains aligned. The follow-up question is relevant but phrased differently (asks to describe feelings during sleep versus asking whether they woke rested or tired), a minor divergence in specificity. No required fields are missing and there is no incorrect information, so the Actual Output largely aligns with the Expected Output.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00213775,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output for factual correctness and whether required points from the Expected Output are addressed in the Actual Output.\",\n    \"Check completeness: identify any missing required elements in the Actual Output or any extraneous/incorrect information not present in the Expected Output.\",\n    \"Assess relevance and clarity: confirm the Actual Output directly answers the prompt, is unambiguous, and aligns with the intent of the Expected Output.\",\n    \"Decide if the evaluator\u2019s judgment is correct by verifying their satisfactory/unsatisfactory label matches the outcome of the comparisons; if not, mark the evaluator as incorrect and cite the specific discrepancies.\"\n] \n \nRubric:\nNone \n \nScore: 0.9"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Actual and Expected have override_skip set to false, so the evaluator correctly identified no-skip for the single item. Per the steps, this is a match (1 matching item), with zero missed skips and zero false skips. Differences in the 'reasoning' and 'follow_up_question' text do not affect the skip comparison, so overall the evaluator followed the specified skip-evaluation logic.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0020565,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"For each item, extract the skip decision from Expected Output and from Actual Output (e.g., explicit skip flag or 'skip' token) and compare them directly.\",\n    \"If Expected indicates 'skip' and Actual also indicates 'skip', mark the evaluator correct for that item.\",\n    \"If Expected indicates 'skip' but Actual does not, or if Expected does not indicate 'skip' but Actual does, mark the evaluator incorrect and record the type of discrepancy (missed skip or false skip).\",\n    \"Summarize across all items: report overall correctness and counts of matching items, missed skips, and false skips.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 26.298324100000173,
+            "evaluationCost": 0.00419425,
+            "order": 1
+        },
+        {
+            "name": "Evaluator - Complete satisfactory answer",
+            "input": "Interview context:\nJob interview\nConversation history:\nAssistant: What is your greatest strength?\nUser: I would say my greatest strength is my ability to solve complex problems quickly and efficiently.\nQuestion:\nWhat is your greatest strength?\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user provided a clear, relevant, and specific answer that directly addresses the question about their greatest strength. The response is complete, concise, and demonstrates self-awareness without needing further clarification.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user provided a clear, complete answer about their problem-solving abilities.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Job interview"
+            ],
+            "completionTime": 7.3443299999999,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 0.9,
+                    "reason": "Both Actual and Expected outputs mark satisfactory:true, override_skip:false, and follow_up_question:null, so the core binary judgment matches. Supporting evidence: the Actual reasoning frames the response as about the user\u2019s \u201cgreatest strength\u201d and \u201cself-awareness,\u201d whereas the Expected reasoning specifically cites \u201cproblem-solving abilities\u201d \u2014 a minor content-specific mismatch in wording but not in the satisfaction decision. Final determination: evaluator is correct. Confidence: high.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0027914999999999997,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output by checking content accuracy, completeness, and alignment with the expected intent and requirements.\",\n    \"Determine a binary satisfaction decision: label the Actual Output as satisfactory if it meets all core expectations; otherwise label it unsatisfactory.\",\n    \"Compare the evaluator's judgment to your binary decision; mark the evaluator as correct if their label matches yours, otherwise mark them incorrect and record the mismatch.\",\n    \"Record specific supporting evidence (exact differences or confirmations), the final evaluator-correct/incorrect determination, and a brief confidence level.\"\n] \n \nRubric:\nNone \n \nScore: 0.9"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": false,
+                    "score": 0.3,
+                    "reason": "Skip decisions match (both override_skip false, satisfactory true, follow_up_question null), so Actual did not skip as Expected required. However, the stated reasons diverge: Expected praises a clear answer about problem-solving abilities, while Actual describes a response about the user\u2019s greatest strength and self-awareness. Because the reason content does not match, the evaluation should be marked incorrect.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00295,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Read Expected Output to determine whether the question should be skipped and, if present, note the expected skip reason or condition.\",\n    \"Read Actual Output to determine whether it skipped the question and, if so, record the actual skip reason or condition.\",\n    \"Compare skip decisions: if Expected indicates skip, confirm Actual also skipped and provided a matching reason; if Expected indicates no skip, confirm Actual gave an answer rather than skipping.\",\n    \"Mark the evaluation as correct when skip decisions and reasons match; mark incorrect when they disagree and categorize the error as a false positive skip (Actual skipped but Expected did not) or a false negative skip (Actual answered but Expected skipped).\"\n] \n \nRubric:\nNone \n \nScore: 0.3"
+                }
+            ],
+            "runDuration": 27.186118099998566,
+            "evaluationCost": 0.0057415,
+            "order": 0
+        },
+        {
+            "name": "Evaluator - User wants to skip question",
+            "input": "Interview context:\nPersonal questionnaire\nConversation history:\nAssistant: What is your annual income?\nUser: I'd rather not share that information\nQuestion:\nWhat is your annual income?\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": true, \"reasoning\": \"The user explicitly stated they prefer not to share their annual income, indicating discomfort or refusal to answer. According to the guidelines, such responses should result in skipping the question regardless of answer quality.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": true, \"reasoning\": \"The user explicitly stated they don't want to share this information, so we should respect their preference and skip the question.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Personal questionnaire"
+            ],
+            "completionTime": 7.584702600001037,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "All required fields match between Actual and Expected: 'satisfactory' is false, 'override_skip' true, and 'follow_up_question' null. The reasoning texts are semantically equivalent (both state the user refused to share income and that the question should be skipped), so element-by-element comparison per Step 1 passes. Independent classification (Step 2) agrees that Actual is unsatisfactory, and the evaluator's label matches this, so the evaluator is correct (Step 3). No discrepancies to list (Step 4).",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002387,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output element-by-element: verify facts, required elements, completeness, and format to determine whether Actual meets the Expected criteria.\",\n    \"Decide independently if Actual is satisfactory: classify as satisfactory only if it matches Expected in content and contains no incorrect or missing required elements; otherwise classify as unsatisfactory.\",\n    \"Check the evaluator's label (satisfactory/unsatisfactory) against your independent classification: if they match, mark the evaluator as correct; if they differ, mark the evaluator as incorrect.\",\n    \"When there is a disagreement, list specific discrepancies between Actual and Expected and state the correct classification with brief evidence supporting why the evaluator's judgment was wrong or right.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Actual and Expected set override_skip:true with satisfactory:false, so the decision to skip aligns. The skip justifications match in substance\u2014both state the user refused to share income and that preference should be respected. Minor wording differences (Actual specifies 'annual income' and mentions 'regardless of answer quality') do not change the justification. Classified as a correct skip.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002384,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Identify whether the Expected Output specifies that the question should be skipped (explicit 'skip' flag or conditional skip reason).\",\n    \"Examine the Actual Output to see if it skipped the question; compare this action to the Expected Output's skip requirement\u2014if both indicate skip or both indicate proceed, mark as correct; otherwise mark as incorrect.\",\n    \"When both Actual and Expected indicate a skip, verify that the Actual Output's skip justification/condition matches the Expected Output; if the justification differs, mark as incorrect due to reason mismatch.\",\n    \"Classify and record the outcome as one of: 'correct skip', 'false positive skip' (Actual skipped but Expected did not), 'false negative skip' (Expected skipped but Actual did not), or 'incorrect skip reason', and capture the specific differing text from Actual vs Expected.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 30.002598000002763,
+            "evaluationCost": 0.004770999999999999,
+            "order": 2
+        },
+        {
+            "name": "Evaluator - Multi-step clarification resolved",
+            "input": "Interview context:\nDiet survey\nConversation history:\nAssistant: Do you follow a specific diet?\nUser: Yes\nAssistant: Which one?\nUser: Vegetarian\nQuestion:\nDo you follow a specific diet?\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user clearly answered the question by confirming they follow a diet (vegetarian) and specified 'Vegetarian' as the type of diet, which directly addresses the question without ambiguity.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"After clarification, the user provided a specific diet.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Diet survey"
+            ],
+            "completionTime": 8.354358100001264,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The evaluator's judgement is correct: Actual and Expected both set satisfactory=true, override_skip=false, and follow_up_question=null, and the reasoning conveys the same conclusion (user provided a specific diet). The only difference is minor phrasing in the reasoning text; no required elements are missing and formatting matches the Expected Output.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0021535,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output by checking that required facts, answers, and formatting align with the Expected Output.\",\n    \"Assess completeness and correctness: confirm Actual contains all expected elements, is factually accurate, and follows constraints (format, length, tone).\",\n    \"Decide if the evaluator's judgement is correct: if Actual meets Expected criteria the evaluator should mark satisfactory; if Actual has critical errors or omissions the evaluator should mark unsatisfactory.\",\n    \"If the evaluator's label disagrees with this decision, document specific discrepancies (missing items, inaccuracies, format violations), classify their severity (minor/major), and mark the evaluator's decision as incorrect.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Expected and Actual indicate the question should not be skipped (override_skip:false). Actual provided an answer and reasoning that the user specified a diet ('Vegetarian'), which matches the Expected reasoning that after clarification the user provided a specific diet. No mismatches with steps 2\u20134 were found.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00171875,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Extract from Expected Output whether the question should be skipped (skip flag or instruction) and extract the evaluator\u2019s decision from the Actual Output (skip vs answer and any provided reason).\",\n    \"If Expected indicates the question should be skipped, verify Actual Output also skipped; if Actual did not skip, mark as incorrect and record the mismatch (Expected: skip, Actual: answered).\",\n    \"If Expected indicates the question should not be skipped, verify Actual Output answered rather than skipped; if Actual skipped, mark as incorrect and record the mismatch (Expected: answer, Actual: skipped).\",\n    \"When Actual and Expected both indicate skip, verify the Actual Output\u2019s reason aligns with the skipping criteria (e.g., unanswerable, personal data request, policy restriction); if the reason is absent or inconsistent, mark as incorrect and note the discrepancy.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 17.00494130000152,
+            "evaluationCost": 0.00387225,
+            "order": 20
+        },
+        {
+            "name": "Evaluator - Clear numeric answer",
+            "input": "Interview context:\nFitness tracking\nConversation history:\nAssistant: How many hours do you sleep?\nUser: 7 hours\nQuestion:\nHow many hours do you sleep?\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user provided a direct and clear answer (7 hours) to the question about sleep duration, which is complete, relevant, and unambiguous. There is no indication of discomfort or refusal to answer.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user provided a clear numeric answer.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Fitness tracking"
+            ],
+            "completionTime": 6.716166199999861,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "All required keys (satisfactory:true, override_skip:false, reasoning, follow_up_question:null) are present and match. The Actual Output\u2019s reasoning is more detailed\u2014explicitly mentions \u201c7 hours\u201d\u2014but aligns with the Expected Output\u2019s characterization of a clear numeric answer. There are no factual or format errors, and the evaluator\u2019s judgment of satisfactory is consistent and supported by cited detail, so the evaluation is correct.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00213875,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output line-by-line: verify all required elements, values, and structure in the Expected Output are present in the Actual Output and note any omissions or extraneous content.\",\n    \"Assess correctness and completeness: check factual accuracy, computations, and that the Actual Output fully satisfies each requirement in the Expected Output; classify as satisfactory only if no significant errors or gaps exist.\",\n    \"Evaluate relevance, clarity, and format: ensure the Actual Output is on-topic, unambiguous, and follows the expected formatting conventions; treat format or clarity failures as unsatisfactory if they impede correctness.\",\n    \"Confirm the evaluator's judgment and evidence: verify the evaluator labeled the answer satisfactory/unsatisfactory consistent with your comparison and that they cited specific discrepancies or confirmations; mark the evaluator's decision as correct or incorrect accordingly.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Evaluation correctly followed the steps: the Expected Output shows no skip indicator (satisfactory true, override_skip false), the Actual Output also provides an answer (satisfactory true, override_skip false) rather than a skip, and the content is consistent (Actual explicitly cites \u201c7 hours,\u201d matching the Expected\u2019s description of a clear numeric answer). Therefore the evaluator was correct about not skipping.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0017044999999999999,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Identify the skip indicator in the Expected Output (e.g., \"SKIP\", \"N/A\", empty answer) and the presence of the same indicator in the Actual Output.\",\n    \"If the Expected Output indicates a skip, check the Actual Output: if it also indicates a skip, mark the evaluator as correct; if it provides an answer, mark as incorrect.\",\n    \"If the Expected Output does not indicate a skip, check the Actual Output: if it provides an answer, proceed to content comparison; if it indicates a skip, mark as incorrect.\",\n    \"When both Actual and Expected provide answers, compare their content for equivalence; if they match, mark the evaluator as correct about not skipping, otherwise mark as incorrect.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 15.992513099998177,
+            "evaluationCost": 0.00384325,
+            "order": 23
+        },
+        {
+            "name": "Evaluator - MCQ indirect answer",
+            "input": "Interview context:\nTransport survey\nConversation history:\nAssistant: Do you use public transport? Yes or No\nUser: Only sometimes\nQuestion:\nDo you use public transport?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Yes\n  2. No\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The user's response 'Only sometimes' does not align with the provided options (Yes/No). The answer is relevant but not compatible with the multiple-choice format, requiring clarification.\", \"follow_up_question\": \"Do you use public transport regularly, sometimes, or never?\"}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The response clearly infers they use public transport.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Transport survey"
+            ],
+            "completionTime": 8.53179629999795,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": false,
+                    "score": 0.2,
+                    "reason": "The Actual Output does not match the Expected Output: it sets satisfactory to false while Expected sets it true; its reasoning claims the reply is incompatible with Yes/No whereas the Expected reasoning infers the user does use public transport; and Actual provides a non-null follow_up_question while Expected has null. The evaluator\u2019s justification correctly notes a format mismatch but incorrectly rejects the inference that 'Only sometimes' indicates use, so the justification is insufficient. Due to these substantive mismatches and the incorrect final judgment, the evaluation is largely incorrect.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00200475,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output for content, intent, and required elements to determine whether they match fully.\",\n    \"If the Actual Output matches the Expected Output, record the evaluator as correct; if it contains some but not all required elements, record as partially correct and list what is missing or incomplete.\",\n    \"If the Actual Output does not match the Expected Output or contains incorrect information, record the evaluator as incorrect and enumerate specific discrepancies (missing, incorrect, or extraneous content).\",\n    \"Assess the evaluator's justification: verify it cites the specific differences between Actual and Expected; if the justification accurately explains the observed differences, confirm the evaluator's judgment, otherwise flag the justification as insufficient.\"\n] \n \nRubric:\nNone \n \nScore: 0.2"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": false,
+                    "score": 0.2,
+                    "reason": "Incorrect decision: Expected marked the response satisfactory (satisfactory: true, follow_up_question: null) while Actual marked it unsatisfactory (satisfactory: false) and added a follow-up question. Both agree override_skip is false, and neither flagged an explicit skip, but the Actual output disagrees with the Expected inference that \"Only sometimes\" implies use of public transport. Because the outputs conflict on acceptability and follow-up, the response fails the comparison criteria.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0021915,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Identify whether the Expected Output indicates the question should be skipped (presence of a skip marker, flag, or explicit instruction).\",\n    \"Identify whether the Actual Output indicates the question was skipped (presence of a skip marker, flag, or explicit instruction).\",\n    \"Compare Actual vs Expected skip decisions: if Expected indicates skip, check Actual also skipped; if Expected does not indicate skip, check Actual did not skip.\",\n    \"If there is a discrepancy, note it as incorrect; if both agree on skipping, verify any provided skip reason or rationale in Actual matches the Expected reason or allowed skip criteria.\"\n] \n \nRubric:\nNone \n \nScore: 0.2"
+                }
+            ],
+            "runDuration": 16.404659400002856,
+            "evaluationCost": 0.00419625,
+            "order": 22
+        },
+        {
+            "name": "Evaluator - MCQ with extra words but valid",
+            "input": "Interview context:\nTransport survey\nConversation history:\nAssistant: Do you use public transport? Yes or No\nUser: Yes, every day\nQuestion:\nDo you use public transport?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Yes\n  2. No\n",
+            "actualOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The user clearly answered 'Yes' to the question 'Do you use public transport?', which directly corresponds to option 1. The response is complete, relevant, clear, and matches the provided options.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": true, \"override_skip\": false, \"reasoning\": \"The response clearly includes one of the valid options.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Transport survey"
+            ],
+            "completionTime": 7.313653600001999,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output aligns with the Expected Output: both set satisfactory=true, override_skip=false, and follow_up_question=null. The Actual reasoning is longer but conveys the same correct conclusion (user answered \u201cYes\u201d to using public transport, matching a valid option). No required elements are missing and there are no factual or formatting errors. The evaluator\u2019s judgement (satisfactory) is correct given these matches.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.001794,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output for correctness and completeness: identify missing elements, incorrect facts, or formatting differences with specific examples.\",\n    \"Assess whether the Actual Output meets the success criteria (i.e., contains required elements and no critical errors) to decide if it is satisfactory.\",\n    \"Compare this assessment to the evaluator's judgement (satisfactory/unsatisfactory) and record whether the evaluator correctly identified the outcome, citing exact mismatches or confirmations.\",\n    \"If the evaluator's judgement is incorrect, state the correct label (satisfactory/unsatisfactory) and give a concise rationale referencing the precise differences between Actual and Expected Outputs.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Pass \u2014 Both Actual and Expected indicate not skipped (satisfactory: true, override_skip: false). Step 1 matches. The Actual provided an answer rather than skipping and included a correct justification that meets the Expected requirement (reasoning confirms the response includes a valid option, explicitly mapping \u2018Yes\u2019 to option 1), so Step 3 is satisfied. No discrepancy to report (no wrong skip decision, missing justification, or incorrect content).",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0023074999999999997,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Compare Expected Output's skip indicator (e.g., 'should_skip' or expected answer presence) with the Actual Output's action (explicit 'skipped' marker or absence of an answer); if they differ, mark the evaluator as incorrect.\",\n    \"If Expected says to skip and Actual did skip, verify Actual includes a correct justification or rationale that matches the Expected reason or an acceptable equivalent; if justification is missing or incorrect, mark as incorrect.\",\n    \"If Expected says not to skip and Actual provided an answer, compare the Actual content to the Expected answer for correctness and completeness; if content aligns, mark correct, otherwise mark incorrect.\",\n    \"Record a final verdict (Pass/Fail) and capture the specific discrepancy between Actual Output and Expected Output (wrong skip decision, missing/incorrect justification, or incorrect answer content).\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 17.128504699998302,
+            "evaluationCost": 0.004101499999999999,
+            "order": 21
+        },
+        {
+            "name": "Evaluator - Strong refusal wording",
+            "input": "Interview context:\nSensitive survey\nConversation history:\nAssistant: What is your age?\nUser: I don't want to answer that\nQuestion:\nWhat is your age?\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": true, \"reasoning\": \"The user explicitly stated they don't want to answer the question, indicating discomfort or preference to move on. According to the guidelines, such responses should result in skipping the question regardless of answer quality.\", \"follow_up_question\": null}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": true, \"reasoning\": \"The user explicitly refused to answer.\", \"follow_up_question\": null}",
+            "retrievalContext": [
+                "Sensitive survey"
+            ],
+            "completionTime": 8.334222900000896,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": false,
+                    "score": 0.2,
+                    "reason": "AO matches EO exactly: both set override_skip true, follow_up_question null, and reasoning indicates the user refused/asked not to answer. Since AO meets the EO, the correct meta-label per step 2 is 'satisfactory' (AO meets EO). The evaluator labeled the item as unsatisfactory (satisfactory: false), so their decision is incorrect. Their justification correctly cites the user's refusal and the guideline to skip, but that reasoning does not reconcile with the incorrect satisfaction label.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0043365,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output (AO) directly to the Expected Output (EO): check accuracy, completeness, and relevance of AO against EO and mark whether AO meets EO requirements.\",\n    \"Determine the correct satisfaction label: based on the AO vs EO comparison, decide if the correct verdict is 'satisfactory' (AO meets EO) or 'unsatisfactory' (AO does not meet EO).\",\n    \"Check the evaluator's decision: verify whether the evaluator labeled AO as satisfactory or not and whether that label matches the correct satisfaction label determined in step 2.\",\n    \"Assess the evaluator's justification and note discrepancies: confirm the evaluator's reasons cite specific AO\u2013EO differences supporting their label; if the label or reasoning is incorrect or missing, mark the evaluator's identification as incorrect and record the mismatch.\"\n] \n \nRubric:\nNone \n \nScore: 0.2"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both Actual and Expected indicate a skip: override_skip is true and satisfactory is false in each, with nearly identical reasoning citing user refusal/discomfort. Per steps 1\u20134, the evaluator\u2019s skip status matches the expected skip, so the decision is correct.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00185775,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Identify Expected Output's skip status for the question (e.g., explicit 'skip' instruction or expectation to answer).\",\n    \"Identify Actual Output's skip status (did the evaluator skip the question or provide an answer?).\",\n    \"Compare Expected vs Actual: if both indicate skip or both indicate an answer, mark the evaluator correct; if they differ, mark incorrect.\",\n    \"If incorrect, classify the mismatch as either 'false skip' (Actual skipped but Expected required an answer) or 'false accept' (Actual answered but Expected required a skip) and capture the relevant evidence (skip flag or provided answer).\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 36.840477500001725,
+            "evaluationCost": 0.00619425,
+            "order": 19
+        },
+        {
+            "name": "Evaluator - Missing answer",
+            "input": "Interview context:\nGeneral survey\nConversation history:\nAssistant: What is your hobby?\nUser: \nQuestion:\nWhat is your hobby?\n",
+            "actualOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"The user did not provide an answer to the question 'What is your hobby?' The response is incomplete, irrelevant, and not clear as the user did not address the question.\", \"follow_up_question\": \"Can you share more about your hobby?\"}",
+            "expectedOutput": "{\"satisfactory\": false, \"override_skip\": false, \"reasoning\": \"No answer was provided.\", \"follow_up_question\": \"Could you tell me about your hobbies?\"}",
+            "retrievalContext": [
+                "General survey"
+            ],
+            "completionTime": 20.107124199999816,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Satisfactory Judgment Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 0.9,
+                    "reason": "The evaluator correctly marked satisfactory=false and override_skip=false, matching the Expected Output. The Actual reasoning conveys the same core fact (no answer provided) though it adds extra negative wording (\u201cincomplete, irrelevant, and not clear\u201d) compared with the Expected\u2019s concise \"No answer was provided.\" The follow_up_question differs only in phrasing/singularity (\u201cCan you share more about your hobby?\u201d vs \u201cCould you tell me about your hobbies?\u201d) but conveys the same request. These are minor wording differences, so the evaluator\u2019s unsatisfactory label is appropriate.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002156,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified whether the answer was satisfactory. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output directly to the Expected Output and identify which required facts, steps, or outputs are present, missing, or incorrect in the Actual Output.\",\n    \"Determine whether the evaluator labeled the answer as satisfactory or unsatisfactory and check if that label aligns with the comparison: label the evaluator correct if the Actual meets Expected requirements and incorrect if it does not.\",\n    \"Assess severity and partiality: if Actual partially meets Expected (minor omissions or errors), judge whether the evaluator\u2019s decision to call it satisfactory/unsatisfactory is reasonable given the degree of deviation.\",\n    \"Record specific evidence and rationale: list the exact discrepancies, omissions, or correct matches between Actual and Expected and state whether this evidence supports the evaluator\u2019s identification.\"\n] \n \nRubric:\nNone \n \nScore: 0.9"
+                },
+                {
+                    "name": "Skip Decision Accuracy [GEval]",
+                    "threshold": 0.8,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Correct \u2014 both outputs signal a skip. Expected Output contains the explicit skip indicator \"No answer was provided.\" (ExpectedSkip=true). Actual Output contains the matching indicator \"The user did not provide an answer to the question 'What is your hobby?'\" (ActualSkip=true). Both have \"override_skip\": false and \"satisfactory\": false, so the evaluator correctly matched skip statuses. Evidence: Expected snippet: \"No answer was provided.\"; Actual snippet: \"The user did not provide an answer to the question 'What is your hobby?'\".",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00339275,
+                    "verboseLogs": "Criteria:\nDetermine if the evaluator correctly identified when to skip a question. \n \nEvaluation Steps:\n[\n    \"Check the Expected Output for a skip requirement: look for explicit skip markers (e.g., \"skip\", \"pass\", \"cannot answer\", \"no answer due to instruction\", or marked unanswerable) and set ExpectedSkip = true/false.\",\n    \"Check the Actual Output for skip indicators using the same criteria (explicit \"skip\"/\"pass\"/\"cannot answer\" or otherwise omitted because of instruction) and set ActualSkip = true/false.\",\n    \"Compare ExpectedSkip and ActualSkip: if they match, mark the evaluator as correct; if they differ, mark incorrect and classify the error as a false positive (ActualSkip=true, ExpectedSkip=false) or a false negative (ActualSkip=false, ExpectedSkip=true).\",\n    \"Record the final judgement (correct/incorrect), the error classification if any, and include the exact snippets from Actual and Expected that show the skip decision as evidence.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 31.55909139999858,
+            "evaluationCost": 0.00554875,
+            "order": 24
+        }
+    ],
+    "conversationalTestCases": [],
+    "metricsScores": [],
+    "prompts": [],
+    "runDuration": 0.0,
+    "evaluationCost": 0.10891299999999998
+}
