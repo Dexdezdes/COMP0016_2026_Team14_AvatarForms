@@ -175,12 +175,18 @@
                                             <ComboBox x:Name="AvatarComboBox"
                                                       SelectionChanged="OnAvatarSelectionChanged"
                                                       HorizontalAlignment="Stretch">
-                                                <ComboBoxItem Content="Julia" Tag="julia" />
-                                                <ComboBoxItem Content="David" Tag="david" />
-                                                <ComboBoxItem Content="Doozy" Tag="doozy" />
-                                                <ComboBoxItem Content="Sam" Tag="sam" />
-                                                <ComboBoxItem Content="Adam" Tag="adam" />
                                             </ComboBox>
+
+                                            <!-- Browse button for custom avatars -->
+                                            <Button x:Name="BrowseAvatarButton"
+                                                    Click="OnBrowseAvatarClicked"
+                                                    HorizontalAlignment="Stretch"
+                                                    Margin="0,12,0,0">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <FontIcon Glyph="&#xE8B5;" />
+                                                    <TextBlock Text="Browse for .glb avatar" />
+                                                </StackPanel>
+                                            </Button>
                                         </StackPanel>
                                     </Border>
                                 </StackPanel>
