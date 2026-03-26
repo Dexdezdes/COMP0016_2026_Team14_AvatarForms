@@ -877,7 +877,7 @@ summariser_test_cases = [
             {"role": "user", "content": "Most nights I sleep pretty well, but sometimes I have trouble"}
         ],
         question="How would you describe your sleep quality?",
-        expected_answer="Good",  # Should match one of the MCQ options
+        expected_answer="Good",
         question_type="mcq",
         options=["Excellent", "Good", "Fair", "Poor"]
     ),
@@ -904,7 +904,7 @@ summariser_test_cases = [
             {"role": "user", "content": "I'm in my thirties"}
         ],
         question="What is your exact age?",
-        expected_answer="I am in my thirties",  # Should not make up an exact number
+        expected_answer="I am in my thirties",
         question_type="open_ended"
     ),
     
@@ -1019,15 +1019,16 @@ summariser_test_cases = [
     ),
 
     SummariserTestCase(
-        name="RAG - Extract simple preference sentence",
-        interview_context="Music survey",
+        name="RAG - MCQ options matching",
+        interview_context="Health survey",
         conversation_history=[
-            {"role": "assistant", "content": "What kind of music do you like?"},
-            {"role": "user", "content": "I like pop music"}
+            {"role": "assistant", "content": "How would you describe your sleep quality?"},
+            {"role": "user", "content": "Most nights I sleep pretty well, but sometimes I have trouble"}
         ],
-        question="What kind of music do you like?",
-        expected_answer="Pop music",
-        question_type="open_ended"
+        question="How would you describe your sleep quality?",
+        expected_answer="Good",
+        question_type="mcq",
+        options=["Excellent", "Good", "Fair", "Poor"]
     ),
 
     SummariserTestCase(
