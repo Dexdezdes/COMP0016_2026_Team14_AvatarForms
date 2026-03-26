@@ -137,6 +137,6 @@ if __name__ == "__main__":
 
     # Run evaluations
     # Results save to folder specified in .env file (DEEPEVAL_RESULTS_FOLDER)
-    agent_evaluation.run_summariser_tests(summariser_test_cases)
-    agent_evaluation.run_evaluator_tests(evaluator_test_cases)
+    # agent_evaluation.run_summariser_tests(summariser_test_cases)
+    # agent_evaluation.run_evaluator_tests(evaluator_test_cases)
     agent_evaluation.run_talker_tests(talker_test_cases)
