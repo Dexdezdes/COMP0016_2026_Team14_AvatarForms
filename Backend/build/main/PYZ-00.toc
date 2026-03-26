@@ -2020,6 +2020,10 @@
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\tracemalloc.py',
    'PYMODULE'),
+  ('tracing',
+   'C:\\Users\\Fakhrurrazi '
+   'Riduan\\source\\repos\\AvatarForms\\Backend\\tracing.py',
+   'PYMODULE'),
   ('tty',
    'C:\\Users\\Fakhrurrazi '
    'Riduan\\AppData\\Local\\Python\\pythoncore-3.13-64\\Lib\\tty.py',

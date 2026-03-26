@@ -2,11 +2,12 @@
 import requests
 import json
 
+from tracing import Tracer
 from formatting import clean_script, format_q_and_as, outputToJSON, conversationToText, LLM_strip
 from prompts import RAG_collate_answer, Talker_system_prompt, Talker_ask_question_prompt, Talker_follow_up_question_prompt, Talker_closing_statement_prompt,Evaluator_system_prompt, RAG_system_prompt
 
 class Model:
-    def __init__(self, url, model, api_key=None, params=None):
+    def __init__(self, url: str, model: str, api_key: str = None, params: dict = None) -> None:
         self.url = url
         self.model = model
         self.api_key = api_key
@@ -20,7 +21,7 @@ class Model:
             "stream": False
         }
 
-    def generate(self, messages, temperature=None):
+    def generate(self, messages: list, temperature: float = None) -> dict:
         # Call the model's API with the messages and return the response
         payload = {
             "model": self.model,
@@ -39,25 +40,36 @@ class Model:
             headers["Authorization"] = f"Bearer {self.api_key}"
         response = requests.request("POST", self.url, headers=headers, data=json.dumps(payload))
         if response.status_code == 200:
-            return response.json()
+            return response
         else:
             raise Exception(f"API call failed with status code {response.status_code}: {response.text}")
         
 
 
 class Agent:
-    def __init__(self, model):
+    def __init__(self, model: Model, tracer: Tracer = None) -> None:
+        self.agent = self.__class__.__name__
         self.model = model
+        self.tracer = tracer
 
-    def run(self, messages, temperature=None):
+    def run(self, messages: list, temperature: float = None) -> str:
         response = self.model.generate(messages, temperature=temperature)
-        return response["choices"][0]["message"]["content"]
+        output = response.json()["choices"][0]["message"]["content"]
+        if self.tracer:
+            self.tracer.log(
+                agent_name=self.agent,
+                prompt=messages,
+                output=output,
+                temperature=temperature,
+                response_time=response.elapsed.total_seconds()
+            )
+        return output
         
     
 
 class TalkerAgent(Agent):
-    def __init__(self, model, conversation_history, interview_context):
-        super().__init__(model)
+    def __init__(self, model: Model, conversation_history: list, interview_context: str, tracer: Tracer = None) -> None:
+        super().__init__(model, tracer=tracer)
         self.conversation_history = conversation_history
         self.interview_context = interview_context
 
@@ -66,7 +78,7 @@ class TalkerAgent(Agent):
         self.follow_up_question_prompt = Talker_follow_up_question_prompt
         self.closing_statement_prompt = Talker_closing_statement_prompt()
 
-    def ask_question(self, question, previous_q_and_a=None):
+    def ask_question(self, question: str, previous_q_and_a: dict = None) -> str:
         if self.conversation_history:
             last_message = self.conversation_history[-1]["content"]
         else:
@@ -82,7 +94,7 @@ class TalkerAgent(Agent):
         output = self.run(messages, temperature=0.3)
         return clean_script(output)
 
-    def ask_followup(self, question, reasoning, transcript, previous_q_and_a=None, follow_up=None):
+    def ask_followup(self, question: str, reasoning: str, transcript: list, previous_q_and_a: dict = None, follow_up: str = None) -> str:
         transcript = conversationToText(transcript)
         if previous_q_and_a:
             previous_q_and_a = format_q_and_as(previous_q_and_a)
@@ -93,19 +105,19 @@ class TalkerAgent(Agent):
         output = self.run(messages, temperature=0.5)
         return clean_script(output)
     
-    def closing_statement(self):
+    def closing_statement(self) -> str:
         prompt = self.system_prompt + self.closing_statement_prompt
         messages = [{"role": "system", "content": prompt}]# + self.conversation_history
         output = self.run(messages)
         return clean_script(output)
 
 class EvaluatorAgent(Agent):
-    def __init__(self, model, interview_context):
-        super().__init__(model)
+    def __init__(self, model: Model, interview_context: str, tracer: Tracer = None) -> None:
+        super().__init__(model, tracer=tracer)
         self.prompt = Evaluator_system_prompt
         self.interview_context = interview_context
 
-    def evaluate(self, question, conversation_history):
+    def evaluate(self, question: str, conversation_history: list) -> dict:
         transcript = conversationToText(conversation_history)
         system = self.prompt(self.interview_context, question, transcript)
         messages = [{"role": "system", "content": system}]
@@ -114,12 +126,12 @@ class EvaluatorAgent(Agent):
         
     
 class RAG_Agent(Agent):
-    def __init__(self, model, interview_context):
-        super().__init__(model)
+    def __init__(self, model: Model, interview_context: str, tracer: Tracer = None) -> None:
+        super().__init__(model, tracer=tracer)
         self.system_prompt = RAG_system_prompt(interview_context)
         self.interview_context = interview_context
 
-    def answer(self, question, conversation_history, question_type="open_ended", options=None):
+    def answer(self, question: str, conversation_history: list, question_type: str = "open_ended", options: list = None) -> str:
         transcript = conversationToText(conversation_history)
         prompt = self.system_prompt + RAG_collate_answer(transcript, question, question_type=question_type, options=options)
         messages = [{"role": "system", "content": prompt}]

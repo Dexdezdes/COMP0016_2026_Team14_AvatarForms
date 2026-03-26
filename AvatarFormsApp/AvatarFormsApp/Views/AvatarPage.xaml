@@ -179,6 +179,7 @@
                                                 <ComboBoxItem Content="David" Tag="david" />
                                                 <ComboBoxItem Content="Doozy" Tag="doozy" />
                                                 <ComboBoxItem Content="Sam" Tag="sam" />
+                                                <ComboBoxItem Content="Adam" Tag="adam" />
                                             </ComboBox>
                                         </StackPanel>
                                     </Border>

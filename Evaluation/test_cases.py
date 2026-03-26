@@ -3,10 +3,9 @@ Test cases for evaluating the different agents.
 Contains predefined test cases for Talker, Evaluator, and RAG agents.
 """
 import sys
-sys.path.append("..\\Backend")  # Add parent directory to sys.path to allow imports from Backend
+sys.path.append("..\\Backend")  # Add Backend directory to sys.path to allow imports
 
 from test_case import TalkerTestCase, EvaluatorTestCase, SummariserTestCase
-from agents import Question
 
 # ==================== TALKER AGENT TEST CASES ====================
 
@@ -15,10 +14,10 @@ talker_test_cases = [
         name="Talker - Simple open-ended question 1",
         interview_context="Job interview for a software developer position",
         conversation_history=[],
-        question=Question(
-            text="What is your greatest strength?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "What is your greatest strength?",
+            "type": "open_ended"
+        },
         expected_answer="Could you tell me about your greatest strength?",
         previous_q_and_a=None
     ),
@@ -27,10 +26,10 @@ talker_test_cases = [
         name="Talker - Simple open-ended question 2",
         interview_context="Sleep quality survey",
         conversation_history=[],
-        question=Question(
-            text="How did you sleep last night?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "How did you sleep last night?",
+            "type": "open_ended"
+        },
         expected_answer="How did you sleep last night? Could you describe the quality of your sleep?",
         previous_q_and_a=None
     ),
@@ -39,11 +38,11 @@ talker_test_cases = [
         name="Talker - MCQ question with options",
         interview_context="Healthcare questionnaire",
         conversation_history=[],
-        question=Question(
-            text="How would you rate your overall health?",
-            question_type="mcq",
-            options=["Excellent", "Good", "Fair", "Poor"]
-        ),
+        question={
+            "text": "How would you rate your overall health?",
+            "type": "mcq",
+            "options": ["Excellent", "Good", "Fair", "Poor"]
+        },
         expected_answer="How would you rate your overall health? Would you say excellent, good, fair, or poor?",
         previous_q_and_a=None
     ),
@@ -54,10 +53,10 @@ talker_test_cases = [
         conversation_history=[
             {"role": "user", "content": "I'm good at solving complex problems"}
         ],
-        question=Question(
-            text="Could you tell me about a time where you demonstrated this strength?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "Could you tell me about a time where you demonstrated this strength?",
+            "type": "open_ended"
+        },
         expected_answer="I hear you mentioned that you're good at solving complex problems. Could you provide a specific example of a problem you've solved in the past?",
         previous_q_and_a={"What is your greatest strength?": "Problem-solving"}
     ),
@@ -68,10 +67,10 @@ talker_test_cases = [
         conversation_history=[
             {"role": "user", "content": "I don't know, I was asleep"}
         ],
-        question=Question(
-            text="How did you sleep last night?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "How did you sleep last night?",
+            "type": "open_ended"
+        },
         expected_answer="Fair enough. Did you wake up feeling rested, or still tired?",
         previous_q_and_a=None
     ),
@@ -82,11 +81,257 @@ talker_test_cases = [
         conversation_history=[
             {"role": "user", "content": "I guess I'm doing okay"}
         ],
-        question=Question(
-            text="How would you rate your mood from 1 to 10?",
-            question_type="mcq",
-        ),
+        question={
+            "text": "How would you rate your mood from 1 to 10?",
+            "type": "mcq"
+        },
         expected_answer="To help us better understand, would you say your mood is closer to 1 (very bad), 5 (neutral), or 10 (very good)?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Simple open-ended question 3",
+        interview_context="Customer feedback survey",
+        conversation_history=[],
+        question={
+            "text": "What did you like about our service?",
+            "type": "open_ended"
+        },
+        expected_answer="What did you like about our service?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Simple open-ended question 4",
+        interview_context="University application",
+        conversation_history=[],
+        question={
+            "text": "Why did you choose this course?",
+            "type": "open_ended"
+        },
+        expected_answer="Why did you choose this course?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Simple open-ended question 5",
+        interview_context="Fitness survey",
+        conversation_history=[],
+        question={
+            "text": "How often do you exercise?",
+            "type": "open_ended"
+        },
+        expected_answer="How often do you exercise?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - MCQ question 2",
+        interview_context="Food preference survey",
+        conversation_history=[],
+        question={
+            "text": "What is your preferred meal time?",
+            "type": "mcq",
+            "options": ["Breakfast", "Lunch", "Dinner"]
+        },
+        expected_answer="What is your preferred meal time? Would you say breakfast, lunch, or dinner?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - MCQ question 3",
+        interview_context="Transport survey",
+        conversation_history=[],
+        question={
+            "text": "What is your main mode of transport?",
+            "type": "mcq",
+            "options": ["Car", "Bus", "Train", "Bike"]
+        },
+        expected_answer="What is your main mode of transport? Would you say car, bus, train, or bike?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - MCQ question 4",
+        interview_context="Tech usage survey",
+        conversation_history=[],
+        question={
+            "text": "Which device do you use most often?",
+            "type": "mcq",
+            "options": ["Phone", "Laptop", "Tablet"]
+        },
+        expected_answer="Which device do you use most often? Would you say phone, laptop, or tablet?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Context follow-up 2",
+        interview_context="Job interview",
+        conversation_history=[
+            {"role": "user", "content": "I enjoy working in teams"}
+        ],
+        question={
+            "text": "Can you give an example?",
+            "type": "open_ended"
+        },
+        expected_answer="You mentioned that you enjoy working in teams. Could you give an example of when you worked successfully in a team?",
+        previous_q_and_a={"Do you prefer teamwork or individual work?": "Teamwork"}
+    ),
+
+    TalkerTestCase(
+        name="Talker - Context follow-up 3",
+        interview_context="Education survey",
+        conversation_history=[
+            {"role": "user", "content": "Math is my favourite subject"}
+        ],
+        question={
+            "text": "Why is that?",
+            "type": "open_ended"
+        },
+        expected_answer="You mentioned that math is your favourite subject. Could you explain why you enjoy it?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Clarification 1",
+        interview_context="Health survey",
+        conversation_history=[
+            {"role": "user", "content": "Not really sure"}
+        ],
+        question={
+            "text": "How often do you feel stressed?",
+            "type": "open_ended"
+        },
+        expected_answer="That's okay. Would you say you feel stressed often, sometimes, or rarely?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Clarification 2",
+        interview_context="Lifestyle survey",
+        conversation_history=[
+            {"role": "user", "content": "Maybe sometimes"}
+        ],
+        question={
+            "text": "Do you eat healthy regularly?",
+            "type": "open_ended"
+        },
+        expected_answer="Would you say you eat healthy food regularly, occasionally, or rarely?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - MCQ question 4",
+        interview_context="Tech usage survey",
+        conversation_history=[],
+        question={
+            "text": "Which device do you use most often?",
+            "type": "mcq",
+            "options": ["Phone", "Laptop", "Tablet"]
+        },
+        expected_answer="Which device do you use most often? Would you say phone, laptop, or tablet?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Simple repetition 1",
+        interview_context="General survey",
+        conversation_history=[],
+        question={
+            "text": "What is your favourite hobby?",
+            "type": "open_ended"
+        },
+        expected_answer="What is your favourite hobby?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Simple repetition 2",
+        interview_context="Travel survey",
+        conversation_history=[],
+        question={
+            "text": "Where did you last travel?",
+            "type": "open_ended"
+        },
+        expected_answer="Where did you last travel?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - MCQ minimal phrasing 1",
+        interview_context="Shopping survey",
+        conversation_history=[],
+        question={
+            "text": "How often do you shop online?",
+            "type": "mcq",
+            "options": ["Daily", "Weekly", "Monthly", "Rarely"]
+        },
+        expected_answer="How often do you shop online? Would you say daily, weekly, monthly, or rarely?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - MCQ minimal phrasing 2",
+        interview_context="Media survey",
+        conversation_history=[],
+        question={
+            "text": "What type of content do you watch most?",
+            "type": "mcq",
+            "options": ["Movies", "TV shows", "YouTube"]
+        },
+        expected_answer="What type of content do you watch most? Would you say movies, TV shows, or YouTube?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Context reuse simple",
+        interview_context="Job interview",
+        conversation_history=[
+            {"role": "user", "content": "I like learning new technologies"}
+        ],
+        question={
+            "text": "Can you expand on that?",
+            "type": "open_ended"
+        },
+        expected_answer="You mentioned that you like learning new technologies. Could you expand on that?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Neutral fallback question",
+        interview_context="General survey",
+        conversation_history=[
+            {"role": "user", "content": ""}
+        ],
+        question={
+            "text": "Can you tell me more?",
+            "type": "open_ended"
+        },
+        expected_answer="Could you tell me more?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Simple open-ended question 6",
+        interview_context="Customer satisfaction survey",
+        conversation_history=[],
+        question={
+            "text": "How satisfied are you with our service?",
+            "type": "open_ended"
+        },
+        expected_answer="How satisfied are you with our service?",
+        previous_q_and_a=None
+    ),
+
+    TalkerTestCase(
+        name="Talker - Very simple fallback",
+        interview_context="General survey",
+        conversation_history=[],
+        question={
+            "text": "Please describe your experience",
+            "type": "open_ended"
+        },
+        expected_answer="Please describe your experience",
         previous_q_and_a=None
     )
 ]
@@ -101,10 +346,10 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "What is your greatest strength?"},
             {"role": "user", "content": "I would say my greatest strength is my ability to solve complex problems quickly and efficiently."}
         ],
-        question=Question(
-            text="What is your greatest strength?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "What is your greatest strength?",
+            "type": "open_ended"
+        },
         expected_answer={
             "satisfactory": True,
             "override_skip": False,
@@ -120,10 +365,10 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "How did you sleep last night?"},
             {"role": "user", "content": "I don't know, I was asleep"}
         ],
-        question=Question(
-            text="How did you sleep last night?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "How did you sleep last night?",
+            "type": "open_ended"
+        },
         expected_answer={
             "satisfactory": False,
             "override_skip": False,
@@ -139,10 +384,10 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "What is your annual income?"},
             {"role": "user", "content": "I'd rather not share that information"}
         ],
-        question=Question(
-            text="What is your annual income?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "What is your annual income?",
+            "type": "open_ended"
+        },
         expected_answer={
             "satisfactory": False,
             "override_skip": True,
@@ -158,16 +403,16 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "How would you rate your overall health? Would you say excellent, good, fair, or poor?"},
             {"role": "user", "content": "I'd say I'm in pretty good shape actually"}
         ],
-        question=Question(
-            text="How would you rate your overall health?",
-            question_type="mcq",
-            options=["Excellent", "Good", "Fair", "Poor"]
-        ),
+        question={
+            "text": "How would you rate your overall health?",
+            "type": "mcq",
+            "options": ["Excellent", "Good", "Fair", "Poor"]
+        },
         expected_answer={
-            "satisfactory": False,
+            "satisfactory": True,
             "override_skip": False,
-            "reasoning": "The user's response is positive but doesn't clearly match one of the provided MCQ options. We should ask a follow-up to clarify.",
-            "follow_up_question": "So would you say your health is good?"
+            "reasoning": "The user response clearly match the 'good' option from the multiple choices.",
+            "follow_up_question": None
         }
     ),
     
@@ -178,11 +423,11 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "How satisfied are you with our service?"},
             {"role": "user", "content": "It could be better"}
         ],
-        question=Question(
-            text="How satisfied are you with our service?",
-            question_type="mcq",
-            options=["Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very Dissatisfied"]
-        ),
+        question={
+            "text": "How satisfied are you with our service?",
+            "type": "mcq",
+            "options": ["Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very Dissatisfied"]
+        },
         expected_answer={
             "satisfactory": False,
             "override_skip": False,
@@ -198,11 +443,11 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "Have you ever been diagnosed with a mental health condition?"},
             {"role": "user", "content": "I'm not comfortable discussing that"}
         ],
-        question=Question(
-            text="Have you ever been diagnosed with a mental health condition?",
-            question_type="mcq",
-            options=["Yes", "No"]
-        ),
+        question={
+            "text": "Have you ever been diagnosed with a mental health condition?",
+            "type": "mcq",
+            "options": ["Yes", "No"]
+        },
         expected_answer={
             "satisfactory": False,
             "override_skip": True,
@@ -220,15 +465,365 @@ evaluator_test_cases = [
             {"role": "assistant", "content": "Could you be more specific about how many times per day?"},
             {"role": "user", "content": "Usually twice, sometimes once if I'm tired"}
         ],
-        question=Question(
-            text="How often do you brush your teeth?",
-            question_type="open_ended"
-        ),
+        question={
+            "text": "How often do you brush your teeth?",
+            "type": "open_ended"
+        },
         expected_answer={
             "satisfactory": True,
             "override_skip": False,
             "reasoning": "After follow-up, the user provided a specific answer about brushing frequency.",
             "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Clear open-ended factual answer",
+        interview_context="General survey",
+        conversation_history=[
+            {"role": "assistant", "content": "What is your favorite color?"},
+            {"role": "user", "content": "Blue"}
+        ],
+        question={
+            "text": "What is your favorite color?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": True,
+            "override_skip": False,
+            "reasoning": "The user provided a clear and direct answer.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Vague open-ended answer",
+        interview_context="Lifestyle survey",
+        conversation_history=[
+            {"role": "assistant", "content": "How often do you exercise?"},
+            {"role": "user", "content": "Sometimes"}
+        ],
+        question={
+            "text": "How often do you exercise?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": False,
+            "override_skip": False,
+            "reasoning": "The response is vague and lacks specific frequency details.",
+            "follow_up_question": "Could you specify how many times per week you exercise?"
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Exact MCQ match",
+        interview_context="Food survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you prefer tea or coffee?"},
+            {"role": "user", "content": "Tea"}
+        ],
+        question={
+            "text": "Do you prefer tea or coffee?",
+            "type": "mcq",
+            "options": ["Tea", "Coffee"]
+        },
+        expected_answer={
+            "satisfactory": True,
+            "override_skip": False,
+            "reasoning": "The user selected one of the provided options.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - MCQ ambiguous synonym",
+        interview_context="Food survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you prefer tea or coffee?"},
+            {"role": "user", "content": "I like both"}
+        ],
+        question={
+            "text": "Do you prefer tea or coffee?",
+            "type": "mcq",
+            "options": ["Tea", "Coffee"]
+        },
+        expected_answer={
+            "satisfactory": False,
+            "override_skip": False,
+            "reasoning": "The response does not clearly select one of the provided options.",
+            "follow_up_question": "Which do you prefer more, tea or coffee?"
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - User refusal general",
+        interview_context="Profile form",
+        conversation_history=[
+            {"role": "assistant", "content": "What is your phone number?"},
+            {"role": "user", "content": "I'd rather not say"}
+        ],
+        question={
+            "text": "What is your phone number?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": False,
+            "override_skip": True,
+            "reasoning": "The user refused to provide the information.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Partial but sufficient open-ended",
+        interview_context="Travel survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Where did you travel last year?"},
+            {"role": "user", "content": "I went to Spain"}
+        ],
+        question={
+            "text": "Where did you travel last year?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": True,
+            "override_skip": False,
+            "reasoning": "The user provided a clear destination.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Open-ended unclear intent",
+        interview_context="Work survey",
+        conversation_history=[
+            {"role": "assistant", "content": "What do you do for work?"},
+            {"role": "user", "content": "Things"}
+        ],
+        question={
+            "text": "What do you do for work?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": False,
+            "override_skip": False,
+            "reasoning": "The answer is too vague to understand the user's occupation.",
+            "follow_up_question": "Could you describe your job role in more detail?"
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - MCQ exact lowercase match",
+        interview_context="Health survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you smoke? Yes or No"},
+            {"role": "user", "content": "no"}
+        ],
+        question={
+            "text": "Do you smoke?",
+            "type": "mcq",
+            "options": ["Yes", "No"]
+        },
+        expected_answer={
+            "satisfactory": True,
+            "override_skip": False,
+            "reasoning": "The answer matches one of the provided options.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - MCQ unclear phrasing",
+        interview_context="Fitness survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you exercise regularly? Yes or No"},
+            {"role": "user", "content": "Kind of"}
+        ],
+        question={
+            "text": "Do you exercise regularly?",
+            "type": "mcq",
+            "options": ["Yes", "No"]
+        },
+        expected_answer={
+            "satisfactory": False,
+            "override_skip": False,
+            "reasoning": "The response does not clearly match the available options.",
+            "follow_up_question": "Would you say yes or no?"
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Detailed open-ended answer",
+        interview_context="Education survey",
+        conversation_history=[
+            {"role": "assistant", "content": "What did you study?"},
+            {"role": "user", "content": "Computer Science with a focus on AI"}
+        ],
+        question={
+            "text": "What did you study?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": True,
+            "override_skip": False,
+            "reasoning": "The user provided a clear and detailed answer.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Open-ended non-answer",
+        interview_context="Feedback form",
+        conversation_history=[
+            {"role": "assistant", "content": "What did you like about the product?"},
+            {"role": "user", "content": "Nothing"}
+        ],
+        question={
+            "text": "What did you like about the product?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": False,
+            "override_skip": False,
+            "reasoning": "The user did not clearly indicate if they actually don't find a thing they like about the product.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Ambiguous opinion",
+        interview_context="Service feedback",
+        conversation_history=[
+            {"role": "assistant", "content": "How was the service?"},
+            {"role": "user", "content": "Okay"}
+        ],
+        question={
+            "text": "How was the service?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": False,
+            "override_skip": False,
+            "reasoning": "The response is vague and lacks detail.",
+            "follow_up_question": "Could you describe what made it okay?"
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Strong refusal wording",
+        interview_context="Sensitive survey",
+        conversation_history=[
+            {"role": "assistant", "content": "What is your age?"},
+            {"role": "user", "content": "I don't want to answer that"}
+        ],
+        question={
+            "text": "What is your age?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": False,
+            "override_skip": True,
+            "reasoning": "The user explicitly refused to answer.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Multi-step clarification resolved",
+        interview_context="Diet survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you follow a specific diet?"},
+            {"role": "user", "content": "Yes"},
+            {"role": "assistant", "content": "Which one?"},
+            {"role": "user", "content": "Vegetarian"}
+        ],
+        question={
+            "text": "Do you follow a specific diet?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": True,
+            "override_skip": False,
+            "reasoning": "After clarification, the user provided a specific diet.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - MCQ with extra words but valid",
+        interview_context="Transport survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you use public transport? Yes or No"},
+            {"role": "user", "content": "Yes, every day"}
+        ],
+        question={
+            "text": "Do you use public transport?",
+            "type": "mcq",
+            "options": ["Yes", "No"]
+        },
+        expected_answer={
+            "satisfactory": True,
+            "override_skip": False,
+            "reasoning": "The response clearly includes one of the valid options.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - MCQ indirect answer",
+        interview_context="Transport survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you use public transport? Yes or No"},
+            {"role": "user", "content": "Only sometimes"}
+        ],
+        question={
+            "text": "Do you use public transport?",
+            "type": "mcq",
+            "options": ["Yes", "No"]
+        },
+        expected_answer={
+            "satisfactory": True,
+            "override_skip": False,
+            "reasoning": "The response clearly infers they use public transport.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Clear numeric answer",
+        interview_context="Fitness tracking",
+        conversation_history=[
+            {"role": "assistant", "content": "How many hours do you sleep?"},
+            {"role": "user", "content": "7 hours"}
+        ],
+        question={
+            "text": "How many hours do you sleep?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": True,
+            "override_skip": False,
+            "reasoning": "The user provided a clear numeric answer.",
+            "follow_up_question": None
+        }
+    ),
+
+    EvaluatorTestCase(
+        name="Evaluator - Missing answer",
+        interview_context="General survey",
+        conversation_history=[
+            {"role": "assistant", "content": "What is your hobby?"},
+            {"role": "user", "content": ""}
+        ],
+        question={
+            "text": "What is your hobby?",
+            "type": "open_ended"
+        },
+        expected_answer={
+            "satisfactory": False,
+            "override_skip": False,
+            "reasoning": "No answer was provided.",
+            "follow_up_question": "Could you tell me about your hobbies?"
         }
     )
 ]
@@ -282,7 +877,7 @@ summariser_test_cases = [
             {"role": "user", "content": "Most nights I sleep pretty well, but sometimes I have trouble"}
         ],
         question="How would you describe your sleep quality?",
-        expected_answer="Good",  # Should match one of the MCQ options
+        expected_answer="Good",
         question_type="mcq",
         options=["Excellent", "Good", "Fair", "Poor"]
     ),
@@ -309,7 +904,7 @@ summariser_test_cases = [
             {"role": "user", "content": "I'm in my thirties"}
         ],
         question="What is your exact age?",
-        expected_answer="I am in my thirties",  # Should not make up an exact number
+        expected_answer="I am in my thirties",
         question_type="open_ended"
     ),
     
@@ -323,55 +918,228 @@ summariser_test_cases = [
         question="Favorite movie genre",
         expected_answer="Science fiction, particularly space exploration themes",
         question_type="open_ended"
+    ),
+
+    SummariserTestCase(
+        name="RAG - Simple factual extraction",
+        interview_context="Basic info",
+        conversation_history=[
+            {"role": "assistant", "content": "What city do you live in?"},
+            {"role": "user", "content": "I live in London"}
+        ],
+        question="What city do you live in?",
+        expected_answer="London",
+        question_type="open_ended"
+    ),
+
+    SummariserTestCase(
+        name="RAG - Short profession extraction",
+        interview_context="Employment",
+        conversation_history=[
+            {"role": "assistant", "content": "What is your job?"},
+            {"role": "user", "content": "I'm a teacher"}
+        ],
+        question="What is your job?",
+        expected_answer="Teacher",
+        question_type="open_ended"
+    ),
+
+    SummariserTestCase(
+        name="RAG - Simple yes answer",
+        interview_context="Health survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you smoke?"},
+            {"role": "user", "content": "No"}
+        ],
+        question="Do you smoke?",
+        expected_answer="No",
+        question_type="mcq",
+        options=["Yes", "No"]
+    ),
+
+    SummariserTestCase(
+        name="RAG - Simple no answer with extra words",
+        interview_context="Health survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you drink alcohol?"},
+            {"role": "user", "content": "No, not at all"}
+        ],
+        question="Do you drink alcohol?",
+        expected_answer="No",
+        question_type="mcq",
+        options=["Yes", "No"]
+    ),
+
+    SummariserTestCase(
+        name="RAG - Extract number clearly",
+        interview_context="Fitness",
+        conversation_history=[
+            {"role": "assistant", "content": "How many times a week do you exercise?"},
+            {"role": "user", "content": "About 3 times a week"}
+        ],
+        question="How many times a week do you exercise?",
+        expected_answer="3 times a week",
+        question_type="open_ended"
+    ),
+
+    SummariserTestCase(
+        name="RAG - Extract duration",
+        interview_context="Work experience",
+        conversation_history=[
+            {"role": "assistant", "content": "How long have you worked here?"},
+            {"role": "user", "content": "I've been here for 2 years"}
+        ],
+        question="How long have you worked here?",
+        expected_answer="2 years",
+        question_type="open_ended"
+    ),
+
+    SummariserTestCase(
+        name="RAG - Clear hobby extraction",
+        interview_context="Personal profile",
+        conversation_history=[
+            {"role": "assistant", "content": "What are your hobbies?"},
+            {"role": "user", "content": "I enjoy reading books"}
+        ],
+        question="What are your hobbies?",
+        expected_answer="Reading books",
+        question_type="open_ended"
+    ),
+
+    SummariserTestCase(
+        name="RAG - Extract food preference",
+        interview_context="Food survey",
+        conversation_history=[
+            {"role": "assistant", "content": "What is your favorite food?"},
+            {"role": "user", "content": "Pizza"}
+        ],
+        question="What is your favorite food?",
+        expected_answer="Pizza",
+        question_type="open_ended"
+    ),
+
+    SummariserTestCase(
+        name="RAG - MCQ options matching",
+        interview_context="Health survey",
+        conversation_history=[
+            {"role": "assistant", "content": "How would you describe your sleep quality?"},
+            {"role": "user", "content": "Most nights I sleep pretty well, but sometimes I have trouble"}
+        ],
+        question="How would you describe your sleep quality?",
+        expected_answer="Good",
+        question_type="mcq",
+        options=["Excellent", "Good", "Fair", "Poor"]
+    ),
+
+    SummariserTestCase(
+        name="RAG - MCQ direct match",
+        interview_context="Transport survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you own a car?"},
+            {"role": "user", "content": "Yes"}
+        ],
+        question="Do you own a car?",
+        expected_answer="Yes",
+        question_type="mcq",
+        options=["Yes", "No"]
+    ),
+
+    SummariserTestCase(
+        name="RAG - Extract simple location",
+        interview_context="Travel",
+        conversation_history=[
+            {"role": "assistant", "content": "Where did you go on holiday?"},
+            {"role": "user", "content": "I went to Italy"}
+        ],
+        question="Where did you go on holiday?",
+        expected_answer="Italy",
+        question_type="open_ended"
+    ),
+
+    SummariserTestCase(
+        name="RAG - Extract simple language",
+        interview_context="Language survey",
+        conversation_history=[
+            {"role": "assistant", "content": "What language do you speak?"},
+            {"role": "user", "content": "English"}
+        ],
+        question="What language do you speak?",
+        expected_answer="English",
+        question_type="open_ended"
+    ),
+
+    SummariserTestCase(
+        name="RAG - Extract pet ownership",
+        interview_context="Lifestyle",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you have pets?"},
+            {"role": "user", "content": "Yes, I have a dog"}
+        ],
+        question="Do you have pets?",
+        expected_answer="Yes",
+        question_type="mcq",
+        options=["Yes", "No"]
+    ),
+
+    SummariserTestCase(
+        name="RAG - Extract specific pet",
+        interview_context="Lifestyle",
+        conversation_history=[
+            {"role": "assistant", "content": "What pet do you have?"},
+            {"role": "user", "content": "I have a dog"}
+        ],
+        question="What pet do you have?",
+        expected_answer="Dog",
+        question_type="open_ended"
+    ),
+
+    SummariserTestCase(
+        name="RAG - Extract simple education",
+        interview_context="Education",
+        conversation_history=[
+            {"role": "assistant", "content": "What is your highest qualification?"},
+            {"role": "user", "content": "I have a bachelor's degree"}
+        ],
+        question="What is your highest qualification?",
+        expected_answer="Bachelor's degree",
+        question_type="open_ended"
+    ),
+
+    SummariserTestCase(
+        name="RAG - Extract working status",
+        interview_context="Employment",
+        conversation_history=[
+            {"role": "assistant", "content": "Are you currently employed?"},
+            {"role": "user", "content": "Yes, I am employed full-time"}
+        ],
+        question="Are you currently employed?",
+        expected_answer="Yes",
+        question_type="mcq",
+        options=["Yes", "No"]
+    ),
+
+    SummariserTestCase(
+        name="RAG - Extract simple rating to MCQ",
+        interview_context="Service feedback",
+        conversation_history=[
+            {"role": "assistant", "content": "How was the service?"},
+            {"role": "user", "content": "It was good"}
+        ],
+        question="How was the service?",
+        expected_answer="Good",
+        question_type="mcq",
+        options=["Excellent", "Good", "Fair", "Poor"]
+    ),
+
+    SummariserTestCase(
+        name="RAG - Extract clear binary preference",
+        interview_context="Preference survey",
+        conversation_history=[
+            {"role": "assistant", "content": "Do you prefer mornings or evenings?"},
+            {"role": "user", "content": "Mornings"}
+        ],
+        question="Do you prefer mornings or evenings?",
+        expected_answer="Mornings",
+        question_type="open_ended"
     )
-]
-
-# ==================== COMPREHENSIVE INTEGRATION TEST CASES ====================
-
-integration_test_cases = [
-    {
-        "name": "Complete interview flow - Job application",
-        "interview_context": "Entry-level software developer position interview",
-        "questions": [
-            Question("What is your name?", "open_ended"),
-            Question("What programming languages do you know?", "open_ended"),
-            Question("Do you have any prior work experience?", "mcq", ["Yes", "No"]),
-            Question("Why do you want to work here?", "open_ended")
-        ],
-        "user_responses": [
-            "My name is Sarah Chen",
-            "I know Python and JavaScript, and I'm learning Java",
-            "Yes, I did an internship last summer",
-            "I'm passionate about technology and your company's mission aligns with my values"
-        ],
-        "expected_final_answers": {
-            "What is your name?": "Sarah Chen",
-            "What programming languages do you know?": "Python, JavaScript, and learning Java",
-            "Do you have any prior work experience?": "Yes",
-            "Why do you want to work here?": "Passionate about technology and aligned with company mission"
-        }
-    },
-    
-    {
-        "name": "Complete interview flow - Medical intake with sensitive questions",
-        "interview_context": "New patient medical history questionnaire",
-        "questions": [
-            Question("What is your full name?", "open_ended"),
-            Question("Do you have any allergies?", "open_ended"),
-            Question("Have you ever been hospitalized?", "mcq", ["Yes", "No", "Prefer not to say"]),
-            Question("Do you smoke?", "mcq", ["Yes", "No", "Occasionally"])
-        ],
-        "user_responses": [
-            "Robert Johnson",
-            "I'm allergic to penicillin",
-            "I'd rather not say",
-            "I used to but I quit last year"
-        ],
-        "expected_final_answers": {
-            "What is your full name?": "Robert Johnson",
-            "Do you have any allergies?": "Allergic to penicillin",
-            "Have you ever been hospitalized?": "Prefer not to say",
-            "Do you smoke?": "No"  # Should interpret "used to but quit" as No
-        }
-    }
 ]

@@ -1,0 +1,11 @@
+[run]
+branch = False
+
+[report]
+skip_covered = False
+skip_empty = False
+
+exclude_lines =
+    if __name__ == .__main__.:
+
+show_missing = True

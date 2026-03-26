@@ -2,12 +2,20 @@
 
 AvatarForms is a Windows application for conversion of digital forms into 3D avatars with a fully local AI interview pipeline.
 
+In many contexts, from education to industry to healthcare, crucial information is collected through static, online forms.
+However, questions on digital forms are rigid, often requiring answers in specific formats or assuming users are implicitly aware of context.
+For many people with accessibility needs, these limitations mean that filling out digital forms can be difficult or unintuitive.
+
+AvatarForms aims to help solve this issue by offering an alternative. A digital form can easy be converted to a real-time 3D avatar, that asks poses questions in natural conversation, asks clarifying questions and followups when needed, then accurately records the information gathered as if the user had filled out the form themselves.
+
 ## Project Structure
 
 ```
 .
 ├── AvatarFormsApp/    # Backend (.NET 10), Frontend (WinUI), Database (SQLite).
 ├── Backend/           # Python AI agent orchestration layer with APIs (HTTP + WebSocket)
+├── Backend-Test/      # Pytest test cases for Python Backend code
+├── Evaluation/        # DeepEval LLM Agent Evaluation Framework (scripts + test cases)
 ├── HeadTTS/           # Open-sourced JavaScript TTS solution by @met4citizen 
 ├── .gitignore         # Git ignore configuration
 └── README.MD          # This file
@@ -90,6 +98,7 @@ You can also use workspace tasks:
 - `publish`
 - `watch`
 
+
 ## Runtime
 
 When you start an interview flow in the app:
@@ -100,10 +109,69 @@ When you start an interview flow in the app:
 - The Python backend initialises WebSocket API for real-time speech relay between the Python agent orchestration layer and HeadTTS (3D avatar rendering + TTS layer) on port `8083`.
 - Avatar is loaded through WebView2.
 
+
+## Runnings Tests
+
+### C# Tests
+Open the outer AvatarFormsApp folder in powershell, and run:
+```powershell
+.\run-tests.ps1
+```
+Then html testing report will popup.
+
+
+### Python Backend Tests
+Ensure packages in both `Backend\requirements.txt` and `Backend-Test\test_requirements.txt` are installed to the environment.
+
+Open the `Backend-Test` folder in the console, and run all test cases with: `pytest`
+
+Specific test files can be run with: `pytest test_x.py`
+
+Code coverage stats can be viewed by running: `pytest --cov=..\Backend`
+
+
+## DeepEval Agent Evaluation
+
+### Running the Evaluation
+
+The DeepEval evaluation is currently set up to use `gpt-5-mini` as the judge LLM, so requires an OPENAI API key.
+
+Set the environment variables:
+```
+OPENAI_API_KEY=key here
+DEEPEVAL_RESULTS_FOLDER=C:\path\to\results\folder
+```
+
+Run the llamafile in the console with flags `--ctx-size 2048 --ngl 9999`, noting down the port is starts running on.
+
+Open the `Evaluation` folder in the console, and run:
+
+`python eval.py --port 8081` (replacing the port with the llamafile port)
+
+This will run tests for all 3 agents by default.
+
+To test individual agents, you can use the flags: `talker`, `evaluator`, `summariser`
+
+E.g. `python eval.py --port 8081 --evaluator`
+
+Test cases can be viewed or modified in `test_cases.py`.
+
+### Viewing Results
+The evaluation results will be displayed in the console, and saved in json format to the `DEEPEVAL_RESULTS_FOLDER` specified.
+
+Example evaluations run previously have been saved to `Evaluation\results`.
+
+To view the results graphically, run: `python display.py example_json_file`
+
+You can optionally specify a path to save the visualation with the flag `--save path\to\save`
+
+Traces of agent calls are saved to `Evaluation\agent_evaluation_logs`, where the prompts and outputs of requests for each agent can be viewed for observability.
+
+
 ## Environment Variables
 
-- Cloud mode requires `FIREWORKS_API_KEY` (read by Python backend).
 - Local mode is the default app flow and uses `--local` with the `.llamafile` server.
+- Cloud mode requires `FIREWORKS_API_KEY` (read by Python backend).
 
 ## Troubleshooting
 

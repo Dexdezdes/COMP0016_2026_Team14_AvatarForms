@@ -78,10 +78,15 @@ venv/
 # Doesn't ignore compiled Python except .llamafile files
 !Backend/
 !Backend/**
+Backend/.env
 Backend/**/*.llamafile
 
 # Ignore pycache
 **/__pycache__/
+
+# Ignore logs
+**/agent_evaluation_logs/
+**/.deepeval/
 
 ################################################################################
 # macOS & Others

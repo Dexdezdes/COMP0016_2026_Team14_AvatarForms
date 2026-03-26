@@ -1,10 +1,10 @@
 
 
-def Talker_system_prompt(context):
-    return f"""
+def Talker_system_prompt(context: str) -> str:
+    return f"""/no_think
 You are a straightforward AI interviewer. Your job is to ask questions in a concise but friendly manner, not wasting the time of the respondent by being overly verbose. You adapt your tone based on the context provided and the user's previous answers, and can reword questions when needed. Always be polite, respect privacy and don't pry.
 
-Some questions may be multiple-choice (MCQ). When asking an MCQ question, naturally present the options in your speech (e.g., "Would you say A, B, C, or D?"). Do not read option letters or numbers mechanically. Instead, weave the choices into a natural-sounding spoken sentence.
+If and only if a question is labelled as Multiple Choice, naturally present the options in your speech (e.g., "Would you say A, B, C, or D?"). Do not read option letters or numbers mechanically. Instead, weave the choices into a natural-sounding spoken sentence.
 
 All output will be spoken aloud, so only output dialogue.
 
@@ -15,7 +15,7 @@ Interview information:
 """
 
 
-def Talker_ask_question_prompt(question, previous_q_and_a=None, last_message=None):
+def Talker_ask_question_prompt(question: str, previous_q_and_a: str = None, last_message: str = None) -> str:
     task = f"""{f'''
 Summary of questions and answers so far:
 
@@ -44,7 +44,7 @@ Ask the following question (you can rephrase if appropriate):
     # return Talker_system_prompt(context) + task
     return task
 
-def Talker_follow_up_question_prompt(question, reasoning, transcript, previous_q_and_a=None, follow_up=None):
+def Talker_follow_up_question_prompt(question: str, reasoning: str, transcript: str, previous_q_and_a: str = None, follow_up: str = None) -> str:
     task = f"""
 Original question: {question}
 
@@ -77,12 +77,12 @@ Transcript of the user's answer to the current question:
     # return Talker_system_prompt(context) + task
     return task
 
-def Talker_closing_statement_prompt():
+def Talker_closing_statement_prompt() -> str:
     return """
 All questions have been asked. Briefly conclude the interview with a single sentence.
 """
 
-def Evaluator_system_prompt(context, question, transcript):
+def Evaluator_system_prompt(context: str, question: str, transcript: str) -> str:
     return f"""
 You are a detail-oriented judge who decides whether or not the user has properly answered a given question and if the answer provides complete information and is satisfactory or if a follow-up question / clarification is required.
 You will be given a portion of an interview transcript in which to evaluate the user's answer.
@@ -126,7 +126,7 @@ Your output must be only a JSON object with the following format:
 OUTPUT:
 """
 
-def RAG_system_prompt(context):
+def RAG_system_prompt(context: str) -> str:
     return f"""
 You are an information retrieval assistant that summarises information from a conversation.
 You will be given a portion of an interview transcript where the user answered a question.
@@ -141,7 +141,7 @@ Interview context:
 """
 
 
-def RAG_collate_answer(conversation_history, question, question_type="open_ended", options=None):
+def RAG_collate_answer(conversation_history: str, question: str, question_type: str = "open_ended", options: list = None) -> str:
     mcq_instruction = ""
 
     if question_type == "mcq" and options:
@@ -170,7 +170,7 @@ Question: {question}
 Answer:
 """
 
-def RAG_summarise_conversation(conversation_history):
+def RAG_summarise_conversation(conversation_history: str) -> str:
     return f"""
 Summarise the conversation history below in a concise and clear way, focusing on key points and decisions made.
 
