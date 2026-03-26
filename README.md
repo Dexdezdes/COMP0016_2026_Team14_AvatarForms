@@ -98,6 +98,14 @@ You can also use workspace tasks:
 - `publish`
 - `watch`
 
+## How to Test
+In the outer AvatarFormsApp folder, do in terminal
+
+```powershell
+.\run-tests.ps1
+```
+Then html testing report will popup.
+
 ## Runtime
 
 When you start an interview flow in the app:
