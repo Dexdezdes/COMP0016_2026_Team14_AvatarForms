@@ -126,6 +126,3 @@ def match_mcq_option(answer: str, options: list) -> str:
 
     # No match found, return original answer
     return answer
-
-
-print("YES")
