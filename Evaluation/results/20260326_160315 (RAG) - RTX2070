@@ -1,0 +1,959 @@
+{
+    "testCases": [
+        {
+            "name": "RAG - MCQ direct match",
+            "input": "Question: {'text': 'Do you own a car?'}\nOptions:\n1. Yes\n2. No",
+            "actualOutput": "Yes",
+            "expectedOutput": "Yes",
+            "retrievalContext": [
+                "Interview context: Transport survey\nConversation history: Assistant: Do you own a car?\nUser: Yes"
+            ],
+            "completionTime": 2.806555000002845,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output fully addresses the question with no irrelevant statements; this is the maximum possible score so it cannot be higher.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.001239,
+                    "verboseLogs": "Statements:\n[\n    \"Yes\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Actual and Expected are identical ('Yes'), so the Actual preserves the Expected\u2019s meaning exactly with no contradictions or omissions given the provided Actual Output and Expected Output parameters.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0012875,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output: confirm the Actual conveys the same main answer and key claims as the Expected, allowing for paraphrasing or simplified wording.\",\n    \"Check for contradictions: flag any statements in the Actual that directly oppose or change the meaning of claims in the Expected.\",\n    \"Assess omissions and relevance: verify that all critical facts from the Expected are present in the Actual; minor omissions or simplifications are acceptable if they do not alter meaning.\",\n    \"Make a final determination: accept the Actual if it preserves the Expected\u2019s meaning without contradictions and retains key information; otherwise reject and list the specific discrepancies.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 13.320070699999633,
+            "evaluationCost": 0.0025265,
+            "order": 16
+        },
+        {
+            "name": "RAG - Short profession extraction",
+            "input": "Question: {'text': 'What is your job?'}",
+            "actualOutput": "I'm a teacher.",
+            "expectedOutput": "Teacher",
+            "retrievalContext": [
+                "Interview context: Employment\nConversation history: Assistant: What is your job?\nUser: I'm a teacher"
+            ],
+            "completionTime": 2.2698297999995702,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output was fully on-topic and directly addressed the question with no irrelevant statements; it cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.000997,
+                    "verboseLogs": "Statements:\n[\n    \"I am a teacher.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output ('I'm a teacher.') conveys the same core assertion as the Expected Output ('Teacher') via an acceptable paraphrase. There are no contradictions and no essential facts omitted, so the outputs match under the evaluation steps (identification of key assertion, contradiction check, omission assessment).",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0014545,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Identify key assertions from the Expected Output and check whether the Actual Output conveys the same assertions (allowing paraphrase or simpler wording).\",\n    \"Verify the Actual Output does not contain any statements that contradict the Expected Output; any direct contradiction indicates a mismatch.\",\n    \"Evaluate omissions and simplifications: accept minor or non-essential omissions that preserve the original meaning, but flag missing or altered essential facts as unacceptable.\",\n    \"Make a final judgment (Match / Partial Match / Mismatch) by weighing presence of core assertions, absence of contradictions, and whether any omissions materially change the expected meaning.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 14.111660700000357,
+            "evaluationCost": 0.0024515,
+            "order": 8
+        },
+        {
+            "name": "RAG - Extract simple language",
+            "input": "Question: {'text': 'What language do you speak?'}",
+            "actualOutput": "I speak English.",
+            "expectedOutput": "English",
+            "retrievalContext": [
+                "Interview context: Language survey\nConversation history: Assistant: What language do you speak?\nUser: English"
+            ],
+            "completionTime": 3.430780999999115,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response is fully relevant to the question with no irrelevant statements; it is already maximal and cannot be higher.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00127925,
+                    "verboseLogs": "Statements:\n[\n    \"I speak English.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output conveys the same core claim as the Expected Output: both indicate the English language. The phrasing differs (full sentence vs single word) but meaning and conclusion align, no contradictions or missing essential information, and the paraphrase is acceptable per the evaluation steps.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0010530000000000001,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Identify core claims and factual points in the Expected Output and verify the Actual Output includes the same core claims (allowing paraphrase).\",\n    \"Check that the Actual Output\u2019s meaning and conclusions align with the Expected Output \u2014 rewording, simplification, or minor restructuring are acceptable.\",\n    \"Flag any direct contradictions or newly introduced facts in the Actual Output that conflict with the Expected Output.\",\n    \"Assess omissions: allow minor or non-essential omissions, but mark the Actual Output as insufficient if any essential information or required conclusions from the Expected Output is missing.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 13.696292500000709,
+            "evaluationCost": 0.00233225,
+            "order": 18
+        },
+        {
+            "name": "RAG - MCQ options matching",
+            "input": "Question: {'text': 'How would you describe your sleep quality?'}\nOptions:\n1. Excellent\n2. Good\n3. Fair\n4. Poor",
+            "actualOutput": "Good",
+            "expectedOutput": "Good",
+            "retrievalContext": [
+                "Interview context: Health survey\nConversation history: Assistant: How would you describe your sleep quality?\nUser: Most nights I sleep pretty well, but sometimes I have trouble"
+            ],
+            "completionTime": 3.231112999998004,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output was fully relevant to the prompt and contained no irrelevant statements. It cannot be higher because 1.00 represents the maximum score; there were no extraneous or off-topic elements to deduct from relevance.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0014099999999999998,
+                    "verboseLogs": "Statements:\n[\n    \"Good\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Actual Output exactly matches Expected Output (both are 'Good'), so all essential points are present, there are no contradictions or unsupported additions, and paraphrase/simplification rules are satisfied.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0014299999999999998,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare key points: verify Actual Output contains each essential claim or fact from Expected Output (allowing for paraphrase), and mark missing essential points as failures.\",\n    \"Check for contradictions: flag any statement in Actual Output that directly opposes or negates information in Expected Output or the user\u2019s answer.\",\n    \"Allow paraphrase and simplification: accept rewording, shorter expressions, or minor omissions when the original meaning and intent from Expected Output are preserved.\",\n    \"Detect unsupported additions and errors: identify any information in Actual Output not present in Expected Output and mark as problematic if it is incorrect or changes the expected meaning.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 14.338331900002231,
+            "evaluationCost": 0.0028399999999999996,
+            "order": 15
+        },
+        {
+            "name": "RAG - MCQ option matching",
+            "input": "Question: {'text': 'How would you describe your sleep quality?'}\nOptions:\n1. Excellent\n2. Good\n3. Fair\n4. Poor",
+            "actualOutput": "Good",
+            "expectedOutput": "Good",
+            "retrievalContext": [
+                "Interview context: Health survey\nConversation history: Assistant: How would you describe your sleep quality?\nUser: Most nights I sleep pretty well, but sometimes I have trouble"
+            ],
+            "completionTime": 3.2198137000013958,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant content and directly matched the input question and options; it cannot be higher since 1.00 is the maximum possible.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0013839999999999998,
+                    "verboseLogs": "Statements:\n[\n    \"Good\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output communicates the same primary answer as the Expected Output: both are \"Good\". There are no contradictory statements or missing supporting details; any trivial whitespace difference does not change the meaning, so outputs are fully aligned.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00163225,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare the core answer: verify that the Actual Output communicates the same primary answer or conclusion as the Expected Output (paraphrasing allowed).\",\n    \"Check supporting details: confirm that relevant facts or reasoning from the Expected Output are present in the Actual Output; minor omissions or simplifications are acceptable if they do not change the intended answer.\",\n    \"Identify contradictions: mark the Actual Output as incorrect if it contains any statement that directly contradicts the Expected Output or reverses the conclusion.\",\n    \"Assess impact of differences: if differences are only rewording, simplification, or minor missing details that do not alter the meaning, consider the Actual Output acceptable; if critical details are altered or omitted in a way that changes the answer, consider it unacceptable.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 16.289468200000556,
+            "evaluationCost": 0.00301625,
+            "order": 3
+        },
+        {
+            "name": "RAG - Simple yes answer",
+            "input": "Question: {'text': 'Do you smoke?'}\nOptions:\n1. Yes\n2. No",
+            "actualOutput": "No",
+            "expectedOutput": "No",
+            "retrievalContext": [
+                "Interview context: Health survey\nConversation history: Assistant: Do you smoke?\nUser: No"
+            ],
+            "completionTime": 2.3194861999982095,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response is fully relevant to the question with no irrelevant statements; it directly addresses the prompt in a concise, on-topic way. Great job.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0012859999999999998,
+                    "verboseLogs": "Statements:\n[\n    \"No\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": \"\"\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output exactly matches the Expected Output (both are \"No\"). Per the evaluation steps, the core meaning is identical (Step 1), there are no contradictions (Step 2), no missing critical information (Step 3), and no added or unsupported content (Step 4).",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00170025,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Extract the key claims and intended answer from the Expected Output and confirm the Actual Output conveys the same meanings (paraphrases or simplifications allowed).\",\n    \"Mark any statements in the Actual Output that directly contradict or reverse the meaning of the Expected Output as errors.\",\n    \"Treat omissions of minor details as acceptable if the core meaning and conclusions remain intact; flag missing critical facts or conclusions as failures.\",\n    \"Check that the Actual Output does not introduce new, unsupported, or incorrect information beyond the Expected Output; any added details must be verified as accurate.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 16.119684500001313,
+            "evaluationCost": 0.0029862499999999998,
+            "order": 9
+        },
+        {
+            "name": "RAG - Extract number clearly",
+            "input": "Question: {'text': 'How many times a week do you exercise?'}",
+            "actualOutput": "About 3 times a week.",
+            "expectedOutput": "3 times a week",
+            "retrievalContext": [
+                "Interview context: Fitness\nConversation history: Assistant: How many times a week do you exercise?\nUser: About 3 times a week"
+            ],
+            "completionTime": 11.717823900002259,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output stayed fully on\u2011topic and directly addressed the question with no irrelevant statements; it can\u2019t be higher because 1.00 is the maximum. Nice and concise.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0014022499999999999,
+                    "verboseLogs": "Statements:\n[\n    \"About 3 times a week.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output conveys the same core claim as the Expected Output (frequency: 3 times a week). Adding the qualifier \u201cAbout\u201d is a minor, acceptable approximation and does not contradict or omit any central fact. No unsupported or conflicting information is introduced, so the response aligns with the evaluation steps.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0016082499999999999,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Identify the core claims and relevant facts in the Expected Output, then confirm the Actual Output conveys the same core claims (paraphrasing or equivalent wording allowed).\",\n    \"Check for contradictions: mark as failing if the Actual Output explicitly denies or reverses any central claim or fact present in the Expected Output.\",\n    \"Allow simplification or minor omissions: accept if non-essential details are missing or simplified, but flag if any omitted content is central to the Expected Output's meaning.\",\n    \"Verify additional content in the Actual Output is consistent with the Expected Output and does not introduce unsupported or conflicting facts; treat unsupported additions as errors.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 16.386803100002,
+            "evaluationCost": 0.0030104999999999997,
+            "order": 11
+        },
+        {
+            "name": "RAG - Handle preferences and ratings",
+            "input": "Question: {'text': 'Favorite movie genre'}",
+            "actualOutput": "My favorite movie genre is science fiction, especially those that focus on space exploration.",
+            "expectedOutput": "Science fiction, particularly space exploration themes",
+            "retrievalContext": [
+                "Interview context: Movie preference survey\nConversation history: Assistant: What's your favorite movie genre?\nUser: I really enjoy science fiction, especially ones about space exploration"
+            ],
+            "completionTime": 3.745343300000968,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant statements and directly addressed the input; it can't be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0015669999999999998,
+                    "verboseLogs": "Statements:\n[\n    \"My favorite movie genre is science fiction.\",\n    \"I especially like science fiction movies that focus on space exploration.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Match \u2014 The Actual Output conveys the same core claim as the Expected Output: a preference for science fiction, specifically space/space-exploration themes. It is a direct paraphrase with only minor wording differences (adds personal phrasing) and introduces no contradictions or missing essential supports.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00167775,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare main points: confirm Actual Output conveys the same core answer/claims as the Expected Output; treat paraphrasing or simplification as acceptable but flag any contradicted main claims.\",\n    \"Check supporting details: verify that key relevant facts or reasons from the Expected Output appear in the Actual Output; allow minor omissions that do not change the conclusion, but flag missing essential supports.\",\n    \"Assess factual consistency: ensure the Actual Output does not introduce factual errors or contradictions relative to the Expected Output; paraphrased facts count as matching if their meaning is preserved.\",\n    \"Make a final judgment (Match / Partial / Mismatch) based on the above: if Partial, list which main points or essential supports are missing or contradicted; if Match, note that only minor/acceptable edits were made.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 16.831134799998836,
+            "evaluationCost": 0.00324475,
+            "order": 6
+        },
+        {
+            "name": "RAG - Extract from conversation with follow-ups",
+            "input": "Question: {'text': 'What is your current job and how long have you had it?'}",
+            "actualOutput": "I work as a software engineer and have had the job for about three years.",
+            "expectedOutput": "I am a software engineer and I have been in this role for about three years.",
+            "retrievalContext": [
+                "Interview context: Employment history\nConversation history: Assistant: What is your current job?\nUser: I work as a software engineer\nAssistant: How long have you been in this role?\nUser: About three years now"
+            ],
+            "completionTime": 6.413140799999383,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output directly answers the question with no irrelevant content; the provided list of irrelevant statements is empty. It cannot be higher because 1.00 is already the maximum possible score. Nice and focused work.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0017612500000000002,
+                    "verboseLogs": "Statements:\n[\n    \"I work as a software engineer.\",\n    \"I have had the job for about three years.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Actual conveys the same core claims as Expected: both state the speaker is a software engineer and has held the role for about three years. Wording differs slightly (\"work as\" / \"am\" and \"have had the job\" / \"have been in this role\") but is equivalent, contains no contradictions, and includes all key information, so it is fully aligned.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00149275,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output: verify Actual conveys the same core claims and relevant information from Expected (paraphrasing and reordering allowed).\",\n    \"Check for contradictions: ensure Actual does not state anything that directly contradicts facts, conclusions, or the user\u2019s answer in Expected.\",\n    \"Assess completeness: accept minor omissions or simplifications, but mark as incomplete if key elements or required conclusions from Expected are missing.\",\n    \"Evaluate accuracy and relevance of details: confirm details in Actual are accurate and relevant to Expected; treat significant inaccuracies or irrelevant additions as errors.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 17.42747589999999,
+            "evaluationCost": 0.003254,
+            "order": 2
+        },
+        {
+            "name": "RAG - Extract simple location",
+            "input": "Question: {'text': 'Where did you go on holiday?'}",
+            "actualOutput": "I went to Italy.",
+            "expectedOutput": "Italy",
+            "retrievalContext": [
+                "Interview context: Travel\nConversation history: Assistant: Where did you go on holiday?\nUser: I went to Italy"
+            ],
+            "completionTime": 3.488491600000998,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response was fully on-topic and contained no irrelevant statements given the question \u201cWhere did you go on holiday?\u201d. It cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0011442499999999999,
+                    "verboseLogs": "Statements:\n[\n    \"I went to Italy.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output \"I went to Italy.\" conveys the same core content as the Expected Output \"Italy\" \u2014 there is no contradiction, no missing critical information, and the added phrase (\"I went to\") is extra but accurate and relevant.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0017062499999999999,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare the core claims and answers in the Actual Output to the Expected Output for semantic equivalence \u2014 allow paraphrasing, simplification, and minor reordering as long as meaning is preserved.\",\n    \"Scan the Actual Output for any statements that directly contradict facts or assertions in the Expected Output; any contradiction is a mismatch.\",\n    \"Identify omissions: flag missing information that is critical to the Expected Output\u2019s meaning; minor or nonessential omissions are acceptable.\",\n    \"Check for added content: ensure any new details in the Actual Output are accurate and relevant; treat introduced incorrect or misleading information as a failure to match.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 16.799106200000097,
+            "evaluationCost": 0.0028504999999999997,
+            "order": 17
+        },
+        {
+            "name": "RAG - Simple answer extraction",
+            "input": "Question: {'text': 'What is your full name?'}",
+            "actualOutput": "My full name is John Michael Smith.",
+            "expectedOutput": "John Michael Smith",
+            "retrievalContext": [
+                "Interview context: Job application\nConversation history: Assistant: What is your full name?\nUser: My name is John Michael Smith"
+            ],
+            "completionTime": 3.213664200000494,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant statements and directly addressed the question; this is the maximum possible score, so it cannot be higher\u2014nice and focused.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00138525,
+                    "verboseLogs": "Statements:\n[\n    \"My full name is John Michael Smith.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output conveys the same core answer as the Expected Output: both identify the name John Michael Smith. The added phrase \"My full name is\" is a harmless paraphrase/extra wording and does not contradict or omit any critical detail, so the outputs align.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00122375,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output by identifying whether the same core answer, conclusions, and key facts are present and aligned between them.\",\n    \"Allow paraphrasing, simplification, or minor omissions: treat synonymous wording, condensed explanations, or reordered points as acceptable if they preserve the original meaning and intent.\",\n    \"Flag contradictions and introduced inaccuracies: mark the Actual Output as incorrect when it directly contradicts the Expected Output or adds false information not supported by the Expected Output.\",\n    \"Evaluate omissions for impact: accept minor, non-essential omissions, but consider the output deficient if missing critical details that change the answer\u2019s correctness or user-relevant meaning.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 19.725984000000608,
+            "evaluationCost": 0.002609,
+            "order": 0
+        },
+        {
+            "name": "RAG - Clear hobby extraction",
+            "input": "Question: {'text': 'What are your hobbies?'}",
+            "actualOutput": "I enjoy reading books.",
+            "expectedOutput": "Reading books",
+            "retrievalContext": [
+                "Interview context: Personal profile\nConversation history: Assistant: What are your hobbies?\nUser: I enjoy reading books"
+            ],
+            "completionTime": 1.5446917000008398,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant statements and directly addressed the question; it cannot be higher because 1.00 is the maximum possible score. Great job\u2014fully relevant!",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00139125,
+                    "verboseLogs": "Statements:\n[\n    \"I enjoy reading books.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The actual output expresses the same essential claim as the expected output: that the speaker engages in/likes reading books. The full sentence (\u201cI enjoy reading books.\u201d) is a meaning-equivalent, adds a personal subject and verb but introduces no contradictions and preserves the required content.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0015517499999999997,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Identify the Expected Output\u2019s key claims and essential facts that the user\u2019s answer must convey.\",\n    \"Compare the Actual Output to the Expected Output: confirm each key claim is present or meaning-equivalent (paraphrase/simplification allowed).\",\n    \"Flag any direct contradictions between Actual Output and Expected Output or any missing essential facts; treat minor, non-critical omissions as acceptable.\",\n    \"Judge overall alignment: if all essential claims are preserved with no contradictions, mark as matching; otherwise record discrepancies and classify their severity.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 18.56317290000152,
+            "evaluationCost": 0.0029429999999999994,
+            "order": 13
+        },
+        {
+            "name": "RAG - Simple factual extraction",
+            "input": "Question: {'text': 'What city do you live in?'}",
+            "actualOutput": "I live in London.",
+            "expectedOutput": "London",
+            "retrievalContext": [
+                "Interview context: Basic info\nConversation history: Assistant: What city do you live in?\nUser: I live in London"
+            ],
+            "completionTime": 2.4009693000007246,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output was fully relevant to the question and contained no irrelevant statements. It can't be higher only because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0015842499999999997,
+                    "verboseLogs": "Statements:\n[\n    \"I live in London.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 0.7,
+                    "reason": "The Actual includes the expected content (London) and preserves the key meaning, so paraphrasing is acceptable. However it adds an unsupported first-person claim (\u201cI live in\u201d), introducing extraneous information not present in the Expected Output. There are no direct contradictions, but the added claim reduces fidelity to the expected output.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0019695,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output to confirm the Actual accurately reflects the user\u2019s answer and included relevant information; flag any direct contradictions.\",\n    \"Allow paraphrasing and simplification: check that the meaning and key points from the Expected Output are preserved in the Actual even if wording differs.\",\n    \"Assess omissions: accept minor, non-essential omissions but mark any missing information that changes the interpretation or omits critical facts.\",\n    \"Verify no added incorrect or extraneous content: ensure the Actual does not introduce new claims or details not supported by the Expected Output.\"\n] \n \nRubric:\nNone \n \nScore: 0.7"
+                }
+            ],
+            "runDuration": 19.434385600001406,
+            "evaluationCost": 0.0035537499999999996,
+            "order": 7
+        },
+        {
+            "name": "RAG - Simple no answer with extra words",
+            "input": "Question: {'text': 'Do you drink alcohol?'}\nOptions:\n1. Yes\n2. No",
+            "actualOutput": "No.",
+            "expectedOutput": "No",
+            "retrievalContext": [
+                "Interview context: Health survey\nConversation history: Assistant: Do you drink alcohol?\nUser: No, not at all"
+            ],
+            "completionTime": 1.9018419000021822,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response contained no irrelevant statements and stayed focused on the question. It isn\u2019t higher likely due to other evaluation criteria (for example extreme brevity or not explicitly selecting an option), but it receives the current score because it remained on-topic and didn\u2019t introduce unrelated content.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00219875,
+                    "verboseLogs": "Statements:\n[\n    \"No.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output and Expected Output both convey the identical core claim: the single-word negative response \"No\". The only difference is a trailing period in the Actual Output, which is a minor punctuation/formatting variation that does not change meaning. No contradictions or missing critical details, so the outputs align fully.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0014689999999999998,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Extract the core claims and essential facts from the Expected Output to use as the reference points for comparison.\",\n    \"Compare the Actual Output to those core claims: confirm each essential fact is present or accurately paraphrased; allow simplification or minor omissions that do not change meaning.\",\n    \"Check for contradictions: flag any statement in the Actual Output that directly opposes or undermines the Expected Output as incorrect.\",\n    \"Judge overall sufficiency and relevance: ensure the Actual Output preserves the user\u2019s intended answer and important details; accept minor non-critical omissions but mark missing or altered critical information as a failure.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 19.226056899999094,
+            "evaluationCost": 0.00366775,
+            "order": 10
+        },
+        {
+            "name": "RAG - Don't hallucinate information",
+            "input": "Question: {'text': 'What is your exact age?'}",
+            "actualOutput": "I'm in my thirties.",
+            "expectedOutput": "I am in my thirties",
+            "retrievalContext": [
+                "Interview context: Personal information\nConversation history: Assistant: What is your age?\nUser: I'm in my thirties"
+            ],
+            "completionTime": 3.1185089999999036,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant statements and stayed fully on-topic; it cannot be higher since 1.00 is the maximum\u2014well done.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0018105,
+                    "verboseLogs": "Statements:\n[\n    \"I am in my thirties.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output conveys the exact same core claim as the Expected Output: both state the speaker is in their thirties. The only differences are a contraction (\"I'm\" vs \"I am\") and a terminal period\u2014minor stylistic/formatting variations that do not change meaning. No essential details are missing and there are no contradictions.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0015369999999999997,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Identify the core claims or answers in the Expected Output and verify the Actual Output expresses the same core claims (paraphrasing, simplification, or minor reordering is acceptable).\",\n    \"Check supporting details: confirm the Actual Output includes relevant supporting information from the Expected Output; allow minor, nonessential omissions but flag missing essential facts or steps.\",\n    \"Detect contradictions: ensure nothing in the Actual Output directly contradicts the Expected Output or the user\u2019s stated answer; any contradiction is a failure point.\",\n    \"Assess overall fidelity: verify the Actual Output preserves the original meaning and intent; if paraphrasing or simplification alters meaning or introduces errors, mark as not matching.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 19.87257839999802,
+            "evaluationCost": 0.0033474999999999998,
+            "order": 5
+        },
+        {
+            "name": "RAG - Handle multiple pieces of information",
+            "input": "Question: {'text': 'Dental visit frequency and last visit date'}",
+            "actualOutput": "I try to visit the dentist every six months, and my last visit was about three months ago.",
+            "expectedOutput": "I visit the dentist every six months and my last visit was about three months ago.",
+            "retrievalContext": [
+                "Interview context: Dental intake\nConversation history: Assistant: How often do you visit the dentist?\nUser: I try to go every six months\nAssistant: When was your last visit?\nUser: About three months ago"
+            ],
+            "completionTime": 4.21089579999898,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output directly addresses dental visit frequency and last visit date with no irrelevant statements; it cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0013597499999999998,
+                    "verboseLogs": "Statements:\n[\n    \"I try to visit the dentist every six months.\",\n    \"My last visit was about three months ago.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output preserves the Expected Output\u2019s core facts: both assert visits every six months and that the last visit was about three months ago. The only difference is minor hedging ('I try to') which does not contradict or introduce unsupported information. Therefore it satisfies the fidelity checks (no contradictions, acceptable paraphrase).",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0020315,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Identify the Expected Output's key claims and facts and verify the Actual Output includes those same core points (paraphrasing, concise rephrasing, or minor non-critical omissions are acceptable).\",\n    \"Check for direct contradictions: flag any statements in the Actual Output that explicitly oppose or negate facts presented in the Expected Output.\",\n    \"Evaluate added or altered information in the Actual Output: ensure any extra details are consistent with the Expected Output and mark as deviation if they are unsupported or misleading.\",\n    \"Make a final fidelity judgement: if the Actual preserves all critical facts, contains no contradictions, and only uses acceptable paraphrase/simplification, mark Acceptable; otherwise mark Unacceptable.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 20.09683280000172,
+            "evaluationCost": 0.0033912499999999997,
+            "order": 4
+        },
+        {
+            "name": "RAG - Extract pet ownership",
+            "input": "Question: {'text': 'Do you have pets?'}\nOptions:\n1. Yes\n2. No",
+            "actualOutput": "Yes.",
+            "expectedOutput": "Yes",
+            "retrievalContext": [
+                "Interview context: Lifestyle\nConversation history: Assistant: Do you have pets?\nUser: Yes, I have a dog"
+            ],
+            "completionTime": 1.8062862000006135,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response directly and succinctly answers the question with no irrelevant content; it is the maximum possible score so it cannot be higher.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0013747499999999999,
+                    "verboseLogs": "Statements:\n[\n    \"Yes.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs convey the identical affirmative response \u201cYes.\u201d The only differences are punctuation/whitespace (Actual includes a period; Expected has a trailing space). There is no contradiction or missing content, so the Actual fully matches the Expected.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0014775,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output: confirm the Actual communicates the same answer and relevant facts as the Expected, allowing for paraphrasing and simplification but not altered conclusions.\",\n    \"Check for contradictions: flag the Actual if it directly contradicts any statement or conclusion in the Expected Output or the user\u2019s original answer.\",\n    \"Assess omissions: accept minor or non-essential omissions that do not change the answer; mark as unacceptable if critical facts, required steps, or core conclusions from the Expected are missing.\",\n    \"Evaluate overall fidelity: determine whether the Actual preserves the intent and meaning of the Expected (pass) or whether paraphrase/simplification changed the answer enough to fail (fail).\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 24.258906200000638,
+            "evaluationCost": 0.0028522499999999998,
+            "order": 19
+        },
+        {
+            "name": "RAG - Extract simple education",
+            "input": "Question: {'text': 'What is your highest qualification?'}",
+            "actualOutput": "I have a bachelor's degree.",
+            "expectedOutput": "Bachelor's degree",
+            "retrievalContext": [
+                "Interview context: Education\nConversation history: Assistant: What is your highest qualification?\nUser: I have a bachelor's degree"
+            ],
+            "completionTime": 4.25766609999846,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the assistant\u2019s output contained no irrelevant statements and directly addressed the question; it can\u2019t be higher because 1.00 is the maximum \u2014 well done and fully on-topic.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00114225,
+                    "verboseLogs": "Statements:\n[\n    \"I have a bachelor's degree.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output conveys the same essential fact as the Expected Output (possession of a bachelor\u2019s degree). The wording is a harmless paraphrase (\u201cI have a bachelor\u2019s degree\u201d vs. \u201cBachelor\u2019s degree\u201d), contains no contradictions, omits no essential element, and adds only a non\u2011problematic personal phrasing, so it fully matches.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0014169999999999999,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Identify the essential facts/claims in the Expected Output and check that the Actual Output conveys those same essentials \u2014 allow paraphrasing, simplification, or minor reordering but require semantic equivalence for core elements.\",\n    \"Verify there are no direct contradictions: any statement in the Actual Output that conflicts with the Expected Output should be marked as incorrect.\",\n    \"Evaluate omissions by classifying each missing element as essential or non\u2011essential; minor or non\u2011essential omissions are acceptable, but omission of essential elements constitutes a failure to match.\",\n    \"Check for added content in the Actual Output that was not in the Expected Output; ensure any additions are relevant and supported by the Expected Output (unsupported or misleading additions reduce the match quality).\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 12.29696530000001,
+            "evaluationCost": 0.00255925,
+            "order": 21
+        },
+        {
+            "name": "RAG - Extract from verbose answer",
+            "input": "Question: {'text': 'Do you have any allergies?'}",
+            "actualOutput": "I have an allergy to penicillin and am allergic to cats.",
+            "expectedOutput": "I am allergic to penicillin and cats.",
+            "retrievalContext": [
+                "Interview context: Medical history\nConversation history: Assistant: Do you have any allergies?\nUser: Well, let me think. I remember when I was a kid, I had a bad reaction to penicillin. Also, I'm pretty sure I'm allergic to cats because I always sneeze around them."
+            ],
+            "completionTime": 3.090230600002542,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response directly addressed the question with no irrelevant statements. It cannot be higher because 1.00 is the maximum score, and the output contained no extraneous content.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0014282499999999998,
+                    "verboseLogs": "Statements:\n[\n    \"I have an allergy to penicillin.\",\n    \"I am allergic to cats.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output conveys the same core claims as the Expected Output: it states an allergy to penicillin and to cats. Wording differs slightly but meaning is preserved, there are no contradictions or omissions of essential details, so it fully aligns with the Expected Output.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00186025,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare core claims: verify the Actual Output conveys the same main answer and relevant facts as the Expected Output; paraphrasing or simplification is acceptable if the original meaning is preserved.\",\n    \"Check for contradictions: flag as incorrect if the Actual Output contains any statement that directly contradicts the Expected Output or the user\u2019s answer.\",\n    \"Evaluate omissions: allow minor or incidental omissions, but mark as incomplete if omitted content removes essential details or changes the conclusion of the Expected Output.\",\n    \"Assess overall fidelity: accept if the Actual Output preserves intent, critical facts, and contains no contradictions; otherwise classify according to severity of factual errors or missing essential content.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 28.13320979999844,
+            "evaluationCost": 0.0032884999999999998,
+            "order": 1
+        },
+        {
+            "name": "RAG - Extract clear binary preference",
+            "input": "Question: {'text': 'Do you prefer mornings or evenings?'}",
+            "actualOutput": "Mornings.",
+            "expectedOutput": "Mornings",
+            "retrievalContext": [
+                "Interview context: Preference survey\nConversation history: Assistant: Do you prefer mornings or evenings?\nUser: Mornings"
+            ],
+            "completionTime": 3.2555651999973634,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response directly addressed the question with no irrelevant content; the list of irrelevant statements was empty. It cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00137975,
+                    "verboseLogs": "Statements:\n[\n    \"Mornings.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output contains the identical core content (\u201cMornings\u201d) with only a minor punctuation difference (a period in the Actual vs a trailing space in the Expected). There are no contradictions, no missing critical content, and the change does not alter meaning.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0016164999999999999,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Verify that each core claim or fact in the Expected Output is present in the Actual Output in substance \u2014 allow paraphrasing or simplified wording but require equivalent meaning.\",\n    \"Identify direct contradictions by checking whether the Actual Output asserts any facts, conclusions, or answers that conflict with the Expected Output.\",\n    \"Evaluate omissions and additions: accept minor or nonessential omissions and concise summarization, but mark as incorrect any missing elements that are critical to the Expected Output or any added information that changes the outcome.\",\n    \"Confirm relevance and clarity: ensure the Actual Output focuses on the same relevant points as the Expected Output and that rewording/simplification does not introduce ambiguity or alter the original intent.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 15.32921510000233,
+            "evaluationCost": 0.0029962499999999998,
+            "order": 24
+        },
+        {
+            "name": "RAG - Extract working status",
+            "input": "Question: {'text': 'Are you currently employed?'}\nOptions:\n1. Yes\n2. No",
+            "actualOutput": "Yes.",
+            "expectedOutput": "Yes",
+            "retrievalContext": [
+                "Interview context: Employment\nConversation history: Assistant: Are you currently employed?\nUser: Yes, I am employed full-time"
+            ],
+            "completionTime": 1.921637900002679,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because there are no irrelevant statements and the output directly addresses the input question with the provided options \u2014 concise and on point.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0019527499999999996,
+                    "verboseLogs": "Statements:\n[\n    \"Yes.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output preserves the essential content (\u201cYes\u201d) from the Expected Output; there are no contradictions or missing facts. The only difference is a minor punctuation change (Actual adds a period while Expected has a trailing space), which is a noncritical formatting variance, so the output aligns with the expected result.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00149125,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output: verify that essential facts, conclusions, and the user\u2019s answer are preserved (paraphrasing, reordering, or simplification allowed).\",\n    \"Check for contradictions: flag any statement in the Actual Output that directly conflicts with the Expected Output as incorrect.\",\n    \"Assess omissions: classify missing information as minor (acceptable: examples, extra detail, nonessential phrasing) or critical (unacceptable if it changes meaning or removes key facts).\",\n    \"Verify relevance and unsupported additions: confirm the Actual Output does not introduce new claims unsupported by the Expected Output; any unsupported or misleading information should be marked as errors.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 18.67554889999883,
+            "evaluationCost": 0.0034439999999999996,
+            "order": 22
+        },
+        {
+            "name": "RAG - Extract simple rating to MCQ",
+            "input": "Question: {'text': 'How was the service?'}\nOptions:\n1. Excellent\n2. Good\n3. Fair\n4. Poor",
+            "actualOutput": "Good",
+            "expectedOutput": "Good",
+            "retrievalContext": [
+                "Interview context: Service feedback\nConversation history: Assistant: How was the service?\nUser: It was good"
+            ],
+            "completionTime": 1.9116142000020773,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contains no irrelevant statements and directly addresses the input by presenting the four response options. It cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0022265,
+                    "verboseLogs": "Statements:\n[\n    \"Good\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Actual and Expected outputs are identical ('Good'), so all core claims are present with no contradictions or omissions. No factual specifics differ, and the response fully satisfies the evaluation steps.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0015934999999999999,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Identify the Expected Output\u2019s core claims and required details, then check whether the Actual Output includes each core claim (allowing paraphrase, simplification, or rewording).\",\n    \"Compare meanings: ensure the Actual Output does not contradict the Expected Output or change the intended conclusions; any opposite or materially altered claim is a contradiction.\",\n    \"Judge omissions: allow minor, nonessential omissions that don\u2019t alter the overall answer; if any critical claim or required detail from the Expected Output is missing, mark as incomplete.\",\n    \"Check factual specifics (numbers, dates, names, technical facts) in the Actual Output against the Expected Output; unapproved discrepancies in these key facts are treated as inaccuracies.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 20.67954059999829,
+            "evaluationCost": 0.00382,
+            "order": 23
+        },
+        {
+            "name": "RAG - Extract duration",
+            "input": "Question: {'text': 'How long have you worked here?'}",
+            "actualOutput": "I've been here for 2 years.",
+            "expectedOutput": "2 years",
+            "retrievalContext": [
+                "Interview context: Work experience\nConversation history: Assistant: How long have you worked here?\nUser: I've been here for 2 years"
+            ],
+            "completionTime": 4.117823600001429,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response was fully relevant to the question with no irrelevant statements; it cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00113375,
+                    "verboseLogs": "Statements:\n[\n    \"I've been here for 2 years.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs convey the same primary answer: a duration of \"2 years.\" The Actual Output is a paraphrase (\"I've been here for 2 years.\") and includes the same factual detail with no contradictions or added incorrect information. Differences are minor wording only and do not change meaning or accuracy.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00212225,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare main claims: confirm the Actual Output conveys the same primary answers or conclusions as the Expected Output (semantic equivalence), allowing paraphrase.\",\n    \"Check supporting details: verify relevant information present in the Expected Output appears in the Actual Output; minor omissions or simplifications are acceptable if they do not remove critical points.\",\n    \"Detect contradictions or errors: flag if the Actual Output directly contradicts the Expected Output or introduces incorrect facts not supported by the Expected Output.\",\n    \"Evaluate impact of differences: if differences exist, determine whether they change the user\u2019s intended answer or accuracy; mark as mismatch if the meaning or correctness is altered.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 101.07091989999753,
+            "evaluationCost": 0.003256,
+            "order": 12
+        },
+        {
+            "name": "RAG - Extract food preference",
+            "input": "Question: {'text': 'What is your favorite food?'}",
+            "actualOutput": "My favorite food is pizza.",
+            "expectedOutput": "Pizza",
+            "retrievalContext": [
+                "Interview context: Food survey\nConversation history: Assistant: What is your favorite food?\nUser: Pizza"
+            ],
+            "completionTime": 3.105275400001119,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant statements and fully addressed the input; it cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0012542500000000002,
+                    "verboseLogs": "Statements:\n[\n    \"My favorite food is pizza.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output conveys the same core claim as the Expected Output: both identify pizza as the favorite food. The response is a direct, acceptable paraphrase with no omissions, contradictions, or loss of intent, preserving relevance and clarity per the evaluation steps.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0014774999999999999,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Compare core claims: verify the Actual Output communicates the same main assertions and conclusions as the Expected Output, allowing paraphrasing or simplification but not changes in meaning.\",\n    \"Check for omissions: accept minor, non-essential omissions that do not alter the user\u2019s intended answer; flag missing essential facts or steps that change the conclusion.\",\n    \"Detect contradictions and errors: ensure no statements in the Actual Output directly contradict the Expected Output or introduce factual errors that undermine the answer.\",\n    \"Assess relevance and clarity: confirm the Actual Output includes the Expected Output\u2019s relevant supporting details and preserves intent and usability; if meaning is preserved and no critical info is lost, mark as matching.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 103.80491460000121,
+            "evaluationCost": 0.00273175,
+            "order": 14
+        },
+        {
+            "name": "RAG - Extract specific pet",
+            "input": "Question: {'text': 'What pet do you have?'}",
+            "actualOutput": "I have a dog.",
+            "expectedOutput": "Dog",
+            "retrievalContext": [
+                "Interview context: Lifestyle\nConversation history: Assistant: What pet do you have?\nUser: I have a dog"
+            ],
+            "completionTime": 2.709488500000589,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output directly addressed the input and contained no irrelevant statements; it cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00125175,
+                    "verboseLogs": "Statements:\n[\n    \"I have a dog.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Faithfulness [GEval]",
+                    "threshold": 0.5,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output conveys the same core concept as the Expected Output by stating \"I have a dog.\" It preserves the main meaning (the presence of a dog); the added possession detail is a harmless, non-contradictory elaboration allowed by the rules, and no incorrect information was introduced.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0015977499999999998,
+                    "verboseLogs": "Criteria:\nCheck that the output reflects the user\u2019s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions. \n \nEvaluation Steps:\n[\n    \"Extract the core claims and relevant facts from the Expected Output and verify the Actual Output contains equivalent claims (paraphrasing or reordering is acceptable).\",\n    \"Check for direct contradictions: mark as a mismatch if the Actual Output asserts anything that opposes or negates the Expected Output\u2019s core claims.\",\n    \"Allow simplification or minor omissions: accept the Actual Output if it preserves the main meaning and intent of the Expected Output despite condensed wording or missing minor details.\",\n    \"Flag additions that are not in the Expected Output when they change meaning or introduce incorrect information; minor harmless elaborations are acceptable.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 101.4923237999974,
+            "evaluationCost": 0.0028494999999999996,
+            "order": 20
+        }
+    ],
+    "conversationalTestCases": [],
+    "metricsScores": [],
+    "prompts": [],
+    "runDuration": 0.0,
+    "evaluationCost": 0.07582225
+}

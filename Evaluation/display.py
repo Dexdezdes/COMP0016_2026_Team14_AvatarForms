@@ -153,6 +153,7 @@ def display_deepeval_results(
 # Example usage:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("path", type=str, help="Path to the DeepEval results JSON file")
+    parser.add_argument("path", type=str, help="Path  tothe DeepEval results JSON file")
+    parser.add_argument("--save", type=str, default=None, help="Optional path to save the figure (e.g., 'results.png')")
     args = parser.parse_args()
-    results = display_deepeval_results(json_path=args.path, save_path=None)
+    results = display_deepeval_results(json_path=args.path, save_path=args.save)

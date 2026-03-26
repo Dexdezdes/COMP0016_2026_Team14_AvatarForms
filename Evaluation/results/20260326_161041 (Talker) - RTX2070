@@ -1,0 +1,959 @@
+{
+    "testCases": [
+        {
+            "name": "Talker - Clarification 2",
+            "input": "Interview context: Lifestyle survey\nConversation history: User: Maybe sometimes\nQuestion: Do you eat healthy regularly?",
+            "actualOutput": "Do you try to eat healthy most of the time?",
+            "expectedOutput": "Would you say you eat healthy food regularly, occasionally, or rarely?",
+            "retrievalContext": [
+                "Lifestyle survey"
+            ],
+            "completionTime": 0.495963400000619,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the reply directly addressed the survey question with no irrelevant content; there was nothing extraneous to remove so the score cannot be higher. Nice and on-topic!",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00183325,
+                    "verboseLogs": "Statements:\n[\n    \"Do you try to eat healthy most of the time?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 0.7,
+                    "reason": "The Actual maintains the core intent\u2014inquiring about how often someone eats healthily\u2014and matches the expected audience and tone. However it frames the question as a binary/yes-no style prompt (\u201cmost of the time\u201d) rather than offering the three frequency categories (regularly, occasionally, rarely), reducing granularity and deviating from the expected format. Overall acceptable but not fully aligned with the expected response structure.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0016342499999999999,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output for overall understandability: confirm the Actual conveys the same core intent and meaning even if phrased differently.\",\n    \"Check contextual appropriateness: ensure the Actual matches the expected audience, tone, and complexity for the given context.\",\n    \"Assess format and structure: verify the Actual loosely follows the Expected format and required elements; accept minor deviations in phrasing, order, or tone.\",\n    \"Decide acceptability by weighing intent alignment and appropriateness against any differences; flag as unacceptable only if meaning, context, or essential format elements are not preserved.\"\n] \n \nRubric:\nNone \n \nScore: 0.7"
+                }
+            ],
+            "runDuration": 18.071989800002484,
+            "evaluationCost": 0.0034675,
+            "order": 15
+        },
+        {
+            "name": "Talker - Simple open-ended question 5",
+            "input": "Interview context: Fitness survey\nConversation history: \nQuestion: How often do you exercise?",
+            "actualOutput": "How often do you exercise?",
+            "expectedOutput": "How often do you exercise?",
+            "retrievalContext": [
+                "Fitness survey"
+            ],
+            "completionTime": 0.3850724000003538,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response stayed fully on-topic for the fitness survey question about exercise frequency and contained no irrelevant statements. Nice work.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0018827499999999999,
+                    "verboseLogs": "Statements:\n[\n    \"How often do you exercise?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Exact match: the Actual and Expected outputs are identical in wording and punctuation, so intent, clarity, context, and format are fully preserved \u2014 acceptable (pass).",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00117825,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output for overall intent and clarity: confirm both convey the same question/meaning and are generally understandable.\",\n    \"Check contextual appropriateness: verify the Actual fits the expected context and purpose; accept minor tone or phrasing differences that do not alter intent.\",\n    \"Evaluate format and structure: ensure the Actual loosely follows the Expected format (order, required fields, or question type); allow small structural or wording changes.\",\n    \"Make a pass/fail judgment: mark as acceptable if intent and usability are preserved despite minor deviations; mark as a mismatch if key information, intent, or essential format is missing or significantly altered.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 19.37924220000059,
+            "evaluationCost": 0.003061,
+            "order": 8
+        },
+        {
+            "name": "Talker - MCQ question 2",
+            "input": "Interview context: Food preference survey\nConversation history: \nQuestion: What is your preferred meal time?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Breakfast\n  2. Lunch\n  3. Dinner",
+            "actualOutput": "What time of day do you usually prefer for your meals? Would you say breakfast, lunch, or dinner?",
+            "expectedOutput": "What is your preferred meal time? Would you say breakfast, lunch, or dinner?",
+            "retrievalContext": [
+                "Food preference survey"
+            ],
+            "completionTime": 0.758033099999011,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output was fully relevant to the survey question and no irrelevant statements were identified. It cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0017204999999999998,
+                    "verboseLogs": "Statements:\n[\n    \"What time of day do you usually prefer for your meals?\",\n    \"Would you say breakfast, lunch, or dinner?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 0.9,
+                    "reason": "Both outputs convey the same main intent\u2014asking the respondent\u2019s preferred meal time\u2014and both include the identical follow-up \u201cWould you say breakfast, lunch, or dinner?\u201d. The Actual is slightly more wordy (\u201cWhat time of day do you usually prefer for your meals?\u201d vs \u201cWhat is your preferred meal time?\u201d) but preserves meaning and clarity, so differences are minor phrasing only.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0018097499999999997,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare overall intent: confirm the Actual Output conveys the same main intent as the Expected Output; if the core meaning is preserved, treat as acceptable.\",\n    \"Check essential elements: verify the Actual Output contains the necessary components and structure present in the Expected Output; minor rephrasing or tone shifts are allowed.\",\n    \"Assess appropriateness and clarity: ensure the Actual Output is understandable, context-appropriate, and does not introduce misleading or contradictory information compared to the Expected Output.\",\n    \"Classify result: if intent and essential elements match -> Accept; if minor omissions or phrasing differences only -> Accept with note; if key elements are missing or meaning changed -> Reject; if ambiguous -> Request revision.\"\n] \n \nRubric:\nNone \n \nScore: 0.9"
+                }
+            ],
+            "runDuration": 19.415029899999354,
+            "evaluationCost": 0.0035302499999999995,
+            "order": 9
+        },
+        {
+            "name": "Talker - Simple open-ended question 2",
+            "input": "Interview context: Sleep quality survey\nConversation history: \nQuestion: How did you sleep last night?",
+            "actualOutput": "How did you sleep last night?",
+            "expectedOutput": "How did you sleep last night? Could you describe the quality of your sleep?",
+            "retrievalContext": [
+                "Sleep quality survey"
+            ],
+            "completionTime": 0.4306741000000329,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output directly addressed the sleep-question prompt with no irrelevant statements; it cannot be higher since 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0015162499999999998,
+                    "verboseLogs": "Statements:\n[\n    \"How did you sleep last night?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 0.7,
+                    "reason": "Partial Match \u2014 The Actual Output contains the exact opening question from the Expected Output (\u201cHow did you sleep last night?\u201d), so the core intent to ask about sleep is preserved. However it omits the required follow-up probe present in the Expected Output (\u201cCould you describe the quality of your sleep?\u201d), so a key element and the fuller request for sleep quality detail is missing. Format/order is otherwise consistent but the missing second sentence constitutes the primary discrepancy.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00184075,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output to confirm the question\u2019s core intent and meaning match; accept minor wording or phrasing differences if intent remains clear.\",\n    \"Assess whether the Actual Output is appropriate for the context and audience relative to the Expected Output; flag it if key context or required elements are missing or off-topic.\",\n    \"Verify that the Actual Output loosely follows the Expected Output\u2019s format and structure (order, required parts, and constraints); allow small structural or tone variations that do not change intent.\",\n    \"Assign a conclusion (Match / Partial Match / Mismatch) based on the above checks and list any specific discrepancies (missing information, altered intent, or format violations) between Actual and Expected Output.\"\n] \n \nRubric:\nNone \n \nScore: 0.7"
+                }
+            ],
+            "runDuration": 20.205447500000446,
+            "evaluationCost": 0.0033569999999999997,
+            "order": 1
+        },
+        {
+            "name": "Talker - Simple repetition 1",
+            "input": "Interview context: General survey\nConversation history: \nQuestion: What is your favourite hobby?",
+            "actualOutput": "What's your favourite hobby?",
+            "expectedOutput": "What is your favourite hobby?",
+            "retrievalContext": [
+                "General survey"
+            ],
+            "completionTime": 0.37746100000003935,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response was fully on-topic and contained no irrelevant statements (the list of irrelevant items is empty). It cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00178175,
+                    "verboseLogs": "Statements:\n[\n    \"The text asks what the reader's favourite hobby is.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output conveys the exact same primary question as the Expected Output; the only difference is a contraction ('What's' vs 'What is'), which is a minor stylistic/informality change. Both are clear, appropriate, and include the required question form and punctuation, so the output is acceptable with no missing elements.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0018147499999999997,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare core intent: confirm the Actual Output communicates the same primary question or goal as the Expected Output; treat faithful paraphrases as equivalent and flag instances where the intent differs.\",\n    \"Check clarity and appropriateness: evaluate whether the Actual Output is generally understandable and suitable for the context compared to the Expected Output; note any introduced ambiguity or inappropriate content.\",\n    \"Assess format and required elements: verify the Actual Output roughly follows the Expected Output's format and includes essential components (order, labels, or sections); allow minor differences in phrasing, tone, or structure.\",\n    \"Decide acceptability and report specifics: accept the Actual Output if intent matches and format is reasonably followed despite minor variations; otherwise reject and list specific deviations (missing elements, changed intent, or significant confusion).\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 19.073990500000946,
+            "evaluationCost": 0.0035965,
+            "order": 17
+        },
+        {
+            "name": "Talker - MCQ question 4",
+            "input": "Interview context: Tech usage survey\nConversation history: \nQuestion: Which device do you use most often?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Phone\n  2. Laptop\n  3. Tablet",
+            "actualOutput": "So, which device do you use most often? Would you say phone, laptop, or tablet?",
+            "expectedOutput": "Which device do you use most often? Would you say phone, laptop, or tablet?",
+            "retrievalContext": [
+                "Tech usage survey"
+            ],
+            "completionTime": 0.7196623000018008,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response contained no irrelevant statements and directly addressed the question; it can't be higher since 1.00 is the maximum. Great job keeping the answer focused and on-topic!",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0019132499999999998,
+                    "verboseLogs": "Statements:\n[\n    \"The speaker asks which device the listener uses most often.\",\n    \"The speaker asks whether it is a phone, laptop, or tablet.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output conveys the same intent and core information as the Expected Output; the only difference is the leading filler word \u201cSo,\u201d. It is equally understandable, appropriate for the context, and preserves the same sentence order and options (phone, laptop, tablet), so the deviation is minor and acceptable.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00138675,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare overall meaning: Determine whether the Actual Output conveys the same intent and core information as the Expected Output despite minor wording differences.\",\n    \"Check understandability and appropriateness: Verify the Actual is generally understandable and reasonably appropriate for the context relative to the Expected Output; accept slight tone or phrasing shifts.\",\n    \"Assess format and structure similarities: Confirm the Actual loosely follows the Expected format/structure (order, required sections, or labels); minor reordering or paraphrasing is acceptable.\",\n    \"Decide acceptability: If intent and key elements match and deviations are minor, mark as acceptable; if key meaning, requirements, or important details are missing or altered, mark as unacceptable.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 20.050706599999103,
+            "evaluationCost": 0.0033,
+            "order": 11
+        },
+        {
+            "name": "Talker - MCQ minimal phrasing 1",
+            "input": "Interview context: Shopping survey\nConversation history: \nQuestion: How often do you shop online?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Daily\n  2. Weekly\n  3. Monthly\n  4. Rarely",
+            "actualOutput": "How often do you shop online? Would you say daily, weekly, monthly, or rarely?",
+            "expectedOutput": "How often do you shop online? Would you say daily, weekly, monthly, or rarely?",
+            "retrievalContext": [
+                "Shopping survey"
+            ],
+            "completionTime": 0.6951478999981191,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output was fully relevant to the shopping-survey question and contained no irrelevant statements; it can\u2019t be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002028,
+                    "verboseLogs": "Statements:\n[\n    \"How often do you shop online?\",\n    \"Would you say daily, weekly, monthly, or rarely?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "AO exactly matches EO: same core question, keywords, and response options (daily, weekly, monthly, rarely). It preserves required content and structure, is clear and appropriate per steps 1\u20133, and therefore is acceptable per step 4.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00141575,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output (AO) and Expected Output (EO) for shared intent: confirm AO conveys the same core question or purpose as EO (keywords, entities, and requested action match).\",\n    \"Check for required content and structure: verify AO includes the essential elements and follows the expected format; treat minor rephrasing, reordered clauses, or synonymous wording as acceptable.\",\n    \"Assess clarity and appropriateness: ensure AO is understandable and suitable for the context/audience; accept small tone/style differences but flag anything that makes the question confusing or inappropriate.\",\n    \"Determine acceptability: if AO preserves intent and key details with only minor deviations, mark as acceptable; if AO omits/changes critical information or significantly alters meaning/format, mark as failing and note what must be corrected.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 19.793575699997746,
+            "evaluationCost": 0.0034437499999999998,
+            "order": 19
+        },
+        {
+            "name": "Talker - Simple open-ended question 4",
+            "input": "Interview context: University application\nConversation history: \nQuestion: Why did you choose this course?",
+            "actualOutput": "What drew you to this course?",
+            "expectedOutput": "Why did you choose this course?",
+            "retrievalContext": [
+                "University application"
+            ],
+            "completionTime": 0.4394196000030206,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output was fully focused on answering why the course was chosen, contained no irrelevant statements, and directly addressed the interview question; it cannot be higher because 1.00 represents a perfect relevancy score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0017157499999999998,
+                    "verboseLogs": "Statements:\n[\n    \"What drew you to this course?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs share the same intent (ask for the respondent\u2019s motivation for taking the course) as required by Step 1. The Actual is clear and appropriate (Step 2) and matches the Expected\u2019s question format and elements\u2014only a minor paraphrase difference in wording (\u201cWhat drew you to\u2026\u201d vs \u201cWhy did you choose\u2026\u201d), so format/structure alignment is satisfied (Step 3). Judgment (Step 4): accept; no substantive deviations beyond synonymous phrasing.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00174275,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output for shared intent: confirm the Actual conveys the same question/goal as the Expected, allowing paraphrase or synonymous wording.\",\n    \"Evaluate clarity and appropriateness: check that the Actual is understandable and fits the context; mark as problematic if it is ambiguous, incomplete, or off-topic compared to the Expected.\",\n    \"Assess format and structure alignment: verify the Actual loosely follows the Expected format (question type, required elements, order) while accepting minor differences in phrasing, tone, or structure.\",\n    \"Make a pass/fail judgment and document deviations: accept if intent and clarity match with only minor format/wording differences; otherwise fail and list specific mismatches (missing elements, wrong context, or unclear phrasing).\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 21.71202120000089,
+            "evaluationCost": 0.0034584999999999998,
+            "order": 7
+        },
+        {
+            "name": "Talker - MCQ question 4",
+            "input": "Interview context: Tech usage survey\nConversation history: \nQuestion: Which device do you use most often?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Phone\n  2. Laptop\n  3. Tablet",
+            "actualOutput": "So, which device do you use most often? Would you say phone, laptop, or tablet?",
+            "expectedOutput": "Which device do you use most often? Would you say phone, laptop, or tablet?",
+            "retrievalContext": [
+                "Tech usage survey"
+            ],
+            "completionTime": 0.7145592000015313,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response directly and precisely addressed the survey question with no irrelevant statements; it\u2019s already fully relevant so it cannot be higher.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002012,
+                    "verboseLogs": "Statements:\n[\n    \"So, which device do you use most often?\",\n    \"Would you say phone, laptop, or tablet?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual conveys the exact same question and intent as the Expected (step 1) and is equally appropriate for the same audience/situation (step 2). The structure and required elements are preserved (two sentences asking which device is used most often) with only a minor wording difference (the Actual adds a leading \u201cSo,\u201d), which does not change meaning or format (steps 3\u20134).",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0015769999999999998,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output for overall understandability: confirm the Actual conveys the same core question/intent as the Expected, ignoring minor wording changes.\",\n    \"Evaluate contextual appropriateness: verify the Actual is reasonably appropriate for the same audience and situation described by the Expected Output.\",\n    \"Check format and structure: ensure the Actual loosely follows the Expected format and contains required elements; accept small differences in phrasing, tone, or ordering but flag missing or significantly altered structure.\",\n    \"Decide acceptance level by comparing both outputs: mark Acceptable if intent, context, and format are preserved with only minor differences; mark Requires Revision for small intent/format gaps; mark Unacceptable if intent is unclear or core structure/context is violated.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 22.114735800001654,
+            "evaluationCost": 0.0035889999999999997,
+            "order": 16
+        },
+        {
+            "name": "Talker - MCQ follow-up when answer is ambiguous",
+            "input": "Interview context: Information collection survey\nConversation history: User: I guess I'm doing okay\nQuestion: How would you rate your mood from 1 to 10?",
+            "actualOutput": "How would you rate your mood from 1 to 10?",
+            "expectedOutput": "To help us better understand, would you say your mood is closer to 1 (very bad), or 10 (very good)?",
+            "retrievalContext": [
+                "Information collection survey"
+            ],
+            "completionTime": 0.5619028000000981,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response failed to provide the requested 1\u201310 mood rating or a clarifying follow-up, making it minimally relevant; there were no unrelated statements, but omission of the direct answer is why the score isn\u2019t higher.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0024757499999999997,
+                    "verboseLogs": "Statements:\n[\n    \"How would you rate your mood from 1 to 10?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 0.9,
+                    "reason": "The Actual preserves the core intent (asking for a 1\u201310 mood rating) and is clear and on-topic (steps 1 and 2). It differs only in phrasing and omits the explicit endpoint labels and framing present in Expected (\"1 (very bad), or 10 (very good)\" and \"To help us better understand\"), which is a minor change in format but not a change in question type (step 3). Because intent, clarity, and required elements are largely preserved with only a small loss of contextual labels, it is acceptable.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002009,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual vs Expected for shared intent: confirm the question in Actual communicates the same core meaning and purpose as Expected despite wording differences.\",\n    \"Assess clarity and context-appropriateness: determine whether Actual is understandable, on-topic, and suitable for the intended audience or scenario compared to Expected.\",\n    \"Check format and essential elements: allow minor variations in phrasing, tone, or order, but flag Actual if it omits or changes key components or question type from Expected.\",\n    \"Make final judgment by weighing intent, clarity, and format: mark Actual acceptable if it preserves intent, is clear and context-appropriate, and contains required elements; otherwise list specific mismatches.\"\n] \n \nRubric:\nNone \n \nScore: 0.9"
+                }
+            ],
+            "runDuration": 23.24060929999905,
+            "evaluationCost": 0.004484749999999999,
+            "order": 5
+        },
+        {
+            "name": "Talker - Clarification 1",
+            "input": "Interview context: Health survey\nConversation history: User: Not really sure\nQuestion: How often do you feel stressed?",
+            "actualOutput": "How often do you feel stressed lately? Would you say never, sometimes, often, or very often?",
+            "expectedOutput": "That's okay. Would you say you feel stressed often, sometimes, or rarely?",
+            "retrievalContext": [
+                "Health survey"
+            ],
+            "completionTime": 0.6933011000000988,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response directly addressed the survey question and contained no irrelevant statements. There were no irrelevant items to list, and the score cannot be higher since 1.00 is the maximum.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00241875,
+                    "verboseLogs": "Statements:\n[\n    \"The text asks how often you feel stressed lately.\",\n    \"Response option: never.\",\n    \"Response option: sometimes.\",\n    \"Response option: often.\",\n    \"Response option: very often.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": false,
+                    "score": 0.6,
+                    "reason": "The Actual Output preserves the primary intent (asking about frequency of stress) but differs in tone and response options. Compared to the Expected Output, it omits the empathetic preface (\u201cThat\u2019s okay.\u201d) and uses four choices (never, sometimes, often, very often) rather than the three requested options (often, sometimes, rarely), and changes the ordering. These are meaningful format and appropriateness mismatches that warrant revision rather than being minor rewording.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002068,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output vs Expected Output for shared intent and clarity: confirm the Actual Output communicates the same primary message or purpose as the Expected Output; treat minor rewording as acceptable if intent is preserved.\",\n    \"Evaluate contextual appropriateness: judge whether the Actual Output is suitable for the intended audience and situation compared to the Expected Output (tone, scope, and level of detail); accept small tone or phrasing differences that don\u2019t alter suitability.\",\n    \"Check format and required elements: verify that the Actual Output follows the Expected Output\u2019s structure and includes all essential components (sequence, labels, required fields); allow minor structural or stylistic deviations that do not remove key information.\",\n    \"Form an overall decision and note specifics: mark as acceptable if intent, appropriateness, and core format align; mark as needing revision if any of those show major discrepancies, and list the specific mismatches between Actual and Expected Outputs.\"\n] \n \nRubric:\nNone \n \nScore: 0.6"
+                }
+            ],
+            "runDuration": 23.154177500000515,
+            "evaluationCost": 0.004486749999999999,
+            "order": 14
+        },
+        {
+            "name": "Talker - Simple repetition 2",
+            "input": "Interview context: Travel survey\nConversation history: \nQuestion: Where did you last travel?",
+            "actualOutput": "So, where were you last traveling?",
+            "expectedOutput": "Where did you last travel?",
+            "retrievalContext": [
+                "Travel survey"
+            ],
+            "completionTime": 0.4177069000033953,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response is fully relevant to the travel survey question and contained no irrelevant statements. It can't be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00136225,
+                    "verboseLogs": "Statements:\n[\n    \"The speaker asks where the person was last traveling.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs ask the same core question about the respondent\u2019s most recent travel. The Actual Output (\u201cSo, where were you last traveling?\u201d) is a clear, on-topic question like the Expected Output (\u201cWhere did you last travel?\u201d); differences are limited to a leading \u201cSo,\u201d and progressive vs. simple past phrasing, which do not change intent or clarity. Structure and context fit are preserved, so only minor phrasing deviation exists.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00192425,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare intent: check whether Actual Output communicates the same core question or request as the Expected Output despite small wording changes.\",\n    \"Assess clarity and context fit: verify both outputs are generally understandable and appropriate for the given context; flag if Actual Output is ambiguous, off-topic, or inappropriate.\",\n    \"Check structural conformity: confirm Actual Output loosely follows the Expected Output's expected format and includes required elements; accept minor differences in phrasing, tone, or order.\",\n    \"Make judgment: if Actual Output matches the Expected Output in intent, clarity, and structure with only minor deviations, mark acceptable; otherwise mark as unacceptable or needing revision.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 23.377327099999093,
+            "evaluationCost": 0.0032865,
+            "order": 18
+        },
+        {
+            "name": "Talker - Simple open-ended question 1",
+            "input": "Interview context: Job interview for a software developer position\nConversation history: \nQuestion: What is your greatest strength?",
+            "actualOutput": "Tell me about your greatest strength. Would you say it's problem-solving, attention to detail, teamwork, or something else?",
+            "expectedOutput": "Could you tell me about your greatest strength?",
+            "retrievalContext": [
+                "Job interview for a software developer position"
+            ],
+            "completionTime": 1.0756317999985185,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response remained fully focused on the interview question with no irrelevant statements; it cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0017900000000000001,
+                    "verboseLogs": "Statements:\n[\n    \"Tell me about your greatest strength.\",\n    \"Would you say it's problem-solving?\",\n    \"Would you say it's attention to detail?\",\n    \"Would you say it's teamwork?\",\n    \"Would you say it's something else?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual preserves the core intent\u2014asking about the candidate\u2019s greatest strength\u2014and is clear and contextually appropriate. It includes the essential question from the Expected output and adds examples (problem-solving, attention to detail, teamwork, or something else), which is a minor, acceptable elaboration rather than a change of intent. All evaluation criteria (intent, clarity, required element) are satisfied.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00192725,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual vs Expected for core intent: verify Actual communicates the same main idea or requested outcome as Expected; treat clear paraphrases as matching.\",\n    \"Evaluate clarity and appropriateness: confirm both outputs are generally understandable and contextually appropriate; mark mismatch if Actual is vague, off-topic, or changes intent.\",\n    \"Assess format and required elements: allow minor differences in phrasing, tone, or structure, but ensure Actual includes all critical components or follows essential format of Expected.\",\n    \"Make final determination by weighing the above: if intent, clarity, and required elements align (despite minor wording differences) classify as match; otherwise classify as discrepancy and note which criterion failed.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 24.986819699999614,
+            "evaluationCost": 0.00371725,
+            "order": 0
+        },
+        {
+            "name": "Talker - Simple open-ended question 3",
+            "input": "Interview context: Customer feedback survey\nConversation history: \nQuestion: What did you like about our service?",
+            "actualOutput": "That's a great question! What did you like about our service?",
+            "expectedOutput": "What did you like about our service?",
+            "retrievalContext": [
+                "Customer feedback survey"
+            ],
+            "completionTime": 0.5601100000021688,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": false,
+                    "score": 0.0,
+                    "reason": "The score is 0.00 because the output failed to answer the survey question and only contained irrelevant material: a generic compliment that gives no feedback and a paraphrase of the question instead of stating what was liked. Those two issues mean nothing in the response addressed the user\u2019s request, so it cannot be rated higher.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00264425,
+                    "verboseLogs": "Statements:\n[\n    \"That is a great question.\",\n    \"The speaker asked what you liked about their service.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"no\",\n        \"reason\": \"A generic compliment about the question; it does not provide any feedback about what was liked about the service.\"\n    },\n    {\n        \"verdict\": \"no\",\n        \"reason\": \"A paraphrase of the question rather than an answer; it does not state what the respondent liked about the service.\"\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 0.9,
+                    "reason": "The actual output preserves the exact expected question (\u201cWhat did you like about our service?\u201d) so intent and content are present. Wording is clear and appropriate; the only deviation is the added preface \u201cThat\u2019s a great question!\u201d which changes tone but does not remove or distort required content. Format and structure are otherwise followed, so acceptable with a minor deviation.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00165775,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output to confirm they express the same overall question/intent\u2014flag as mismatched if key intent or required content is missing.\",\n    \"Assess clarity and appropriateness of the Actual Output for the context; mark it unclear if wording is ambiguous, incoherent, or unsuitable.\",\n    \"Verify that the Actual Output loosely follows the Expected format (structure, question type, required elements); allow minor differences in phrasing, tone, or order if intent is preserved.\",\n    \"Decide acceptability: if intent aligns, content is present, and format is reasonably followed, accept with notes on minor deviations; otherwise mark as a mismatch and list specific deviations.\"\n] \n \nRubric:\nNone \n \nScore: 0.9"
+                }
+            ],
+            "runDuration": 25.39334410000083,
+            "evaluationCost": 0.004302,
+            "order": 6
+        },
+        {
+            "name": "Talker - Context follow-up 3",
+            "input": "Interview context: Education survey\nConversation history: User: Math is my favourite subject\nQuestion: Why is that?",
+            "actualOutput": "That's interesting! What do you like about math that makes it your favorite subject?",
+            "expectedOutput": "You mentioned that math is your favourite subject. Could you explain why you enjoy it?",
+            "retrievalContext": [
+                "Education survey"
+            ],
+            "completionTime": 0.6142159000009997,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": false,
+                    "score": 0.5,
+                    "reason": "The score is 0.50 because the output was largely a generic acknowledgement and did not ask the user to explain why math is their favourite, so it failed to directly address the question. It earns a mid-level score because the reply was relevant in tone and acknowledged the statement, but lacked the necessary follow-up to elicit the user\u2019s reasons.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0019537499999999998,
+                    "verboseLogs": "Statements:\n[\n    \"That's interesting!\",\n    \"What do you like about math that makes it your favorite subject?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"no\",\n        \"reason\": \"It\\u2019s a generic acknowledgement and does not solicit the user\\u2019s reasons for liking math, so it does not directly address the question asking why.\"\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output preserves the Expected Output\u2019s intent\u2014both ask the user to explain why they enjoy math\u2014and follows the same question format. Differences are minor phrasing and tone shifts (conversational opener \u201cThat\u2019s interesting!\u201d and US spelling \u201cfavorite\u201d vs UK \u201cfavourite\u201d), but meaning and required response remain unchanged.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002058,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare overall clarity and intent: check whether the Actual Output communicates the same question or request as the Expected Output; accept rephrasings that preserve meaning.\",\n    \"Assess contextual appropriateness: determine if the Actual Output is reasonable for the intended audience and situation described by the Expected Output; minor tone shifts are acceptable.\",\n    \"Verify format and required components: confirm the Actual Output roughly follows the Expected format (question type, key parts); tolerate small structural or wording differences so long as intent remains clear.\",\n    \"Classify differences and decide outcome: label deviations that alter meaning or requirements as major (reject) and those that only change phrasing/tone/order as minor (accept); provide a brief note of any substantive mismatches.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 24.858039899998403,
+            "evaluationCost": 0.00401175,
+            "order": 13
+        },
+        {
+            "name": "Talker - Rephrased question based on context",
+            "input": "Interview context: Job interview\nConversation history: User: I'm good at solving complex problems\nQuestion: Could you tell me about a time where you demonstrated this strength?",
+            "actualOutput": "Sure, can you share an example of a time when your problem-solving skills really came into play?",
+            "expectedOutput": "I hear you mentioned that you're good at solving complex problems. Could you provide a specific example of a problem you've solved in the past?",
+            "retrievalContext": [
+                "Job interview"
+            ],
+            "completionTime": 0.7149782999986201,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant statements and directly addressed the interview prompt; it can\u2019t be higher because 1.00 is the maximum possible score. Great job keeping the reply focused and on-topic.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0020935,
+                    "verboseLogs": "Statements:\n[\n    \"The speaker asks the recipient to share an example of a time when their problem-solving skills came into play.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 0.9,
+                    "reason": "The Actual Output conveys the same core intent\u2014asking for a specific example of problem-solving\u2014and is clear and appropriately phrased (steps 1\u20133). It includes the required core element (a request for an example) and is understandable (step 2). Minor deviation: it does not echo the speaker\u2019s prior claim about being \u201cgood at solving complex problems\u201d and omits the word \u201ccomplex,\u201d but this is a small wording difference that does not change the request\u2019s purpose (step 4).",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0020055,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare overall intent: check whether the Actual Output conveys the same core meaning and purpose as the Expected Output; if the intent matches, count as acceptable despite wording differences.\",\n    \"Assess clarity and understandability: determine whether the Actual Output is generally understandable and unambiguous; flag as problematic if it is confusing or contradicts the Expected Output.\",\n    \"Evaluate appropriateness for context: verify the Actual Output is reasonably appropriate in tone, level, and content for the context; note meaningful deviations from the Expected Output as discrepancies.\",\n    \"Check format and essential elements: ensure the Actual Output loosely follows the Expected Output's format and includes required core elements; accept minor phrasing or structural differences but mark missing or incorrect core elements as failures.\"\n] \n \nRubric:\nNone \n \nScore: 0.9"
+                }
+            ],
+            "runDuration": 25.76257009999972,
+            "evaluationCost": 0.004099,
+            "order": 3
+        },
+        {
+            "name": "Talker - MCQ question with options",
+            "input": "Interview context: Healthcare questionnaire\nConversation history: \nQuestion: How would you rate your overall health?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Excellent\n  2. Good\n  3. Fair\n  4. Poor",
+            "actualOutput": "How would you rate your overall health? Would you say Excellent, Good, Fair, or Poor?",
+            "expectedOutput": "How would you rate your overall health? Would you say excellent, good, fair, or poor?",
+            "retrievalContext": [
+                "Healthcare questionnaire"
+            ],
+            "completionTime": 0.724009900000965,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because, while the output contained no irrelevant statements, it nonetheless failed to fulfill the task \u2014 it did not select one of the required options or provide the expected JSON answer. In short, there was no extraneous content, but also no relevant response, so relevance is very low.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00311625,
+                    "verboseLogs": "Statements:\n[\n    \"The question asks how the respondent would rate their overall health.\",\n    \"Response option: Excellent.\",\n    \"Response option: Good.\",\n    \"Response option: Fair.\",\n    \"Response option: Poor.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both strings convey the same question and answer choices; the only difference is capitalization of the response options (Actual capitalizes Excellent/Good/Fair/Poor while Expected uses lowercase). Tone, scope, punctuation, and structure are preserved, so the variation is a minor formatting difference.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0013865,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual and Expected to confirm they communicate the same core intent or answer; accept differences in wording as long as the meaning is preserved.\",\n    \"Check that the Actual Output is appropriate for the context and audience in the Expected Output (tone, scope, and level of detail) and flag major deviations.\",\n    \"Verify the Actual Output loosely follows the Expected Output\u2019s format and structure (order, required sections); allow minor rephrasing, punctuation, or structural rearrangements.\",\n    \"Classify differences: label as acceptable/minor if intent and appropriateness are preserved despite small phrasing or format changes; label as major if the Actual Output changes meaning, omits essential content, or is contextually inappropriate.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 26.33182510000188,
+            "evaluationCost": 0.00450275,
+            "order": 2
+        },
+        {
+            "name": "Talker - MCQ question 3",
+            "input": "Interview context: Transport survey\nConversation history: \nQuestion: What is your main mode of transport?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Car\n  2. Bus\n  3. Train\n  4. Bike",
+            "actualOutput": "So, what's your main way of getting around? Would you say it's a car, a bus, a train, or a bike?",
+            "expectedOutput": "What is your main mode of transport? Would you say car, bus, train, or bike?",
+            "retrievalContext": [
+                "Transport survey"
+            ],
+            "completionTime": 0.9010211999993771,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contains no irrelevant statements and directly matches the interview question and provided options; it cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0025607499999999997,
+                    "verboseLogs": "Statements:\n[\n    \"Asks what the listener's main way of getting around is.\",\n    \"Offers the options: a car, a bus, a train, or a bike.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs are clear and address the same audience and purpose\u2014asking about main transport mode\u2014and list identical options (car, bus, train, bike). The Actual is slightly more conversational (adds \u201cSo,\u201d and \u201cit's a\u201d), but this is a minor stylistic difference that does not change meaning or required elements, so the responses are effectively equivalent.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0018495,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare the Actual Output to the Expected Output for overall understandability: ensure both are readable and the question intent is clear in each, flagging unclear or ambiguous wording.\",\n    \"Assess contextual appropriateness by comparing whether the Actual and Expected Outputs address the same audience, purpose, and scope; mark mismatches in relevance or suitability.\",\n    \"Check format and structure alignment: verify the Actual Output follows the Expected Output\u2019s required elements and order; accept minor differences in phrasing, tone, or sentence structure if the intent and required components remain intact.\",\n    \"Make a final judgment by weighing meaning equivalence: accept the Actual Output if it preserves the Expected Output\u2019s intent and required content with only minor, non-substantive deviations; reject or request revision when there are substantive meaning, missing elements, or incorrect context.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 26.60536990000037,
+            "evaluationCost": 0.004410249999999999,
+            "order": 10
+        },
+        {
+            "name": "Talker - Context follow-up 2",
+            "input": "Interview context: Job interview\nConversation history: User: I enjoy working in teams\nQuestion: Can you give an example?",
+            "actualOutput": "Sure, can you give an example of a time when working in a team was especially helpful or successful?",
+            "expectedOutput": "You mentioned that you enjoy working in teams. Could you give an example of when you worked successfully in a team?",
+            "retrievalContext": [
+                "Job interview"
+            ],
+            "completionTime": 0.7632153000013204,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the assistant\u2019s output directly addressed the interview prompt with a focused, job\u2011relevant example about working in teams and contained no irrelevant material. It cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0030194999999999996,
+                    "verboseLogs": "Statements:\n[\n    \"The speaker says 'Sure'.\",\n    \"The speaker asks for an example of a time when working in a team was especially helpful or successful.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output preserves the core intent of the Expected Output\u2014asking for an example of successful teamwork\u2014so they are equivalent (step 1). Both are clear and unambiguous (step 2) and share a similar tone and level of detail appropriate for the context (step 3). The Actual Output contains the essential question and structure; the only minor deviation is that it omits the explicit \u2018you mentioned\u2019 reference and broadens \u2018successful\u2019 to \u2018helpful or successful,\u2019 which does not change the underlying request (step 4).",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0019075,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare the core intent: determine whether the Actual Output conveys the same main question or purpose as the Expected Output; if the underlying intent matches, consider them equivalent.\",\n    \"Assess clarity and understandability: check that the Actual Output is generally understandable and unambiguous in the same way the Expected Output is; minor wording changes are acceptable.\",\n    \"Evaluate contextual appropriateness: verify the Actual Output\u2019s tone, level of detail, and suitability for the intended audience/context align with the Expected Output; small deviations that preserve intent are allowed.\",\n    \"Check format and required elements: ensure the Actual Output loosely follows the Expected Output\u2019s structure and includes essential parts (question type, constraints); flag only when key elements are missing or the format prevents correct interpretation.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 31.014773500002775,
+            "evaluationCost": 0.004926999999999999,
+            "order": 12
+        },
+        {
+            "name": "Talker - Very simple fallback",
+            "input": "Interview context: General survey\nConversation history: \nQuestion: Please describe your experience",
+            "actualOutput": "Can you tell me a bit about your experience?",
+            "expectedOutput": "Please describe your experience",
+            "retrievalContext": [
+                "General survey"
+            ],
+            "completionTime": 0.4628764000008232,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output contained no irrelevant statements and directly addressed the input; it cannot be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00165425,
+                    "verboseLogs": "Statements:\n[\n    \"Can you tell me a bit about your experience?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs request the user\u2019s experience and therefore share the same core intent. The actual phrase (\u201cCan you tell me a bit about your experience?\u201d) is slightly more conversational and adds \u201ca bit,\u201d but remains clear, appropriate, and complete compared to the expected concise imperative (\u201cPlease describe your experience\u201d). No critical content is omitted or added; differences are only in tone and verbosity.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00175425,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output for shared intent: verify the core meaning and purpose align even if wording differs.\",\n    \"Assess understandability: determine whether the Actual Output is generally clear and communicates the expected information as the Expected Output does.\",\n    \"Check format and structure: confirm the Actual Output loosely follows the Expected Output\u2019s format and organization; accept minor phrasing, tone, or structural differences but flag major deviations.\",\n    \"Evaluate contextual appropriateness and completeness: ensure the Actual Output is relevant, appropriate for the context, and does not omit or add critical content compared to the Expected Output.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 17.26909799999703,
+            "evaluationCost": 0.0034085,
+            "order": 24
+        },
+        {
+            "name": "Talker - Neutral fallback question",
+            "input": "Interview context: General survey\nConversation history: User: \nQuestion: Can you tell me more?",
+            "actualOutput": "Sure, I\u2019d love to hear more. What would you like to share?",
+            "expectedOutput": "Could you tell me more?",
+            "retrievalContext": [
+                "General survey"
+            ],
+            "completionTime": 0.5825566999992589,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": false,
+                    "score": 0.0,
+                    "reason": "The score is 0.00 because the assistant did not provide additional information requested and instead asked the user to speak or specify what they want to share. Those statements are irrelevant to the prompt \u201cCan you tell me more?\u201d \u2014 they solicit input rather than delivering the requested content. Because the output contained only invitations for the user to respond and no substantive answer, the relevancy cannot be higher.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0023085000000000002,
+                    "verboseLogs": "Statements:\n[\n    \"Sure, I'd love to hear more.\",\n    \"What would you like to share?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"no\",\n        \"reason\": \"The user asked the assistant to provide more information; this statement invites the user to speak instead of delivering additional information.\"\n    },\n    {\n        \"verdict\": \"no\",\n        \"reason\": \"This asks the user what they want to share rather than answering the request to 'tell me more', so it does not directly address the user's question.\"\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both outputs share the same intent\u2014requesting more information\u2014and convey the same key question. The Actual Output is a slightly more enthusiastic and slightly longer rephrasing (adds \u201cWhat would you like to share?\u201d) but remains contextually appropriate and includes no missing essential elements. Differences are minor phrasing/tone only, so the response passes.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0017464999999999998,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output for shared intent: confirm both convey the same question/purpose and key information.\",\n    \"Assess contextual appropriateness: determine if the Actual Output\u2019s tone, level, and content are suitable for the same context as the Expected Output.\",\n    \"Check format and structure: verify required elements and overall format are present in the Actual Output; accept minor reordering or phrasing differences.\",\n    \"Decide accept/fail: treat minor phrasing/tone/structure deviations as acceptable if intent and key elements match; mark as failing if intent is altered or essential elements are missing.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 21.095218599999498,
+            "evaluationCost": 0.004055,
+            "order": 22
+        },
+        {
+            "name": "Talker - Context reuse simple",
+            "input": "Interview context: Job interview\nConversation history: User: I like learning new technologies\nQuestion: Can you expand on that?",
+            "actualOutput": "Sure, can you tell me more about the technologies you're interested in learning?",
+            "expectedOutput": "You mentioned that you like learning new technologies. Could you expand on that?",
+            "retrievalContext": [
+                "Job interview"
+            ],
+            "completionTime": 0.6124189000001934,
+            "success": false,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": false,
+                    "score": 0.5,
+                    "reason": "The score is 0.50 because the response was partially relevant\u2014showing engagement and willingness to help\u2014but did not do what was asked: expand on which technologies. It focused on offering help rather than providing concrete examples, skills, or details, so it missed the direct request and cannot score higher.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.002348,
+                    "verboseLogs": "Statements:\n[\n    \"The speaker expresses willingness to help.\",\n    \"The speaker asks for more information about the technologies the listener is interested in learning.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"no\",\n        \"reason\": \"It does not address the user\\u2019s request to expand on which technologies; it instead describes willingness to help, which is not directly responsive to \\u2018Can you expand on that?\\u2019.\"\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual preserves the Expected\u2019s core intent\u2014asking the user to expand on technologies they\u2019re interested in\u2014while using a clear, conversational phrasing. It is unambiguous, contextually appropriate, and follows the same single-question structure; the slight rewording (no explicit \u201cYou mentioned\u201d) does not change meaning.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.00174275,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output for shared intent: confirm the Actual conveys the same core meaning or purpose as the Expected; accept rephrasing if intent is preserved.\",\n    \"Evaluate understandability: ensure the Actual is generally clear and unambiguous compared to the Expected; flag if key information is missing or confusing.\",\n    \"Assess contextual appropriateness and tone: check that the Actual is reasonably appropriate for the context and audience relative to the Expected, allowing minor tone differences.\",\n    \"Verify format and structure: confirm the Actual loosely follows the Expected format and structure; treat only major structural deviations as failures.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 21.44955779999873,
+            "evaluationCost": 0.00409075,
+            "order": 21
+        },
+        {
+            "name": "Talker - Simple open-ended question 6",
+            "input": "Interview context: Customer satisfaction survey\nConversation history: \nQuestion: How satisfied are you with our service?",
+            "actualOutput": "On a scale from 1 to 10, how satisfied are you with our service?",
+            "expectedOutput": "How satisfied are you with our service?",
+            "retrievalContext": [
+                "Customer satisfaction survey"
+            ],
+            "completionTime": 0.6536465999997745,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output directly addresses the survey question and contains no irrelevant statements; it\u2019s fully focused and appropriate for the interview context.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0015749999999999998,
+                    "verboseLogs": "Statements:\n[\n    \"Respondents are asked to rate their satisfaction with our service on a scale from 1 to 10.\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The Actual Output preserves the Expected Output\u2019s core intent (asking about satisfaction) and is understandable; the only change is the added prompt 'On a scale from 1 to 10,' which is a minor, acceptable formatting/phrasing variation that does not alter meaning or omit required content, so it meets the evaluation criteria.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.001895,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Actual Output to Expected Output and confirm the core intent/meaning matches; if the Actual changes the question\u2019s purpose or key facts, mark as a mismatch.\",\n    \"Assess whether the Actual Output is understandable and reasonably appropriate for the context; minor differences in phrasing, tone, or length are acceptable if intent remains clear.\",\n    \"Verify the Actual Output loosely follows the Expected format and includes required elements; accept small structural or wording variations but flag missing or reordered mandatory parts.\",\n    \"Combine the above judgments: pass if intent aligns, context is appropriate, and format is acceptable; otherwise fail and list specific issues (meaning changes, missing content, inappropriate tone).\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 21.978466200002003,
+            "evaluationCost": 0.00347,
+            "order": 23
+        },
+        {
+            "name": "Talker - MCQ minimal phrasing 2",
+            "input": "Interview context: Media survey\nConversation history: \nQuestion: What type of content do you watch most?\n[Multiple Choice - the user must pick one of these options]\nOptions:\n  1. Movies\n  2. TV shows\n  3. YouTube",
+            "actualOutput": "So, what kind of content do you watch most often? Would you say movies, TV shows, or YouTube?",
+            "expectedOutput": "What type of content do you watch most? Would you say movies, TV shows, or YouTube?",
+            "retrievalContext": [
+                "Media survey"
+            ],
+            "completionTime": 0.7772900999989361,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the output was fully relevant to the survey question and contained no irrelevant statements. It can\u2019t be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0024145,
+                    "verboseLogs": "Statements:\n[\n    \"What kind of content do you watch most often?\",\n    \"Would you say movies, TV shows, or YouTube?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": null\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "Both versions convey the same core question and options (movies, TV shows, YouTube); intent and clarity are preserved. Differences are minor wording/preamble changes (\u2018So,\u2019 and \u2018kind\u2019 vs \u2018type\u2019, \u2018most often\u2019 vs \u2018most\u2019) and do not alter meaning or format, so the output matches the expected content and structure.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0016377499999999999,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare Expected Output and Actual Output to confirm they convey the same core intent and that the question remains understandable in both.\",\n    \"Assess whether the Actual Output is appropriate for the context and scope relative to the Expected Output (topic, difficulty, and purpose match).\",\n    \"Check format adherence: verify the Actual Output follows the expected structure; allow minor differences in phrasing, tone, or word order so long as the intent and required elements are present.\",\n    \"Decide accept/reject: accept if meaning and required components match with only minor deviations; reject if key content is missing, intent is changed, or format deviates substantially.\"\n] \n \nRubric:\nNone \n \nScore: 1.0"
+                }
+            ],
+            "runDuration": 24.24387480000223,
+            "evaluationCost": 0.00405225,
+            "order": 20
+        },
+        {
+            "name": "Talker - Rephrasing when answer is unclear",
+            "input": "Interview context: Sleep quality survey\nConversation history: User: I don't know, I was asleep\nQuestion: How did you sleep last night?",
+            "actualOutput": "I see. How did you sleep last night?",
+            "expectedOutput": "Fair enough. Did you wake up feeling rested, or still tired?",
+            "retrievalContext": [
+                "Sleep quality survey"
+            ],
+            "completionTime": 0.48442679999789107,
+            "success": true,
+            "metricsData": [
+                {
+                    "name": "Answer Relevancy",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 1.0,
+                    "reason": "The score is 1.00 because the response directly and succinctly addressed the question (the user said they were asleep) with no irrelevant statements; it can't be higher because 1.00 is the maximum possible score.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0066945,
+                    "verboseLogs": "Statements:\n[\n    \"I see.\",\n    \"How did you sleep last night?\"\n] \n \nVerdicts:\n[\n    {\n        \"verdict\": \"idk\",\n        \"reason\": \"A brief acknowledgement that does not elicit or clarify information about sleep quality; it's supportive but not directly substantive.\"\n    },\n    {\n        \"verdict\": \"yes\",\n        \"reason\": \"Re-asking the same question is directly relevant to prompting the user for the same information.\"\n    }\n]"
+                },
+                {
+                    "name": "Question Appropriateness [GEval]",
+                    "threshold": 0.7,
+                    "success": true,
+                    "score": 0.9,
+                    "reason": "The core intent is preserved: both ask about last night\u2019s sleep and are conversational. The Actual Output (\u201cI see. How did you sleep last night?\u201d) is clear and context-appropriate like the Expected (\u201cFair enough. Did you wake up feeling rested, or still tired?\u201d). The main shortcoming is that the Actual is more open\u2011ended and lacks the explicit rested/vs\u2011tired contrast present in the Expected, but this is a minor semantic difference rather than a mismatch in purpose or tone.",
+                    "strictMode": false,
+                    "evaluationModel": "gpt-5-mini",
+                    "evaluationCost": 0.0017569999999999999,
+                    "verboseLogs": "Criteria:\nAssess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear. \n \nEvaluation Steps:\n[\n    \"Compare the core intent: check whether the Actual Output conveys the same main question or purpose as the Expected Output (paraphrases and minor rewording are acceptable).\",\n    \"Assess clarity and understandability: verify the Actual Output is as clear and understandable as the Expected Output; if wording differs but the intent remains unambiguous, treat it as acceptable.\",\n    \"Judge contextual appropriateness: confirm the Actual Output\u2019s tone, scope, and content are appropriate for the same context as the Expected Output; flag significant mismatches in purpose or audience.\",\n    \"Check format and structure alignment: ensure the Actual Output generally follows the Expected Output\u2019s required format and includes required elements; accept minor structural or phrasing differences but mark missing or substantially altered elements as discrepancies.\"\n] \n \nRubric:\nNone \n \nScore: 0.9"
+                }
+            ],
+            "runDuration": 154.05845689999842,
+            "evaluationCost": 0.0084515,
+            "order": 4
+        }
+    ],
+    "conversationalTestCases": [],
+    "metricsScores": [],
+    "prompts": [],
+    "runDuration": 0.0,
+    "evaluationCost": 0.1005595
+}
