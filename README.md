@@ -98,13 +98,6 @@ You can also use workspace tasks:
 - `publish`
 - `watch`
 
-## How to Test
-In the outer AvatarFormsApp folder, do in terminal
-
-```powershell
-.\run-tests.ps1
-```
-Then html testing report will popup.
 
 ## Runtime
 
@@ -117,13 +110,17 @@ When you start an interview flow in the app:
 - Avatar is loaded through WebView2.
 
 
-## Tests
+## Runnings Tests
 
-To run C# unit tests,
+### C# Tests
+Open the outer AvatarFormsApp folder in powershell, and run:
+```powershell
+.\run-tests.ps1
+```
+Then html testing report will popup.
 
 
-To run the Python unit tests:
-
+### Python Backend Tests
 Ensure packages in both `Backend\requirements.txt` and `Backend-Test\test_requirements.txt` are installed to the environment.
 
 Open the `Backend-Test` folder in the console, and run all test cases with: `pytest`
