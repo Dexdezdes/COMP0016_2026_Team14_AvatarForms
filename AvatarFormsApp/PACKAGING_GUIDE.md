@@ -19,7 +19,7 @@ This creates a folder with all dependencies and a single executable.
 2. **Publish as self-contained:**
    ```powershell
    cd AvatarFormsApp
-   dotnet publish -c Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained true -p:PublishSingleFile=false -p:RuntimeIdentifierOverride=win-x64
+   dotnet publish -c Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained true -p:PublishSingleFile=false -p:RuntimeIdentifierOverride=win-x64 -p:SatelliteResourceLanguages=en-US
    ```
 
 3. **Find the output:**
