@@ -123,11 +123,20 @@ Then html testing report will popup.
 ### Python Backend Tests
 Ensure packages in both `Backend\requirements.txt` and `Backend-Test\test_requirements.txt` are installed to the environment.
 
-Open the `Backend-Test` folder in the console, and run all test cases with: `pytest`
+Open the `Backend-Test` folder in the console, and run all test cases with: 
+```bat
+pytest
+```
 
-Specific test files can be run with: `pytest test_x.py`
+Specific test files can be run with: 
+```bat
+pytest test_x.py
+```
 
-Code coverage stats can be viewed by running: `pytest --cov=..\Backend`
+Code coverage stats can be viewed by running: 
+```bat
+pytest --cov=..\Backend
+```
 
 
 ## DeepEval Agent Evaluation
@@ -146,13 +155,19 @@ Run the llamafile in the console with flags `--ctx-size 2048 --ngl 9999`, noting
 
 Open the `Evaluation` folder in the console, and run:
 
-`python eval.py --port 8081` (replacing the port with the llamafile port)
+```bat
+python eval.py --port 8081
+``` 
+(replacing the port with the llamafile port)
 
 This will run tests for all 3 agents by default.
 
 To test individual agents, you can use the flags: `talker`, `evaluator`, `summariser`
 
-E.g. `python eval.py --port 8081 --evaluator`
+E.g. 
+```bat
+python eval.py --port 8081 --evaluator
+```
 
 Test cases can be viewed or modified in `test_cases.py`.
 
@@ -161,7 +176,10 @@ The evaluation results will be displayed in the console, and saved in json forma
 
 Example evaluations run previously have been saved to `Evaluation\results`.
 
-To view the results graphically, run: `python display.py example_json_file`
+To view the results graphically, run: 
+```bat
+python display.py example_json_file
+```
 
 You can optionally specify a path to save the visualation with the flag `--save path\to\save`
 
