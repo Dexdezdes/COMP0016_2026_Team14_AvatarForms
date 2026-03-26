@@ -69,8 +69,8 @@ def display_deepeval_results(
     # ============= 2. Completion time Distribution (Top-right) =============
     ax2 = fig.add_subplot(gs[0, 1])
     durations = [tc['completionTime'] for tc in test_cases if 'completionTime' in tc]
-    bins = range(0, math.ceil(max(durations)))
-    ax2.hist(durations, bins=bins, color='#3498db', edgecolor='white', alpha=0.7)
+    # bins = range(0, math.ceil(max(durations)))
+    ax2.hist(durations, bins=10, color='#3498db', edgecolor='white', alpha=0.7)
     ax2.axvline(np.mean(durations), color='#e74c3c', linestyle='--', 
                 label=f'Mean: {np.mean(durations):.2f}s')
     ax2.set_xlabel('Completion Time (seconds)', fontsize=10)
@@ -145,5 +145,5 @@ def display_deepeval_results(
 
 # Example usage:
 if __name__ == "__main__":
-    path = "results\\20260319_195224"
+    path = "results\\20260326_105522"
     results = display_deepeval_results(json_path=path, save_path=None)

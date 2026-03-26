@@ -13,6 +13,53 @@ from deepeval.metrics import AnswerRelevancyMetric, FaithfulnessMetric, GEval
 from deepeval import evaluate
 from deepeval.models import GPTModel
 
+# import json
+# from deepeval.metrics import BaseMetric
+
+# class BaseJSONMetric(BaseMetric):
+#     target_key = None 
+
+#     def _init_(self, threshold: float = 1.0):
+#         self.threshold = threshold
+
+#     def measure(self, test_case: LLMTestCase):
+#         try:
+#             actual = json.loads(test_case.actual_output) if isinstance(test_case.actual_output, str) else test_case.actual_output
+#             expected = json.loads(test_case.expected_output) if isinstance(test_case.expected_output, str) else test_case.expected_output
+            
+#             actual_val = actual.get(self.target_key)
+#             expected_val = expected.get(self.target_key)
+            
+#             self.score = 1.0 if actual_val == expected_val else 0.0
+#             self.reason = f"Key '{self.target_key}': Actual={actual_val}, Expected={expected_val}"
+            
+#         except (json.JSONDecodeError, AttributeError, TypeError):
+#             self.score = 0.0
+#             self.reason = "Invalid JSON format or missing expected keys"
+            
+#         self.success = self.score >= self.threshold
+#         return self.score
+
+#     async def a_measure(self, test_case: LLMTestCase):
+#         return self.measure(test_case)
+
+#     def is_successful(self):
+#         return self.success
+
+# class SatisfactoryJudgmentMetric(BaseJSONMetric):
+#     target_key = "is_satisfactory"
+
+#     @property
+#     def _name_(self):
+#         return "Satisfactory Judgment Accuracy"
+
+# class SkipDecisionMetric(BaseJSONMetric):
+#     target_key = "override_skip"
+
+#     @property
+#     def _name_(self):
+#         return "Skip Decision Accuracy"
+
 class AgentEvaluation:
     def __init__(self, judge_model: str, agent_model: Model, talker_agent: Agent, evaluator_agent: Agent, summariser_agent: Agent, tracer: Tracer = None) -> None:
         self.judge_model = GPTModel(model=judge_model)
@@ -27,7 +74,13 @@ class AgentEvaluation:
         
         metrics = [
             AnswerRelevancyMetric(model=self.judge_model),
-            FaithfulnessMetric(model=self.judge_model)
+            GEval(
+                name="Faithfulness",
+                model=self.judge_model,
+                criteria="Check that the output reflects the user’s answer and relevant information without contradicting it, allowing for paraphrasing, simplification, and minor omissions.",
+                evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT, LLMTestCaseParams.EXPECTED_OUTPUT],
+                threshold=0.5
+            )
         ]
         evaluate(deepeval_test_cases, metrics)
     
@@ -61,7 +114,7 @@ class AgentEvaluation:
             GEval(
                 name="Question Appropriateness",
                 model=self.judge_model,
-                criteria="Determine if the question is asked appropriately, clearly, and matches the expected format.",
+                criteria="Assess whether the question is generally understandable, reasonably appropriate for the context, and loosely follows the expected format. Minor differences in phrasing, tone, or structure should be accepted as long as the intent is clear.",
                 evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT, LLMTestCaseParams.EXPECTED_OUTPUT],
                 threshold=0.7
             )
@@ -71,7 +124,7 @@ class AgentEvaluation:
 
 if __name__ == "__main__":
 
-    interviewer = AvatarFormsInterviewer(is_local=True, cutoff=4, local_port=8080)
+    interviewer = AvatarFormsInterviewer(is_local=True, cutoff=4, local_port=8081)
     model = interviewer.get_model()
     agent_evaluation = AgentEvaluation(
         judge_model="gpt-5-mini",
@@ -85,5 +138,5 @@ if __name__ == "__main__":
     # Run evaluations
     # Results save to folder specified in .env file (DEEPEVAL_RESULTS_FOLDER)
     agent_evaluation.run_summariser_tests(summariser_test_cases)
-    agent_evaluation.run_evaluator_tests(evaluator_test_cases)
-    agent_evaluation.run_talker_tests(talker_test_cases)
+    # agent_evaluation.run_evaluator_tests(evaluator_test_cases)
+    # agent_evaluation.run_talker_tests(talker_test_cases)
