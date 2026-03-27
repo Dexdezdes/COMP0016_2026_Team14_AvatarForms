@@ -207,6 +207,24 @@ Traces of agent calls are saved to `Evaluation\agent_evaluation_logs`, where the
 For packaging/distribution details, see:
 - `AvatarFormsApp/PACKAGING_GUIDE.md`
 
+## Dependencies
+- WinUI3
+	- https://github.com/microsoft/microsoft-ui-xaml
+- Flowbite
+	- https://github.com/themesberg/flowbite
+- Tailwind CSS
+	- https://github.com/tailwindlabs/tailwindcss
+- Prism.js
+	- https://github.com/PrismJS/prism
+- Avaturn
+	- https://avaturn.me/
+- DeepEval
+	- https://github.com/confident-ai/deepeval
+ - HeadTTS
+ 	- https://github.com/met4citizen/HeadTTS
+ - Kokoro
+ 	- https://github.com/hexgrad/kokoro
+  
 ## Additional Development References
 
 - WinUI control/design reference:
