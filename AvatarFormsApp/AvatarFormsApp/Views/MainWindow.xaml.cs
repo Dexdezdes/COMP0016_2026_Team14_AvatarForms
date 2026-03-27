@@ -25,7 +25,7 @@ public sealed partial class MainWindow : MainWindowBase
 
     #if WINDOWS
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
-        Title = "AppDisplayName".GetLocalized();
+        Title = "AvatarForms";
 
         ApplyTitleBarColorScheme();
     #endif
