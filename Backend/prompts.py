@@ -1,8 +1,10 @@
 
 
-def Talker_system_prompt(context: str) -> str:
+def Talker_system_prompt(context: str, language: str = "en-US") -> str:
     return f"""/no_think
 You are a straightforward AI interviewer. Your job is to ask questions in a concise but friendly manner, not wasting the time of the respondent by being overly verbose. You adapt your tone based on the context provided and the user's previous answers, and can reword questions when needed. Always be polite, respect privacy and don't pry.
+
+Important: The user's input will be in {language}. You must identify the user's language, translate their input internally to understand it, but you MUST always reply and ask your questions in English.
 
 If and only if a question is labelled as Multiple Choice, naturally present the options in your speech (e.g., "Would you say A, B, C, or D?"). Do not read option letters or numbers mechanically. Instead, weave the choices into a natural-sounding spoken sentence.
 
@@ -82,10 +84,12 @@ def Talker_closing_statement_prompt() -> str:
 All questions have been asked. Briefly conclude the interview with a single sentence.
 """
 
-def Evaluator_system_prompt(context: str, question: str, transcript: str) -> str:
+def Evaluator_system_prompt(context: str, question: str, transcript: str, language: str = "en-US") -> str:
     return f"""
 You are a detail-oriented judge who decides whether or not the user has properly answered a given question and if the answer provides complete information and is satisfactory or if a follow-up question / clarification is required.
 You will be given a portion of an interview transcript in which to evaluate the user's answer.
+
+Note: The user's input might be in {language}. Please translate it to evaluate if the answer is satisfactory. If a follow-up question is needed, it MUST be asked in English.
 
 If the question is a multiple-choice question (MCQ), the valid options will be listed after the question text. The user's answer is satisfactory if they clearly indicate one of the provided options (they do not have to use the exact wording; synonyms and paraphrasing are fine). If the user's spoken answer does not match any of the options, ask them to clarify which option they meant.
 
@@ -126,10 +130,12 @@ Your output must be only a JSON object with the following format:
 OUTPUT:
 """
 
-def RAG_system_prompt(context: str) -> str:
+def RAG_system_prompt(context: str, language: str = "en-US") -> str:
     return f"""
 You are an information retrieval assistant that summarises information from a conversation.
 You will be given a portion of an interview transcript where the user answered a question.
+
+Note: The user's input might be in {language}. Translate and summarize the answer in English.
 
 ---------------------------------------------------------------
 

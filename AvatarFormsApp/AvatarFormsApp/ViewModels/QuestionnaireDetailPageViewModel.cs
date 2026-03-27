@@ -15,6 +15,7 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient, INa
     private readonly IPythonProcessService _pythonProcessService;
     private readonly IQuestionnaireAPIService _questionnaireAPIService;
     private readonly IResponseAPIService _responseAPIService;
+    private readonly ILocalSettingsService _localSettingsService;
 
     [ObservableProperty]
     private Questionnaire? questionnaire;
@@ -41,7 +42,8 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient, INa
         ILlamafileProcessService llamafileProcessService,
         IPythonProcessService pythonProcessService,
         IQuestionnaireAPIService questionnaireAPIService,
-        IResponseAPIService responseAPIService)
+        IResponseAPIService responseAPIService,
+        ILocalSettingsService localSettingsService)
     {
         _questionnaireService = questionnaireService;
         _navigationService = navigationService;
@@ -49,6 +51,7 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient, INa
         _pythonProcessService = pythonProcessService;
         _questionnaireAPIService = questionnaireAPIService;
         _responseAPIService = responseAPIService;
+        _localSettingsService = localSettingsService;
 
         _responseAPIService.AllResponsesReceived += OnAllResponsesReceived;
     }
@@ -117,13 +120,20 @@ public partial class QuestionnaireDetailPageViewModel : ObservableRecipient, INa
             StatusMessage = "Starting avatar process...";
             if (!_pythonProcessService.IsRunning)
             {
+                var language = await _localSettingsService.ReadSettingAsync<string>("SelectedSpeechLanguage");
+                if (string.IsNullOrEmpty(language))
+                {
+                    language = "en-US";
+                }
+
                 // Start with local mode enabled, ports: 8081 (llama), 8883 (websocket), 8882 (http), 5000 (response)
                 bool pythonReady = await _pythonProcessService.StartAsync(
                     useLocal: true, 
                     llamaPort: 8081, 
                     websocketPort: 8883,
                     httpPort: 8882,
-                    responsePort: 5000);
+                    responsePort: 5000,
+                    language: language);
 
                 if (!pythonReady)
                 {

@@ -18,10 +18,10 @@
         
         <ApplicationId>AvatarFormsApp</ApplicationId>
         <PackageId>AvatarFormsApp</PackageId>
-        <AssemblyName>AvatarFormsApp</AssemblyName>
+        <AssemblyName>AvatarForms</AssemblyName>
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <ApplicationVersion>1</ApplicationVersion>
-        <ApplicationTitle>AvatarFormsApp</ApplicationTitle>
+        <ApplicationTitle>AvatarForms</ApplicationTitle>
    </PropertyGroup>
 
     <PropertyGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
@@ -97,6 +97,9 @@
     <ItemGroup>
       <Content Remove="..\..\Backend\google_gemma-3-4b-it-Q6_K.llamafile" />
       <Content Remove="..\..\Backend\requirements.txt" />
+      <Content Remove="..\..\HeadTTS\avatars\adam.glb" />
+      <Content Remove="..\..\HeadTTS\avatars\doozy.glb" />
+      <Content Remove="..\..\HeadTTS\avatars\sam.glb" />
     </ItemGroup>
 
     <ItemGroup>

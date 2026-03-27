@@ -68,12 +68,13 @@ class Agent:
     
 
 class TalkerAgent(Agent):
-    def __init__(self, model: Model, conversation_history: list, interview_context: str, tracer: Tracer = None) -> None:
+    def __init__(self, model: Model, conversation_history: list, interview_context: str, tracer: Tracer = None, language: str = "en-US") -> None:
         super().__init__(model, tracer=tracer)
         self.conversation_history = conversation_history
         self.interview_context = interview_context
+        self.language = language
 
-        self.system_prompt = Talker_system_prompt(interview_context)
+        self.system_prompt = Talker_system_prompt(interview_context, self.language)
         self.ask_question_prompt = Talker_ask_question_prompt
         self.follow_up_question_prompt = Talker_follow_up_question_prompt
         self.closing_statement_prompt = Talker_closing_statement_prompt()
@@ -112,23 +113,24 @@ class TalkerAgent(Agent):
         return clean_script(output)
 
 class EvaluatorAgent(Agent):
-    def __init__(self, model: Model, interview_context: str, tracer: Tracer = None) -> None:
+    def __init__(self, model: Model, interview_context: str, tracer: Tracer = None, language: str = "en-US") -> None:
         super().__init__(model, tracer=tracer)
         self.prompt = Evaluator_system_prompt
         self.interview_context = interview_context
+        self.language = language
 
     def evaluate(self, question: str, conversation_history: list) -> dict:
         transcript = conversationToText(conversation_history)
-        system = self.prompt(self.interview_context, question, transcript)
+        system = self.prompt(self.interview_context, question, transcript, self.language)
         messages = [{"role": "system", "content": system}]
         output = self.run(messages, temperature=0.2)
         return outputToJSON(output)
         
     
 class RAG_Agent(Agent):
-    def __init__(self, model: Model, interview_context: str, tracer: Tracer = None) -> None:
+    def __init__(self, model: Model, interview_context: str, tracer: Tracer = None, language: str = "en-US") -> None:
         super().__init__(model, tracer=tracer)
-        self.system_prompt = RAG_system_prompt(interview_context)
+        self.system_prompt = RAG_system_prompt(interview_context, language)
         self.interview_context = interview_context
 
     def answer(self, question: str, conversation_history: list, question_type: str = "open_ended", options: list = None) -> str:

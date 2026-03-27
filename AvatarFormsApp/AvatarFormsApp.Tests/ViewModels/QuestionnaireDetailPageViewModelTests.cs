@@ -16,6 +16,7 @@ public class QuestionnaireDetailPageViewModelTests
     private readonly Mock<IPythonProcessService> _mockPythonService = new();
     private readonly Mock<IQuestionnaireAPIService> _mockQApiService = new();
     private readonly Mock<IResponseAPIService> _mockResponseApiService = new();
+    private readonly Mock<ILocalSettingsService> _mockLocalSettingsService = new();
 
     private QuestionnaireDetailPageViewModel GetViewModel()
     {
@@ -25,7 +26,8 @@ public class QuestionnaireDetailPageViewModelTests
             _mockLlamaService.Object,
             _mockPythonService.Object,
             _mockQApiService.Object,
-            _mockResponseApiService.Object);
+            _mockResponseApiService.Object,
+            _mockLocalSettingsService.Object);
     }
 
     private Questionnaire CreateValidQuestionnaire(string id)
