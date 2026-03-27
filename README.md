@@ -185,12 +185,6 @@ You can optionally specify a path to save the visualation with the flag `--save 
 
 Traces of agent calls are saved to `Evaluation\agent_evaluation_logs`, where the prompts and outputs of requests for each agent can be viewed for observability.
 
-
-## Environment Variables
-
-- Local mode is the default app flow and uses `--local` with the `.llamafile` server.
-- Cloud mode requires `FIREWORKS_API_KEY` (read by Python backend).
-
 ## Troubleshooting
 
 - No AI model starts:
