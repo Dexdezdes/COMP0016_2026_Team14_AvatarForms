@@ -18,10 +18,10 @@
         
         <ApplicationId>AvatarFormsApp</ApplicationId>
         <PackageId>AvatarFormsApp</PackageId>
-        <AssemblyName>AvatarFormsApp</AssemblyName>
+        <AssemblyName>AvatarForms</AssemblyName>
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <ApplicationVersion>1</ApplicationVersion>
-        <ApplicationTitle>AvatarFormsApp</ApplicationTitle>
+        <ApplicationTitle>AvatarForms</ApplicationTitle>
    </PropertyGroup>
 
     <PropertyGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
